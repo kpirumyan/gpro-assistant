@@ -49,6 +49,15 @@ Open [http://localhost:3000](http://localhost:3000).
 | `npm run lint:fix`     | Run ESLint with auto-fix  |
 | `npm run format`       | Format with Prettier      |
 | `npm run format:check` | Check Prettier formatting |
+| `npm run test`         | Run tests (Vitest)        |
+| `npm run test:watch`   | Run tests in watch mode   |
+| `npm run test:coverage`| Run tests with coverage   |
+
+## Testing
+
+See **[TESTING.md](TESTING.md)** for stack, folder layout, and the backlog of deferred work (E2E, CI, feature tests).
+
+Every `git commit` runs `npm run test` and `npm run lint` via Husky (`pre-commit` hook). To skip in an emergency: `git commit --no-verify`.
 
 ## Deploy (Vercel)
 
