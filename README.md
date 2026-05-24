@@ -40,18 +40,18 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
-| Command                | Description               |
-| ---------------------- | ------------------------- |
-| `npm run dev`          | Start dev server          |
-| `npm run build`        | Production build          |
-| `npm run start`        | Start production server   |
-| `npm run lint`         | Run ESLint                |
-| `npm run lint:fix`     | Run ESLint with auto-fix  |
-| `npm run format`       | Format with Prettier      |
-| `npm run format:check` | Check Prettier formatting |
-| `npm run test`         | Run tests (Vitest)        |
-| `npm run test:watch`   | Run tests in watch mode   |
-| `npm run test:coverage`| Run tests with coverage   |
+| Command                 | Description               |
+| ----------------------- | ------------------------- |
+| `npm run dev`           | Start dev server          |
+| `npm run build`         | Production build          |
+| `npm run start`         | Start production server   |
+| `npm run lint`          | Run ESLint                |
+| `npm run lint:fix`      | Run ESLint with auto-fix  |
+| `npm run format`        | Format with Prettier      |
+| `npm run format:check`  | Check Prettier formatting |
+| `npm run test`          | Run tests (Vitest)        |
+| `npm run test:watch`    | Run tests in watch mode   |
+| `npm run test:coverage` | Run tests with coverage   |
 
 ## Testing
 

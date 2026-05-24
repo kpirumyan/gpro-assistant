@@ -6,9 +6,17 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 <!-- END:nextjs-agent-rules -->
 
+## Product context
+
+This is a single-user app for personal use. It will use one GPRO API key to fetch game data, visualize it, generate derived data, write results to the database, and analyze the collected data.
+
 ## Testing
 
 Before adding or changing tests, read [TESTING.md](TESTING.md) for stack, layout, and deferred backlog.
+
+This project follows a TDD-first workflow: prefer writing or updating a failing test before changing implementation code, then make the smallest change needed to pass.
+
+TDD workflow note: after writing the failing test(s), stop and wait for explicit user confirmation before implementing the code that makes them pass.
 
 **Never change tests to make a fix pass.** If `npm run test` fails while fixing a bug or implementing a change, fix the application code (or fixtures/MSW mocks), not the test assertions or expectations. Only edit tests when the user explicitly asks to add, update, or remove test coverage — not as a shortcut to green CI.
 
