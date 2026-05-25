@@ -39,6 +39,12 @@ gpro-assistant/
 │   │   ├── layout.tsx          # Root layout (fonts, nav, body)
 │   │   ├── page.tsx            # Home (/)
 │   │   ├── globals.css         # Global styles + Tailwind
+│   │   ├── driver/
+│   │   │   ├── page.tsx        # /driver
+│   │   │   └── actions.ts      # Server actions for driver data
+│   │   ├── car/
+│   │   │   ├── page.tsx        # /car
+│   │   │   └── actions.ts      # Server actions for car data
 │   │   ├── fuel/page.tsx       # /fuel (placeholder)
 │   │   ├── tires/page.tsx      # /tires (placeholder)
 │   │   ├── setup/page.tsx      # /setup (placeholder)
@@ -48,10 +54,13 @@ gpro-assistant/
 │   ├── components/             # Shared React components
 │   │   ├── AppNav.tsx          # Navigation bar
 │   │   ├── PageShell.tsx       # Page wrapper (title + description)
-│   │   └── SettingsApiKeyForm.tsx  # API key form
+│   │   ├── SettingsApiKeyForm.tsx  # API key form
+│   │   ├── DriverPanel.tsx     # Displays driver skills and attributes
+│   │   ├── CarPanel.tsx        # Displays car part levels and wear
+│   │   └── StatBar.tsx         # Reusable gradient stat bar
 │   ├── lib/                    # Domain logic (keep pages thin)
-│   │   ├── gpro/               # GPRO API client, types, fixtures (future)
-│   │   ├── db/                 # Database client + schema (future)
+│   │   ├── gpro/               # GPRO API client, types, fixtures
+│   │   ├── db/                 # Database client + schema
 │   │   └── calculators/        # Fuel, tire, setup calculations (future)
 │   └── test/
 │       └── msw/                # MSW mock server for tests

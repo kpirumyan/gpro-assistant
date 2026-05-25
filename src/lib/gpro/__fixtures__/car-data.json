@@ -1,0 +1,15 @@
+{
+  "parts": [
+    { "name": "Chassis", "level": 2, "wear": 48 },
+    { "name": "Engine", "level": 2, "wear": 10 },
+    { "name": "Front Wing", "level": 2, "wear": 49 },
+    { "name": "Rear Wing", "level": 2, "wear": 42 },
+    { "name": "Underbody", "level": 2, "wear": 48 },
+    { "name": "Sidepods", "level": 2, "wear": 43 },
+    { "name": "Cooling", "level": 2, "wear": 40 },
+    { "name": "Gearbox", "level": 2, "wear": 10 },
+    { "name": "Brakes", "level": 3, "wear": 10 },
+    { "name": "Suspension", "level": 3, "wear": 10 },
+    { "name": "Electronics", "level": 2, "wear": 10 }
+  ]
+}
