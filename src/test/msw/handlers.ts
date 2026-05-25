@@ -1,4 +1,10 @@
 import { http, HttpResponse, type HttpHandler } from "msw";
+import driverProfileFixture from "@/lib/gpro/__fixtures__/driver-profile.json";
+import carDataFixture from "@/lib/gpro/__fixtures__/car-data.json";
+
+function isAuthorized(request: Request): boolean {
+  return request.headers.get("Authorization") === "Bearer VALID_TOKEN";
+}
 
 /**
  * GPRO API mock handlers — add when integrating api.gpro.net.
@@ -6,9 +12,22 @@ import { http, HttpResponse, type HttpHandler } from "msw";
  */
 export const handlers: HttpHandler[] = [
   http.get("https://gpro.net/en/backend/api/v2/Menu", ({ request }) => {
-    const authHeader = request.headers.get("Authorization");
-    if (authHeader === "Bearer VALID_TOKEN") {
+    if (isAuthorized(request)) {
       return HttpResponse.json({}, { status: 200 });
+    }
+    return HttpResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }),
+
+  http.get("https://gpro.net/en/backend/api/v2/DriProfile", ({ request }) => {
+    if (isAuthorized(request)) {
+      return HttpResponse.json(driverProfileFixture, { status: 200 });
+    }
+    return HttpResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }),
+
+  http.get("https://gpro.net/en/backend/api/v2/UpdateCar", ({ request }) => {
+    if (isAuthorized(request)) {
+      return HttpResponse.json(carDataFixture, { status: 200 });
     }
     return HttpResponse.json({ error: "Unauthorized" }, { status: 401 });
   }),
