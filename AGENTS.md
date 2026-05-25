@@ -50,7 +50,7 @@ Respect `.agentignore`. Never read, search, list, or analyze files matching thos
 ## Language rules
 
 - **English only**: all source code comments and Git commit messages.
-- Chat conversation & artifacts (plans, walkthroughs, etc.): user's language.
+- Chat conversation & artifacts (implementation plans, walkthroughs, etc.): user's language.
 
 ## Terminal rules
 
