@@ -54,7 +54,7 @@ Respect `.agentignore`. Never read, search, list, or analyze files matching thos
 
 ## Terminal rules
 
-- Always use bash terminal (e.g., via `bash -c "..."`) for running commands instead of Windows PowerShell.
+- Always use Git Bash terminal on Windows (via `& "C:\Program Files\Git\bin\bash.exe" -c "..."`) for running commands instead of Windows PowerShell or default `bash` (which resolves to WSL bash where Windows Node.js/npm is missing).
 
 ## Architecture
 
