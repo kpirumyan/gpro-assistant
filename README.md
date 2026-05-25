@@ -51,6 +51,9 @@ Open [http://localhost:3000](http://localhost:3000).
 | `npm run test`          | Run tests (Vitest)        |
 | `npm run test:watch`    | Run tests in watch mode   |
 | `npm run test:coverage` | Run tests with coverage   |
+| `npm run db:generate`   | Generate DB migrations    |
+| `npm run db:migrate`    | Apply DB migrations       |
+| `npm run db:studio`     | Open Drizzle Studio       |
 
 ## Testing
 
