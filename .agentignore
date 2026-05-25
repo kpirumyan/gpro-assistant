@@ -1,7 +1,5 @@
 node_modules/
 .next/
-.aider*
-.cursor/
 .idea/
 .vs/
 .vscode/

@@ -8,32 +8,70 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Product context
 
-This is a single-user app for personal use. It will use one GPRO API key to fetch game data, visualize it, generate derived data, write results to the database, and analyze the collected data.
+Single-user Next.js app for personal use. Fetches game data from the GPRO API, visualizes it, generates derived analytics, writes results to the database (Vercel Postgres / Neon), and presents analysis. The GPRO API token is stored in the database (not in env variables).
 
-## Context Exclusion
+## Workflow
 
-You must always respect the exclusions defined in `.agentignore`. Never read, search, list, analyze, or include in your context any files or directories matching the patterns in `.agentignore` (such as `node_modules`, `.next`, `.cursor`, `.vscode`, `package-lock.json`, etc.) unless the user explicitly requests you to do so.
+Every non-trivial task follows five phases:
 
-## Testing
+1. **Plan** — Research the task, create an implementation plan artifact. **Stop and wait for user approval.**
+2. **Implement** — Write code following project conventions. TDD-first internally: write the test, then the code to pass it — deliver both together without pausing between them.
+3. **Test** — Run `npm run test` and `npm run lint`. Show results. **Stop and wait for user approval.**
+4. **Review** — Run the code review checklist (see `.agents/skills/code-review.md`). Fix any issues found.
+5. **Commit** — Conventional Commits format. One commit = one logical change. Feature + its tests = one commit.
 
-Before adding or changing tests, read [TESTING.md](TESTING.md) for stack, layout, and deferred backlog.
+For trivial tasks (typo fix, config tweak), skip the plan phase but still test and review.
 
-This project follows a TDD-first workflow: prefer writing or updating a failing test before changing implementation code, then make the smallest change needed to pass.
+## Interaction mode
 
-TDD workflow note: after writing the failing test(s), stop and wait for explicit user confirmation before implementing the code that makes them pass.
+**Current: interactive** — stop after plan, after tests, before commit. The user will switch to a dual-mode (autonomous for simple tasks) when ready, via explicit request or `/goal`.
 
-**Never change tests to make a fix pass.** If `npm run test` fails while fixing a bug or implementing a change, fix the application code (or fixtures/MSW mocks), not the test assertions or expectations. Only edit tests when the user explicitly asks to add, update, or remove test coverage — not as a shortcut to green CI.
+## Error handling
 
-## Git commits
+When a command, build, or test fails: attempt up to **3 automatic fix cycles**. After 3 failures, **stop** and report the issue with context. Never loop indefinitely.
 
-Before any `git commit` (local or when the user asks you to commit):
+## Commit conventions
 
-1. Run `npm run test` and `npm run lint` — both must pass.
-2. If either fails, fix the issues and re-run; do not commit until green. On test failures, fix application code — **never** alter tests to make them pass (see Testing above).
+Use [Conventional Commits](https://www.conventionalcommits.org/):
 
-A Husky `pre-commit` hook runs the same checks automatically for all commits.
+- `feat(scope):` — new feature
+- `fix(scope):` — bug fix
+- `refactor(scope):` — restructuring without behavior change
+- `test(scope):` — adding or updating tests
+- `docs(scope):` — documentation changes only
+- `chore(scope):` — tooling, dependencies, config
 
-## Language Rules
+**Never change tests to make a fix pass.** Fix application code instead. Only edit tests when the user explicitly asks to add, update, or remove test coverage.
 
-- **English only**: All comments in the source code (inside files) and Git commit messages must ALWAYS be in English. This rule does NOT apply to the chat conversation with the user, which should be in the user's language.
+## Context exclusion
 
+Respect `.agentignore`. Never read, search, list, or analyze files matching those patterns unless the user explicitly asks.
+
+## Language rules
+
+- **English only**: all source code comments and Git commit messages.
+- Chat conversation: user's language.
+
+## Architecture
+
+Read `ARCHITECTURE.md` before making structural changes. **Update it** when the project structure, data flow, or key patterns change. This file is the agent's "memory" between sessions.
+
+## Documentation maintenance
+
+At commit time, check whether these files need updating:
+- `README.md` — routes, scripts, prerequisites
+- `ARCHITECTURE.md` — structure, patterns, decisions
+- `.env.example` — new environment variables
+
+## Skills
+
+Detailed instructions live in `.agents/skills/`. Read the relevant skill before starting the corresponding work.
+
+| Skill | File | When to read |
+|-------|------|-------------|
+| Testing | `testing.md` | Writing or reviewing tests |
+| API Integration | `api-integration.md` | Working with GPRO API |
+| Next.js Patterns | `nextjs-patterns.md` | Creating routes, components, data fetching |
+| Code Review | `code-review.md` | Before every commit |
+| UI Patterns | `ui-patterns.md` | Building or modifying UI |
+| Database | `database.md` | Schema changes, queries, migrations |
