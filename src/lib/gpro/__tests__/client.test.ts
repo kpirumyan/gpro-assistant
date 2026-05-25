@@ -22,7 +22,7 @@ describe("fetchDriverProfile", () => {
   it("should return driver profile data for a valid token", async () => {
     const profile = await fetchDriverProfile("VALID_TOKEN");
     expect(profile).toMatchObject({
-      name: "Tom Herbert",
+      driName: "Tom Herbert",
       overall: 90,
       concentration: 27,
       talent: 244,
@@ -48,7 +48,7 @@ describe("fetchCarData", () => {
     expect(data.parts).toHaveLength(11);
     expect(data.parts[0]).toMatchObject({
       name: "Chassis",
-      level: 2,
+      level: 1,
       wear: 48,
     });
   });

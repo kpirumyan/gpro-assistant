@@ -6,13 +6,13 @@
 // --- Driver Profile ---
 
 export interface DriverProfileResponse {
-  name: string;
+  driName: string;
   overall: number;
   concentration: number;
   talent: number;
-  aggression: number;
+  aggressiveness: number;
   experience: number;
-  technicalInsight: number;
+  techInsight: number;
   stamina: number;
   charisma: number;
   motivation: number;

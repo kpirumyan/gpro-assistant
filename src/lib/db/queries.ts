@@ -56,13 +56,13 @@ export async function upsertDriverProfile(data: DriverProfileResponse): Promise<
       await db
         .update(driverProfiles)
         .set({
-          name: data.name,
+          name: data.driName,
           overall: data.overall,
           concentration: data.concentration,
           talent: data.talent,
-          aggression: data.aggression,
+          aggression: data.aggressiveness,
           experience: data.experience,
-          technicalInsight: data.technicalInsight,
+          technicalInsight: data.techInsight,
           stamina: data.stamina,
           charisma: data.charisma,
           motivation: data.motivation,
@@ -75,13 +75,13 @@ export async function upsertDriverProfile(data: DriverProfileResponse): Promise<
         .where(eq(driverProfiles.id, existing[0].id));
     } else {
       await db.insert(driverProfiles).values({
-        name: data.name,
+        name: data.driName,
         overall: data.overall,
         concentration: data.concentration,
         talent: data.talent,
-        aggression: data.aggression,
+        aggression: data.aggressiveness,
         experience: data.experience,
-        technicalInsight: data.technicalInsight,
+        technicalInsight: data.techInsight,
         stamina: data.stamina,
         charisma: data.charisma,
         motivation: data.motivation,

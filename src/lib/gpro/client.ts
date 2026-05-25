@@ -33,7 +33,7 @@ export async function verifyToken(token: string): Promise<boolean> {
 export async function fetchDriverProfile(token: string): Promise<DriverProfileResponse> {
   if (!token) throw new Error("API token is required");
 
-  const response = await fetch(`${GPRO_API_BASE_URL}/GetDriverProfile`, {
+  const response = await fetch(`${GPRO_API_BASE_URL}/DriProfile`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -59,7 +59,7 @@ export async function fetchDriverProfile(token: string): Promise<DriverProfileRe
 export async function fetchCarData(token: string): Promise<CarDataResponse> {
   if (!token) throw new Error("API token is required");
 
-  const response = await fetch(`${GPRO_API_BASE_URL}/GetCar`, {
+  const response = await fetch(`${GPRO_API_BASE_URL}/UpdateCar`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -75,5 +75,33 @@ export async function fetchCarData(token: string): Promise<CarDataResponse> {
     throw new Error(`GPRO API error: ${response.status} ${response.statusText}`);
   }
 
-  return response.json() as Promise<CarDataResponse>;
+  interface RawUpdateCarResponse {
+    lvlChassis: number; usaChassis: number;
+    lvlEngine: number; usaEngine: number;
+    lvlFWing: number; usaFWing: number;
+    lvlRWing: number; usaRWing: number;
+    lvlUnderbody: number; usaUnderbody: number;
+    lvlSidepods: number; usaSidepods: number;
+    lvlCooling: number; usaCooling: number;
+    lvlGear: number; usaGear: number;
+    lvlBrakes: number; usaBrakes: number;
+    lvlSusp: number; usaSusp: number;
+    lvlElectronics: number; usaElectronics: number;
+  }
+  const raw = await response.json() as RawUpdateCarResponse;
+  return {
+    parts: [
+      { name: "Chassis", level: raw.lvlChassis, wear: raw.usaChassis },
+      { name: "Engine", level: raw.lvlEngine, wear: raw.usaEngine },
+      { name: "Front Wing", level: raw.lvlFWing, wear: raw.usaFWing },
+      { name: "Rear Wing", level: raw.lvlRWing, wear: raw.usaRWing },
+      { name: "Underbody", level: raw.lvlUnderbody, wear: raw.usaUnderbody },
+      { name: "Sidepods", level: raw.lvlSidepods, wear: raw.usaSidepods },
+      { name: "Cooling", level: raw.lvlCooling, wear: raw.usaCooling },
+      { name: "Gearbox", level: raw.lvlGear, wear: raw.usaGear },
+      { name: "Brakes", level: raw.lvlBrakes, wear: raw.usaBrakes },
+      { name: "Suspension", level: raw.lvlSusp, wear: raw.usaSusp },
+      { name: "Electronics", level: raw.lvlElectronics, wear: raw.usaElectronics },
+    ],
+  };
 }

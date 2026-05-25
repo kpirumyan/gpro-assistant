@@ -18,14 +18,14 @@ export const handlers: HttpHandler[] = [
     return HttpResponse.json({ error: "Unauthorized" }, { status: 401 });
   }),
 
-  http.get("https://gpro.net/en/backend/api/v2/GetDriverProfile", ({ request }) => {
+  http.get("https://gpro.net/en/backend/api/v2/DriProfile", ({ request }) => {
     if (isAuthorized(request)) {
       return HttpResponse.json(driverProfileFixture, { status: 200 });
     }
     return HttpResponse.json({ error: "Unauthorized" }, { status: 401 });
   }),
 
-  http.get("https://gpro.net/en/backend/api/v2/GetCar", ({ request }) => {
+  http.get("https://gpro.net/en/backend/api/v2/UpdateCar", ({ request }) => {
     if (isAuthorized(request)) {
       return HttpResponse.json(carDataFixture, { status: 200 });
     }
