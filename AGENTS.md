@@ -15,7 +15,7 @@ Single-user Next.js app for personal use. Fetches game data from the GPRO API, v
 Every non-trivial task follows five phases:
 
 1. **Plan** — Research the task, create an implementation plan artifact. **Stop and wait for user approval.**
-2. **Implement** — Write code following project conventions. TDD-first internally: write the test, then the code to pass it — deliver both together without pausing between them.
+2. **Implement** — Write code following project conventions. TDD-first internally: write the test, then the code to pass it — deliver both together without pausing between them. If database schema changes are made, generate and apply migrations (`npm run db:generate` and `npm run db:migrate`).
 3. **Test** — Run `npm run test` and `npm run lint`. Show results. **Stop and wait for user approval.**
 4. **Review** — Run the code review checklist (see `.agents/skills/code-review.md`). Fix any issues found.
 5. **Commit** — Conventional Commits format. One commit = one logical change. Feature + its tests = one commit.
