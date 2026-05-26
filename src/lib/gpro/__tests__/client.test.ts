@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { verifyToken, fetchDriverProfile, fetchCarData, fetchRaceAnalysis } from "../client";
+import driverProfileFixture from "../__fixtures__/driver-profile.json";
+import carDataFixture from "../__fixtures__/car-data.json";
+import raceAnalysisFixture from "../__fixtures__/race-analysis.json";
 
 describe("verifyToken", () => {
   it("should return true for a valid token", async () => {
@@ -21,12 +24,7 @@ describe("verifyToken", () => {
 describe("fetchDriverProfile", () => {
   it("should return driver profile data for a valid token", async () => {
     const profile = await fetchDriverProfile("VALID_TOKEN");
-    expect(profile).toMatchObject({
-      driName: "Tom Herbert",
-      overall: 90,
-      concentration: 27,
-      talent: 244,
-    });
+    expect(profile).toEqual(driverProfileFixture);
   });
 
   it("should throw on invalid token", async () => {
@@ -48,8 +46,8 @@ describe("fetchCarData", () => {
     expect(data.parts).toHaveLength(11);
     expect(data.parts[0]).toMatchObject({
       name: "Chassis",
-      level: 1,
-      wear: 48,
+      level: carDataFixture.lvlChassis,
+      wear: carDataFixture.usaChassis,
     });
   });
 
@@ -69,9 +67,9 @@ describe("fetchCarData", () => {
 describe("fetchRaceAnalysis", () => {
   it("should return race analysis data for a valid token", async () => {
     const data = await fetchRaceAnalysis("VALID_TOKEN", 99, 1);
-    expect(data.startFuel).toBeDefined();
-    expect(data.pits).toHaveLength(1);
-    expect(data.laps).toHaveLength(70);
+    expect(data.startFuel).toBe(raceAnalysisFixture.startFuel);
+    expect(data.pits).toHaveLength(raceAnalysisFixture.pits.length);
+    expect(data.laps).toHaveLength(raceAnalysisFixture.laps.length);
   });
 
   it("should throw on invalid token", async () => {
