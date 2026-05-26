@@ -118,6 +118,10 @@ The API token is stored in the database (not `.env.local`). The Settings page fo
 
 Tests are written before (or alongside) production code. Tests must never be weakened to make a fix pass.
 
+### Mocking external APIs with JSON fixtures
+
+All mock data for external API responses (such as the GPRO API) used by Mock Service Worker (MSW) must be stored in the `src/lib/gpro/__fixtures__/` directory as `.json` files. Mock handlers in `src/test/msw/handlers.ts` must import these fixtures rather than containing inline, hardcoded mock response objects. This maintains consistency, keeps the mock server configuration clean, and simplifies adding or updating mock data.
+
 ## Architecture Decision Records (ADR)
 
 ### ADR-001: Antigravity as sole development agent
