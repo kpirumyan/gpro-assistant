@@ -12,19 +12,28 @@ Single-user Next.js app for personal use. Fetches game data from the GPRO API, v
 
 ## Workflow
 
-Every non-trivial task follows five phases:
+Every non-trivial task follows these phases:
 
 1. **Plan** — Research the task, create an implementation plan artifact. **Stop and wait for user approval.**
-2. **Implement** — Write code following project conventions. TDD-first internally: write the test, then the code to pass it — deliver both together without pausing between them. If database schema changes are made, generate and apply migrations (`npm run db:generate` and `npm run db:migrate`).
-3. **Test** — Run `npm run test` and `npm run lint`. Show results. **Stop and wait for user approval.**
-4. **Review** — Run the code review checklist (see `.agents/skills/code-review.md`). Fix any issues found.
-5. **Commit** — Conventional Commits format. One commit = one logical change. Feature + its tests = one commit.
+2. **Post-Approval Setup** — Once the plan is approved, perform the following setup steps:
+   - Create a directory in `.agents/plans/` named after the current git worktree/branch (e.g., `.agents/plans/<worktree-name>`).
+   - Save the approved `implementation_plan.md` in that directory.
+   - Create and save the `task.md` checklist in that directory.
+   - Create and save a Mermaid diagram (e.g., `diagram.md`) representing the architecture/plan in that directory, formatted so it can be viewed using the Mermaid Previewer extension in VS Code.
+3. **Implement** — Write code following project conventions. TDD-first internally: write the test, then the code to pass it — deliver both together without pausing between them. If database schema changes are made, generate and apply migrations (`npm run db:generate` and `npm run db:migrate`).
+4. **Test** — Run `npm run test` and `npm run lint`. Show results. **Stop and wait for user approval.**
+5. **Review** — Run the code review checklist (see `.agents/skills/code-review.md`). Fix any issues found.
+6. **Commit** — Conventional Commits format. One commit = one logical change. Feature + its tests = one commit.
 
-For trivial tasks (typo fix, config tweak), skip the plan phase but still test and review.
+For trivial tasks (typo fix, config tweak), skip the plan/setup phases but still test and review.
 
 ## Interaction mode
 
-**Current: interactive** — stop after plan, after tests, before commit. The user will switch to a dual-mode (autonomous for simple tasks) when ready, via explicit request or `/goal`.
+The agent must support the following interaction modes, controlled by user commands:
+- `/interactive` — Switch the agent to interactive mode. Stop for approval after the **Plan** phase, after the **Test** phase, and before committing.
+- `/goal` — Switch the agent to autonomous mode. The agent will run tasks autonomously without stopping for intermediate approvals until the final goal is met.
+
+**Current Mode: interactive** (default unless `/goal` is explicitly specified in the conversation or request). Always respect this mode and do not proceed to execution/autonomous running if in interactive mode.
 
 ## Error handling
 
