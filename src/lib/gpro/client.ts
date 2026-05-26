@@ -135,3 +135,29 @@ export async function fetchRaceAnalysis(token: string, season: number, race: num
 
   return response.json() as Promise<RaceAnalysisResponse>;
 }
+
+/**
+ * Fetches the race calendar from the GPRO API.
+ */
+export async function fetchCalendar(token: string): Promise<unknown> {
+  if (!token) throw new Error("API token is required");
+
+  const response = await fetch(`${GPRO_API_BASE_URL}/Calendar`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      throw new Error("Invalid or expired API token");
+    }
+    throw new Error(`GPRO API error: ${response.status} ${response.statusText}`);
+  }
+
+  return response.json();
+}
+

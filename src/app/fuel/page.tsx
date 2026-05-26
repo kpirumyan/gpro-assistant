@@ -1,10 +1,17 @@
 import { PageShell } from "@/components/PageShell";
+import { FuelSyncPanel } from "@/components/FuelSyncPanel";
+import { getFuelAnalyticsList } from "@/lib/db/queries";
 
-export default function FuelPage() {
+export default async function FuelPage() {
+  const data = await getFuelAnalyticsList();
+
   return (
     <PageShell
       title="Fuel consumption"
-      description="Calculate fuel usage for race strategy. Coming soon."
-    />
+      description="Calculate fuel usage for race strategy."
+    >
+      <FuelSyncPanel data={data} />
+    </PageShell>
   );
 }
+
