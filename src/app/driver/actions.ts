@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getGproCredentials, upsertDriverProfile } from "@/lib/db/queries";
-import { fetchDriverProfile } from "@/lib/gpro/client";
+import { fetchDriverProfile, AuthError } from "@/lib/gpro/client";
 
 export type SyncDriverState = {
   message?: string;
@@ -22,6 +22,9 @@ export async function syncDriverData(): Promise<SyncDriverState> {
     return { message: "Driver data synced successfully" };
   } catch (error) {
     console.error("Failed to sync driver data:", error);
+    if (error instanceof AuthError) {
+      return { error: "AUTH_ERROR" };
+    }
     const message = error instanceof Error ? error.message : "Unknown error";
     return { error: `Failed to sync driver data: ${message}` };
   }

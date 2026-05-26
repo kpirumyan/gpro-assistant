@@ -1,4 +1,4 @@
-import { pgTable, serial, text, integer, boolean, timestamp, jsonb, numeric, unique } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, integer, timestamp, jsonb, numeric, unique } from "drizzle-orm/pg-core";
 
 export const settings = pgTable("settings", {
   id: serial("id").primaryKey(),
@@ -11,8 +11,6 @@ export const settings = pgTable("settings", {
 export const gproCredentials = pgTable("gpro_credentials", {
   id: serial("id").primaryKey(),
   token: text("token").notNull(),
-  isValid: boolean("is_valid").notNull().default(false),
-  verifiedAt: timestamp("verified_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

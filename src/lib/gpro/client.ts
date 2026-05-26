@@ -1,5 +1,12 @@
 import type { DriverProfileResponse, CarDataResponse, RaceAnalysisResponse } from "./types";
 
+export class AuthError extends Error {
+  constructor(message = "Invalid or expired API token") {
+    super(message);
+    this.name = "AuthError";
+  }
+}
+
 const GPRO_API_BASE_URL = "https://gpro.net/en/backend/api/v2";
 
 /**
@@ -44,7 +51,7 @@ export async function fetchDriverProfile(token: string): Promise<DriverProfileRe
 
   if (!response.ok) {
     if (response.status === 401 || response.status === 403) {
-      throw new Error("Invalid or expired API token");
+      throw new AuthError();
     }
     throw new Error(`GPRO API error: ${response.status} ${response.statusText}`);
   }
@@ -70,7 +77,7 @@ export async function fetchCarData(token: string): Promise<CarDataResponse> {
 
   if (!response.ok) {
     if (response.status === 401 || response.status === 403) {
-      throw new Error("Invalid or expired API token");
+      throw new AuthError();
     }
     throw new Error(`GPRO API error: ${response.status} ${response.statusText}`);
   }
@@ -125,7 +132,7 @@ export async function fetchRaceAnalysis(token: string, season: number, race: num
 
   if (!response.ok) {
     if (response.status === 401 || response.status === 403) {
-      throw new Error("Invalid or expired API token");
+      throw new AuthError();
     }
     if (response.status === 404) {
       throw new Error(`Race analysis not found for Season ${season}, Race ${race}`);
@@ -153,7 +160,7 @@ export async function fetchCalendar(token: string): Promise<unknown> {
 
   if (!response.ok) {
     if (response.status === 401 || response.status === 403) {
-      throw new Error("Invalid or expired API token");
+      throw new AuthError();
     }
     throw new Error(`GPRO API error: ${response.status} ${response.statusText}`);
   }

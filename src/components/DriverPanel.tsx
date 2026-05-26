@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { syncDriverData, type SyncDriverState } from "@/app/driver/actions";
 import { StatBar } from "./StatBar";
 
@@ -94,7 +95,14 @@ export function DriverPanel({ data }: DriverPanelProps) {
         </form>
       </div>
 
-      {state?.error && (
+      {state?.error === "AUTH_ERROR" ? (
+        <div
+          role="alert"
+          className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400"
+        >
+          Invalid or expired API token. Please update your API key in <Link href="/settings" className="font-semibold underline hover:text-red-800 dark:hover:text-red-300">Settings</Link>.
+        </div>
+      ) : state?.error && (
         <div
           role="alert"
           className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400"

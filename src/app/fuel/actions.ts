@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getGproCredentials } from "@/lib/db/queries";
-import { fetchCalendar } from "@/lib/gpro/client";
+import { fetchCalendar, AuthError } from "@/lib/gpro/client";
 import { syncRaceHistory } from "@/lib/services/race-analysis.service";
 import { db } from "@/lib/db";
 import { raceAnalysis } from "@/lib/db/schema";
@@ -83,6 +83,9 @@ export async function syncRacesData(): Promise<SyncRacesState> {
     };
   } catch (error) {
     console.error("Failed to sync races:", error);
+    if (error instanceof AuthError) {
+      return { error: "AUTH_ERROR" };
+    }
     const message = error instanceof Error ? error.message : "Unknown error";
     return { error: `Sync failed: ${message}` };
   }

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getGproCredentials, upsertCarParts } from "@/lib/db/queries";
-import { fetchCarData } from "@/lib/gpro/client";
+import { fetchCarData, AuthError } from "@/lib/gpro/client";
 
 export type SyncCarState = {
   message?: string;
@@ -22,6 +22,9 @@ export async function syncCarData(): Promise<SyncCarState> {
     return { message: "Car data synced successfully" };
   } catch (error) {
     console.error("Failed to sync car data:", error);
+    if (error instanceof AuthError) {
+      return { error: "AUTH_ERROR" };
+    }
     const message = error instanceof Error ? error.message : "Unknown error";
     return { error: `Failed to sync car data: ${message}` };
   }

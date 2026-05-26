@@ -27,8 +27,6 @@ export async function saveApiKey(
 
     await upsertGproCredentials({
       token: key.trim(),
-      isValid: true,
-      verifiedAt: new Date(),
     });
     revalidatePath("/settings");
     return { message: "API key saved successfully" };
