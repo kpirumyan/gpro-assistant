@@ -1,31 +1,31 @@
 # Race Fuel Analytics Task List
 
 ## 1. База данных (Drizzle ORM)
-- [/] Добавить таблицу `race_analysis` в `src/lib/db/schema.ts` (Сырые данные гонок).
-- [/] Добавить таблицу `race_car_snapshots` в `src/lib/db/schema.ts` (Состояние машины).
-- [/] Добавить таблицу `race_driver_snapshots` в `src/lib/db/schema.ts` (Состояние пилота).
-- [/] Добавить таблицу `race_fuel_analytics` в `src/lib/db/schema.ts` (Вычисленные метрики топлива).
-- [/] Создать и применить миграцию базы данных (`npm run db:generate` и `npm run db:migrate`).
+- [x] Добавить таблицу `race_analysis` в `src/lib/db/schema.ts` (Сырые данные гонок).
+- [x] Добавить таблицу `race_car_snapshots` в `src/lib/db/schema.ts` (Состояние машины).
+- [x] Добавить таблицу `race_driver_snapshots` в `src/lib/db/schema.ts` (Состояние пилота).
+- [x] Добавить таблицу `race_fuel_analytics` в `src/lib/db/schema.ts` (Вычисленные метрики топлива).
+- [x] Создать и применить миграцию базы данных (`npm run db:generate` и `npm run db:migrate`).
 - [x] Тестирование изменений (проверка типов, lint).
-- [ ] Review (code review checklist).
-- [ ] Commit изменений базы данных.
+- [x] Review (code review checklist).
+- [x] Commit изменений базы данных.
 
 ## 2. GPRO API Клиент
-- [ ] Добавить тип `RaceAnalysisResponse` в `src/lib/gpro/types.ts`.
-- [ ] Реализовать функцию `fetchRaceAnalysis(token, season, race)` в `src/lib/gpro/client.ts`.
-- [ ] Тестирование изменений.
-- [ ] Review.
-- [ ] Commit изменений API клиента.
+- [x] Добавить тип `RaceAnalysisResponse` в `src/lib/gpro/types.ts`.
+- [x] Реализовать функцию `fetchRaceAnalysis(token, season, race)` в `src/lib/gpro/client.ts`.
+- [x] Тестирование изменений.
+- [x] Review.
+- [x] Commit изменений API клиента.
 
 ## 3. Бизнес-логика (Сервисный слой)
-- [ ] Создать `src/lib/services/race-analysis.service.ts`.
-- [ ] Реализовать логику синхронизации гонок (`syncRaceHistory`).
-- [ ] Реализовать логику парсинга снепшотов пилота и болида.
-- [ ] Реализовать алгоритм расчета расхода топлива (с учетом погрешностей пит-стопов и точного финишного остатка).
-- [ ] Реализовать сохранение рассчитанной аналитики в БД.
-- [ ] Написать unit-тесты для алгоритмов расчета (`race-analysis.service.test.ts`).
-- [ ] Тестирование (запуск написанных тестов).
-- [ ] Review.
+- [x] Создать `src/lib/services/race-analysis.service.ts`.
+- [x] Реализовать логику синхронизации гонок (`syncRaceHistory`).
+- [x] Реализовать логику парсинга снепшотов пилота и болида.
+- [x] Реализовать алгоритм расчета расхода топлива (с учетом погрешностей пит-стопов и точного финишного остатка).
+- [x] Реализовать сохранение рассчитанной аналитики в БД.
+- [x] Написать unit-тесты для алгоритмов расчета (`race-analysis.service.test.ts`).
+- [x] Тестирование (запуск написанных тестов).
+- [x] Review.
 - [ ] Commit бизнес-логики.
 
 ## 4. UI Слой
