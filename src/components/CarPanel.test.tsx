@@ -1,15 +1,16 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { CarPanel } from "./CarPanel";
+import carDataFixture from "@/lib/gpro/__fixtures__/car-data.json";
 
 vi.mock("@/app/car/actions", () => ({
   syncCarData: vi.fn(),
 }));
 
 const mockParts = [
-  { name: "Chassis", level: 2, wear: 48 },
-  { name: "Engine", level: 2, wear: 10 },
-  { name: "Front Wing", level: 2, wear: 49 },
+  { name: "Chassis", level: carDataFixture.lvlChassis, wear: carDataFixture.usaChassis },
+  { name: "Engine", level: carDataFixture.lvlEngine, wear: carDataFixture.usaEngine },
+  { name: "Front Wing", level: carDataFixture.lvlFWing, wear: carDataFixture.usaFWing },
 ];
 
 describe("CarPanel", () => {

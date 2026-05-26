@@ -1,26 +1,27 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { DriverPanel } from "./DriverPanel";
+import driverProfileFixture from "@/lib/gpro/__fixtures__/driver-profile.json";
 
 vi.mock("@/app/driver/actions", () => ({
   syncDriverData: vi.fn(),
 }));
 
 const mockDriverData = {
-  name: "Tom Herbert",
-  overall: 90,
-  concentration: 27,
-  talent: 244,
-  aggression: 7,
-  experience: 4,
-  technicalInsight: 53,
-  stamina: 16,
-  charisma: 94,
-  motivation: 154,
-  reputation: 0,
-  weight: 77,
-  age: 17,
-  energy: 100,
+  name: driverProfileFixture.driName,
+  overall: driverProfileFixture.overall,
+  concentration: driverProfileFixture.concentration,
+  talent: driverProfileFixture.talent,
+  aggression: driverProfileFixture.aggressiveness,
+  experience: driverProfileFixture.experience,
+  technicalInsight: driverProfileFixture.techInsight,
+  stamina: driverProfileFixture.stamina,
+  charisma: driverProfileFixture.charisma,
+  motivation: driverProfileFixture.motivation,
+  reputation: driverProfileFixture.reputation,
+  weight: driverProfileFixture.weight,
+  age: driverProfileFixture.age,
+  energy: driverProfileFixture.energy,
   updatedAt: new Date("2025-01-15T10:00:00Z"),
 };
 
