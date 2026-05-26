@@ -26,6 +26,7 @@ Run through every item before committing. Fix any issues found.
 - [ ] New or changed logic in `src/lib/` has co-located `.test.ts` tests
 - [ ] New or changed components have co-located `.test.tsx` tests (if they contain logic beyond simple rendering)
 - [ ] Tests assert behavior, not implementation details
+- [ ] No hardcoded API mock data in tests or MSW handlers — they must import and use `.json` fixtures from `__fixtures__`
 
 ### 4. Documentation
 

@@ -44,6 +44,7 @@ Not installed: Jest, Playwright, Cypress.
 - Only edit tests when the user explicitly asks to add, update, or remove test coverage.
 - Every new module in `src/lib/` should have a co-located `.test.ts` file.
 - Component tests go in a co-located `.test.tsx` file next to the component.
+- **Single Source of Truth for Mocks**: All mock data for external APIs must be stored as `.json` files in `__fixtures__`. MSW handlers and test assertions MUST import these fixtures. Never use inline, hardcoded mock response objects.
 
 ## MSW patterns
 
