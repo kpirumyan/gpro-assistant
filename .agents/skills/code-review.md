@@ -15,6 +15,7 @@ Run through every item before committing. Fix any issues found.
 
 - [ ] No `console.log` / `console.debug` / `console.warn` left in production code (only `console.error` is acceptable for genuine errors)
 - [ ] No `any` types — use proper TypeScript types
+- [ ] No suppressions — never use `@ts-ignore`, `eslint-disable`, `suppressHydrationWarning`, or similar workarounds to silence errors. Always fix the root cause properly.
 - [ ] No TODO / FIXME comments — either resolve them in this commit or raise to user
 - [ ] No hardcoded values — use constants, config, env variables, or database
 - [ ] No unused imports or variables

@@ -45,7 +45,7 @@ src/app/
 
 ### Hydration
 
-- **Never** use `suppressHydrationWarning` to fix hydration mismatches (like date formatting or random values).
+- **Never** use `suppressHydrationWarning` to fix hydration mismatches. As a strict project rule, **no suppressions or workarounds are allowed** anywhere in the codebase (including `eslint-disable` for hook dependencies or `@ts-ignore`). Always fix the underlying issue.
 - **Never** use `useEffect` just to set a `mounted` state to bypass hydration mismatches. This causes cascading renders and is an anti-pattern according to React documentation.
 - **Instead**, use `next/dynamic` with `ssr: false` to create client-only components for values that differ between server and client (like localized dates).
 
