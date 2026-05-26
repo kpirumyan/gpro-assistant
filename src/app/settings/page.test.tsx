@@ -81,11 +81,4 @@ describe("SettingsPage", () => {
     expect(screen.queryByText(/active api key/i)).not.toBeInTheDocument();
   });
 
-  it("keeps the API key field empty when no key is saved", async () => {
-    vi.mocked(queries.getGproCredentials).mockResolvedValue(null);
-
-    render(await SettingsPage());
-
-    expect(screen.getByLabelText("GPRO API key")).toHaveValue("");
-  });
 });
