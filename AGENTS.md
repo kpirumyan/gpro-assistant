@@ -56,6 +56,10 @@ Respect `.agentignore`. Never read, search, list, or analyze files matching thos
 
 - Always use Git Bash terminal on Windows (via `& "C:\Program Files\Git\bin\bash.exe" -c "..."`) for running commands instead of Windows PowerShell or default `bash` (which resolves to WSL bash where Windows Node.js/npm is missing).
 
+## Environment rules
+
+- If operating in a git worktree and `.env.local` is missing, you MUST automatically copy `.env.local` from the original parent repository (read the `.git` file to find the original path) before running any commands that require environment variables (like `npm run db:migrate`).
+
 ## Architecture
 
 Read `ARCHITECTURE.md` before making structural changes. **Update it** when the project structure, data flow, or key patterns change. This file is the agent's "memory" between sessions.
