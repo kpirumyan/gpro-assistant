@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { verifyToken, fetchDriverProfile, fetchCarData } from "../client";
+import { verifyToken, fetchDriverProfile, fetchCarData, fetchRaceAnalysis } from "../client";
 
 describe("verifyToken", () => {
   it("should return true for a valid token", async () => {
@@ -62,6 +62,42 @@ describe("fetchCarData", () => {
   it("should throw on empty token", async () => {
     await expect(fetchCarData("")).rejects.toThrow(
       "API token is required"
+    );
+  });
+});
+
+describe("fetchRaceAnalysis", () => {
+  it("should return race analysis data for a valid token", async () => {
+    const data = await fetchRaceAnalysis("VALID_TOKEN", 99, 1);
+    expect(data.startFuel).toBeDefined();
+    expect(data.pits).toHaveLength(1);
+    expect(data.laps).toHaveLength(70);
+  });
+
+  it("should throw on invalid token", async () => {
+    await expect(fetchRaceAnalysis("INVALID_TOKEN", 99, 1)).rejects.toThrow(
+      "Invalid or expired API token"
+    );
+  });
+
+  it("should throw on empty token", async () => {
+    await expect(fetchRaceAnalysis("", 99, 1)).rejects.toThrow(
+      "API token is required"
+    );
+  });
+
+  it("should throw on missing season or race", async () => {
+    await expect(fetchRaceAnalysis("VALID_TOKEN", 0, 1)).rejects.toThrow(
+      "Season and race parameters are required"
+    );
+    await expect(fetchRaceAnalysis("VALID_TOKEN", 99, 0)).rejects.toThrow(
+      "Season and race parameters are required"
+    );
+  });
+
+  it("should throw when race analysis is not found", async () => {
+    await expect(fetchRaceAnalysis("VALID_TOKEN", 1, 1)).rejects.toThrow(
+      "Race analysis not found for Season 1, Race 1"
     );
   });
 });

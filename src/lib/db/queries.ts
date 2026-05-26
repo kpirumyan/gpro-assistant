@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { db } from "./index";
-import { settings, gproCredentials, driverProfiles, carParts } from "./schema";
+import { settings, gproCredentials, driverProfiles, carParts, raceAnalysis, raceFuelAnalytics } from "./schema";
 import type { DriverProfileResponse, CarPartResponse } from "@/lib/gpro/types";
 
 export async function getSetting(key: string): Promise<string | null> {
@@ -199,3 +199,48 @@ export async function upsertCarParts(parts: CarPartResponse[]): Promise<void> {
     throw new Error("Failed to save car parts");
   }
 }
+
+export type FuelAnalyticsListEntry = {
+  id: number;
+  season: number;
+  race: number;
+  group: string;
+  type: string;
+  stintIndex: number | null;
+  lapsAnalyzed: number;
+  fastLapsCount: number;
+  avgFuelPerLapMin: string;
+  avgFuelPerLapMax: string;
+  createdAt: Date;
+};
+
+export async function getFuelAnalyticsList(): Promise<FuelAnalyticsListEntry[]> {
+  try {
+    return await db
+      .select({
+        id: raceFuelAnalytics.id,
+        season: raceAnalysis.season,
+        race: raceAnalysis.race,
+        group: raceAnalysis.group,
+        type: raceFuelAnalytics.type,
+        stintIndex: raceFuelAnalytics.stintIndex,
+        lapsAnalyzed: raceFuelAnalytics.lapsAnalyzed,
+        fastLapsCount: raceFuelAnalytics.fastLapsCount,
+        avgFuelPerLapMin: raceFuelAnalytics.avgFuelPerLapMin,
+        avgFuelPerLapMax: raceFuelAnalytics.avgFuelPerLapMax,
+        createdAt: raceFuelAnalytics.createdAt,
+      })
+      .from(raceFuelAnalytics)
+      .innerJoin(raceAnalysis, eq(raceFuelAnalytics.raceAnalysisId, raceAnalysis.id))
+      .orderBy(
+        desc(raceAnalysis.season),
+        desc(raceAnalysis.race),
+        desc(raceFuelAnalytics.type),
+        raceFuelAnalytics.stintIndex
+      );
+  } catch (error) {
+    console.error("Failed to get fuel analytics list:", error);
+    return [];
+  }
+}
+
