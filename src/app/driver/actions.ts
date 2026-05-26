@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getGproApiKey, upsertDriverProfile } from "@/lib/db/queries";
+import { getGproCredentials, upsertDriverProfile } from "@/lib/db/queries";
 import { fetchDriverProfile } from "@/lib/gpro/client";
 
 export type SyncDriverState = {
@@ -11,12 +11,12 @@ export type SyncDriverState = {
 
 export async function syncDriverData(): Promise<SyncDriverState> {
   try {
-    const apiKey = await getGproApiKey();
-    if (!apiKey) {
+    const credentials = await getGproCredentials();
+    if (!credentials) {
       return { error: "No API key configured. Please add one in Settings." };
     }
 
-    const profile = await fetchDriverProfile(apiKey);
+    const profile = await fetchDriverProfile(credentials.token);
     await upsertDriverProfile(profile);
     revalidatePath("/driver");
     return { message: "Driver data synced successfully" };

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getGproApiKey, upsertCarParts } from "@/lib/db/queries";
+import { getGproCredentials, upsertCarParts } from "@/lib/db/queries";
 import { fetchCarData } from "@/lib/gpro/client";
 
 export type SyncCarState = {
@@ -11,12 +11,12 @@ export type SyncCarState = {
 
 export async function syncCarData(): Promise<SyncCarState> {
   try {
-    const apiKey = await getGproApiKey();
-    if (!apiKey) {
+    const credentials = await getGproCredentials();
+    if (!credentials) {
       return { error: "No API key configured. Please add one in Settings." };
     }
 
-    const carData = await fetchCarData(apiKey);
+    const carData = await fetchCarData(credentials.token);
     await upsertCarParts(carData.parts);
     revalidatePath("/car");
     return { message: "Car data synced successfully" };

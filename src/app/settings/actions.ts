@@ -1,6 +1,6 @@
 "use server";
 
-import { setSetting } from "@/lib/db/queries";
+import { upsertGproCredentials } from "@/lib/db/queries";
 import { revalidatePath } from "next/cache";
 import { verifyToken } from "@/lib/gpro/client";
 
@@ -14,7 +14,7 @@ export async function saveApiKey(
   formData: FormData
 ): Promise<SaveApiKeyState> {
   const key = formData.get("gproApiKey");
-  
+
   if (!key || typeof key !== "string" || !key.trim()) {
     return { error: "API key is required" };
   }
@@ -25,7 +25,11 @@ export async function saveApiKey(
       return { error: "Invalid or expired API token. Please check and try again." };
     }
 
-    await setSetting("gpro-api-key", key.trim());
+    await upsertGproCredentials({
+      token: key.trim(),
+      isValid: true,
+      verifiedAt: new Date(),
+    });
     revalidatePath("/settings");
     return { message: "API key saved successfully" };
   } catch (error) {
@@ -33,3 +37,4 @@ export async function saveApiKey(
     return { error: "Failed to save API key" };
   }
 }
+

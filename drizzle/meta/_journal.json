@@ -15,6 +15,13 @@
       "when": 1779743330418,
       "tag": "0001_fancy_mephisto",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1779805955477,
+      "tag": "0002_greedy_marvel_boy",
+      "breakpoints": true
     }
   ]
 }

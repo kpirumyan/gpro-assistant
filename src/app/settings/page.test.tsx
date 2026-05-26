@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import SettingsPage from "./page";
+import { SettingsFormWrapper } from "./page";
 import * as actions from "@/app/settings/actions";
 import * as queries from "@/lib/db/queries";
 import * as client from "@/lib/gpro/client";
@@ -11,7 +11,8 @@ vi.mock("@/app/settings/actions", () => ({
 }));
 
 vi.mock("@/lib/db/queries", () => ({
-  getGproApiKey: vi.fn(),
+  getGproCredentials: vi.fn(),
+  upsertGproCredentials: vi.fn(),
 }));
 
 vi.mock("@/lib/gpro/client", () => ({
@@ -27,14 +28,15 @@ describe("SettingsPage", () => {
       }
       return { message: "API key saved successfully" };
     });
+    vi.mocked(queries.upsertGproCredentials).mockResolvedValue(undefined);
   });
 
   it("shows the API key form", async () => {
-    vi.mocked(queries.getGproApiKey).mockResolvedValue(null);
-    render(await SettingsPage());
+    vi.mocked(queries.getGproCredentials).mockResolvedValue(null);
+    render(await SettingsFormWrapper());
 
     expect(
-      screen.getByRole("heading", { name: "Settings" })
+      screen.getByRole("heading", { name: "GPRO API access" })
     ).toBeInTheDocument();
     expect(
       screen.getByLabelText("GPRO API key", { selector: "input" })
@@ -45,16 +47,19 @@ describe("SettingsPage", () => {
   });
 
   it("keeps the API key field empty when settings open", async () => {
-    vi.mocked(queries.getGproApiKey).mockResolvedValue(null);
-    render(await SettingsPage());
+    vi.mocked(queries.getGproCredentials).mockResolvedValue(null);
+    render(await SettingsFormWrapper());
 
     expect(screen.getByLabelText("GPRO API key")).toHaveValue("");
   });
 
   it("does not reveal any saved API key value in the UI", async () => {
-    vi.mocked(queries.getGproApiKey).mockResolvedValue("secret_token");
-    vi.mocked(client.verifyToken).mockResolvedValue(true);
-    render(await SettingsPage());
+    vi.mocked(queries.getGproCredentials).mockResolvedValue({
+      token: "secret_token",
+      isValid: true,
+      verifiedAt: new Date(),
+    });
+    render(await SettingsFormWrapper());
 
     expect(screen.queryByDisplayValue(/.+/)).not.toBeInTheDocument();
     expect(screen.queryAllByText(/api key/i).length).toBeGreaterThan(0);
@@ -62,9 +67,9 @@ describe("SettingsPage", () => {
 
   it("allows the user to type an API key and save it", async () => {
     const user = userEvent.setup();
-    vi.mocked(queries.getGproApiKey).mockResolvedValue(null);
+    vi.mocked(queries.getGproCredentials).mockResolvedValue(null);
 
-    render(await SettingsPage());
+    render(await SettingsFormWrapper());
 
     await user.type(screen.getByLabelText("GPRO API key"), "gpro-test-key");
     await user.click(screen.getByRole("button", { name: "Save API key" }));
@@ -75,12 +80,27 @@ describe("SettingsPage", () => {
 
   it("does not save an empty API key", async () => {
     const user = userEvent.setup();
-    vi.mocked(queries.getGproApiKey).mockResolvedValue(null);
+    vi.mocked(queries.getGproCredentials).mockResolvedValue(null);
 
-    render(await SettingsPage());
+    render(await SettingsFormWrapper());
 
     await user.click(screen.getByRole("button", { name: "Save API key" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(/required/i);
   });
+
+  it("shows verifying state when credentials are stale", async () => {
+    vi.mocked(queries.getGproCredentials).mockResolvedValue({
+      token: "old_token",
+      isValid: false,
+      verifiedAt: new Date(Date.now() - 2 * 3600 * 1000), // 2 hours ago
+    });
+    vi.mocked(client.verifyToken).mockResolvedValue(true);
+
+    render(await SettingsFormWrapper());
+
+    expect(screen.getByText(/active api key/i)).toBeInTheDocument();
+  });
 });
+
+

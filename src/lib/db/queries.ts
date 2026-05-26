@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "./index";
-import { settings, driverProfiles, carParts } from "./schema";
+import { settings, gproCredentials, driverProfiles, carParts } from "./schema";
 import type { DriverProfileResponse, CarPartResponse } from "@/lib/gpro/types";
 
 export async function getSetting(key: string): Promise<string | null> {
@@ -31,9 +31,76 @@ export async function setSetting(key: string, value: string): Promise<void> {
   }
 }
 
-export async function getGproApiKey(): Promise<string | null> {
-  return getSetting("gpro-api-key");
+// --- GPRO Credentials ---
+
+/** TTL for cached token validity: 1 hour */
+const CREDENTIAL_TTL_MS = 3600 * 1000;
+
+export type GproCredentials = {
+  token: string;
+  isValid: boolean;
+  verifiedAt: Date | null;
+};
+
+/**
+ * Returns the stored GPRO credentials.
+ * If the token validity was checked within the TTL, `isValid` reflects the cached result.
+ * If the cache is stale, `isValid` is `false` — the caller should re-verify.
+ */
+export async function getGproCredentials(): Promise<GproCredentials | null> {
+  try {
+    const result = await db.select().from(gproCredentials).limit(1);
+    if (result.length === 0) return null;
+
+    const row = result[0];
+    const isFresh =
+      row.verifiedAt !== null &&
+      Date.now() - row.verifiedAt.getTime() < CREDENTIAL_TTL_MS;
+
+    return {
+      token: row.token,
+      isValid: isFresh ? row.isValid : false,
+      verifiedAt: row.verifiedAt,
+    };
+  } catch (error) {
+    console.error("Failed to get GPRO credentials:", error);
+    return null;
+  }
 }
+
+/**
+ * Atomically saves or updates the GPRO credentials (token + validation result).
+ */
+export async function upsertGproCredentials(
+  data: GproCredentials
+): Promise<void> {
+  try {
+    const existing = await db.select({ id: gproCredentials.id }).from(gproCredentials).limit(1);
+
+    if (existing.length > 0) {
+      await db
+        .update(gproCredentials)
+        .set({
+          token: data.token,
+          isValid: data.isValid,
+          verifiedAt: data.verifiedAt,
+          updatedAt: new Date(),
+        })
+        .where(eq(gproCredentials.id, existing[0].id));
+    } else {
+      await db.insert(gproCredentials).values({
+        token: data.token,
+        isValid: data.isValid,
+        verifiedAt: data.verifiedAt,
+      });
+    }
+  } catch (error) {
+    console.error("Failed to upsert GPRO credentials:", error);
+    throw new Error("Failed to save GPRO credentials");
+  }
+}
+
+
 
 // --- Driver Profile ---
 
