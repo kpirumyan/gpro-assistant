@@ -1,13 +1,5 @@
 import { pgTable, serial, text, integer, timestamp, jsonb, numeric, unique } from "drizzle-orm/pg-core";
 
-export const settings = pgTable("settings", {
-  id: serial("id").primaryKey(),
-  key: text("key").notNull().unique(),
-  value: text("value").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
 export const gproCredentials = pgTable("gpro_credentials", {
   id: serial("id").primaryKey(),
   token: text("token").notNull(),
