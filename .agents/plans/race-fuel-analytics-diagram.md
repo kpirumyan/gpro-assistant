@@ -6,62 +6,62 @@
 flowchart TD
     %% UI Layer
     subgraph UI ["4. UI Layer"]
-        SyncBtn[Кнопка: Синхронизировать гонки]
-        Status[Индикатор загрузки/статуса]
+        SyncBtn["Кнопка: Синхронизировать гонки"]
+        Status["Индикатор загрузки/статуса"]
     end
 
     %% Service Layer (Business Logic)
     subgraph Service ["3. Business Logic (Service Layer)"]
-        SA[Server Action: Start Sync]
-        RAService[race-analysis.service.ts]
-        SyncLoop{Цикл по гонкам<br/>от последней назад}
-        ParseData[Парсинг Снепшотов<br/>(driver, car, wear)]
-        CalcFuel[Алгоритм расчета топлива]
-        CalcStint[Расчет по стинтам<br/>Учет погрешностей пит-стопов]
-        CalcFull[Расчет на всю гонку]
+        SA["Server Action: Start Sync"]
+        RAService["race-analysis.service.ts"]
+        SyncLoop{"Цикл по гонкам (от последней назад)"}
+        ParseData["Парсинг Снепшотов (driver, car, wear)"]
+        CalcFuel["Алгоритм расчета топлива"]
+        CalcStint["Расчет по стинтам (учет погрешностей пит-стопов)"]
+        CalcFull["Расчет на всю гонку"]
     end
 
     %% API Client Layer
     subgraph APIClient ["2. GPRO API Client"]
-        Client[fetchRaceAnalysis(token, S, R)]
-        Types[RaceAnalysisResponse Type]
+        Client["fetchRaceAnalysis(token, S, R)"]
+        Types["RaceAnalysisResponse Type"]
     end
 
     %% External
     subgraph External ["GPRO Server"]
-        Endpoint[/api/RaceAnalysis?SR=S,R/]
+        Endpoint["/api/RaceAnalysis?SR=S,R"]
     end
 
     %% Database Layer
     subgraph DB ["1. Database (Drizzle ORM)"]
-        RawDB[(race_analysis<br/>Сырой JSON)]
-        CarDB[(race_car_snapshots)]
-        DriverDB[(race_driver_snapshots)]
-        FuelDB[(race_fuel_analytics)]
+        RawDB[("race_analysis (Сырой JSON)")]
+        CarDB[("race_car_snapshots")]
+        DriverDB[("race_driver_snapshots")]
+        FuelDB[("race_fuel_analytics")]
     end
 
     %% Connections
     SyncBtn -->|Клик| SA
     SA --> RAService
     RAService --> SyncLoop
-    SyncLoop -->|Запрос гонки| Client
+    SyncLoop -->|"Запрос гонки"| Client
     Client --> Endpoint
-    Endpoint -->|Сырой JSON| Types
-    Types -->|Ответ API| RAService
+    Endpoint -->|"Сырой JSON"| Types
+    Types -->|"Ответ API"| RAService
     
-    RAService -->|1. Сохранение сырых данных| RawDB
-    RAService -->|2. Парсинг данных| ParseData
-    ParseData -->|Снепшот машины| CarDB
-    ParseData -->|Снепшот пилота| DriverDB
+    RAService -->|"1. Сохранение сырых данных"| RawDB
+    RAService -->|"2. Парсинг данных"| ParseData
+    ParseData -->|"Снепшот машины"| CarDB
+    ParseData -->|"Снепшот пилота"| DriverDB
     
-    RAService -->|3. Расчет топлива| CalcFuel
+    RAService -->|"3. Расчет топлива"| CalcFuel
     CalcFuel --> CalcStint
-    CalcStint -->|Запись отрезка| FuelDB
+    CalcStint -->|"Запись отрезка"| FuelDB
     CalcFuel --> CalcFull
-    CalcFull -->|Запись всей гонки| FuelDB
+    CalcFull -->|"Запись всей гонки"| FuelDB
 
-    RAService -->|Следующая гонка| SyncLoop
-    SyncLoop -.->|Остановка цикла<br/>(Уже в БД или 404)| SA
+    RAService -->|"Следующая гонка"| SyncLoop
+    SyncLoop -.->|"Остановка цикла (уже в БД или 404)"| SA
     SA --> Status
     
     %% Styles
