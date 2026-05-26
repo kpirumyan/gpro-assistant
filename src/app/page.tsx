@@ -1,4 +1,9 @@
+import { Metadata } from "next";
 import { PageShell } from "@/components/PageShell";
+
+export const metadata: Metadata = {
+  title: "Dashboard — GPRO Assistant",
+};
 
 export default function Home() {
   return (

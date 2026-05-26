@@ -1,4 +1,9 @@
+import { Metadata } from "next";
 import { PageShell } from "@/components/PageShell";
+
+export const metadata: Metadata = {
+  title: "Tire wear — GPRO Assistant",
+};
 
 export default function TiresPage() {
   return (
