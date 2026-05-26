@@ -72,15 +72,11 @@ describe("SettingsFormWrapper", () => {
     expect(await screen.findByRole("status")).toHaveTextContent(/saved/i);
   });
 
-  it("does not save an empty API key", async () => {
-    const user = userEvent.setup();
-    vi.mocked(client.verifyToken).mockResolvedValue(true);
-
+  it("disables the save button when the API key is empty", async () => {
     render(await SettingsFormWrapper({ credentials: STALE_CREDENTIALS }));
 
-    await user.click(screen.getByRole("button", { name: "Save API key" }));
-
-    expect(await screen.findByRole("alert")).toHaveTextContent(/required/i);
+    const saveButton = screen.getByRole("button", { name: "Save API key" });
+    expect(saveButton).toBeDisabled();
   });
 
   it("re-verifies and shows active status when cache is stale but token is valid", async () => {

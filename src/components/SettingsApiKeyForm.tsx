@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { saveApiKey } from "@/app/settings/actions";
 
 export function SettingsApiKeyForm({
@@ -11,6 +11,7 @@ export function SettingsApiKeyForm({
   isKeyValid?: boolean;
 }) {
   const [state, formAction, isPending] = useActionState(saveApiKey, {});
+  const [inputValue, setInputValue] = useState("");
 
   return (
     <section className="mt-10 max-w-2xl rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/60">
@@ -75,6 +76,8 @@ export function SettingsApiKeyForm({
             autoComplete="off"
             spellCheck={false}
             disabled={isPending}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
             className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:focus:border-zinc-50 dark:focus:ring-zinc-50/10"
             placeholder="Enter your API key"
           />
@@ -101,7 +104,7 @@ export function SettingsApiKeyForm({
         <button
           type="submit"
           aria-label="Save API key"
-          disabled={isPending}
+          disabled={isPending || !inputValue.trim()}
           className="inline-flex items-center justify-center rounded-xl bg-zinc-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-900/20 dark:bg-zinc-50 dark:text-zinc-950 dark:hover:bg-zinc-200 dark:focus:ring-zinc-50/20 disabled:opacity-50"
         >
           {isPending ? "Saving..." : "Save"}
