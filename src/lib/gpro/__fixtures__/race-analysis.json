@@ -1,0 +1,25 @@
+{
+  "startFuel": 100,
+  "pits": [
+    {
+      "fuelLeft": 10,
+      "refilledTo": 80
+    }
+  ],
+  "laps": [
+    { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 },
+    { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 },
+    { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 },
+    { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 },
+    { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 },
+    { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 },
+    { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 },
+    { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 },
+    { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 },
+    { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 },
+    { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 },
+    { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 },
+    { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 },
+    { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }, { "boostLap": 0 }
+  ]
+}

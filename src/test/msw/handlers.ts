@@ -1,6 +1,8 @@
 import { http, HttpResponse, type HttpHandler } from "msw";
 import driverProfileFixture from "@/lib/gpro/__fixtures__/driver-profile.json";
 import carDataFixture from "@/lib/gpro/__fixtures__/car-data.json";
+import calendarFixture from "@/lib/gpro/__fixtures__/calendar.json";
+import raceAnalysisFixture from "@/lib/gpro/__fixtures__/race-analysis.json";
 
 function isAuthorized(request: Request): boolean {
   return request.headers.get("Authorization") === "Bearer VALID_TOKEN";
@@ -20,14 +22,7 @@ export const handlers: HttpHandler[] = [
 
   http.get("https://gpro.net/en/backend/api/v2/Calendar", ({ request }) => {
     if (isAuthorized(request)) {
-      return HttpResponse.json([
-        {
-          idx: "1",
-          trackName: "Melbourne GP",
-          isCurrentRace: 1,
-          season: 99
-        }
-      ], { status: 200 });
+      return HttpResponse.json(calendarFixture, { status: 200 });
     }
     return HttpResponse.json({ error: "Unauthorized" }, { status: 401 });
   }),
@@ -54,11 +49,7 @@ export const handlers: HttpHandler[] = [
     const sr = url.searchParams.get("SR");
     
     if (sr === "99,1") {
-      return HttpResponse.json({
-        startFuel: 100,
-        pits: [{ fuelLeft: 10, refilledTo: 80 }],
-        laps: new Array(70).fill({ boostLap: 0 }),
-      }, { status: 200 });
+      return HttpResponse.json(raceAnalysisFixture, { status: 200 });
     }
 
     if (sr === "1,1") {
