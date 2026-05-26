@@ -1,8 +1,11 @@
 "use client";
 
 import { useActionState } from "react";
+import dynamic from "next/dynamic";
 import { syncDriverData, type SyncDriverState } from "@/app/driver/actions";
 import { StatBar } from "./StatBar";
+
+const ClientDate = dynamic(() => import("./ClientDate").then((mod) => mod.ClientDate), { ssr: false });
 
 type DriverData = {
   name: string;
@@ -61,7 +64,7 @@ export function DriverPanel({ data }: DriverPanelProps) {
           {data && (
             <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
               {data.name} · last synced{" "}
-              {data.updatedAt.toLocaleString()}
+              <ClientDate date={data.updatedAt} fallback={"..."} />
             </p>
           )}
         </div>

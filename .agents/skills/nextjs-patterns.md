@@ -43,6 +43,18 @@ src/app/
   - Event handlers (`onClick`, `onChange`)
   - Third-party client-only libraries
 
+### Hydration
+
+- **Never** use `suppressHydrationWarning` to fix hydration mismatches (like date formatting or random values).
+- **Never** use `useEffect` just to set a `mounted` state to bypass hydration mismatches. This causes cascading renders and is an anti-pattern according to React documentation.
+- **Instead**, use `next/dynamic` with `ssr: false` to create client-only components for values that differ between server and client (like localized dates).
+
+### React Documentation
+
+- Always refer to React documentation when in doubt about hooks or component lifecycle.
+- If React documentation is available in `node_modules` (e.g., `node_modules/react/`), read it from there.
+- If not available locally, search the official React documentation.
+
 ### Shared components (`src/components/`)
 
 | Component | Purpose |
