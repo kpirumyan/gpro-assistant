@@ -46,6 +46,7 @@ Not installed: Jest, Playwright, Cypress.
 - Every new module in `src/lib/` should have a co-located `.test.ts` file.
 - Component tests go in a co-located `.test.tsx` file next to the component.
 - **Single Source of Truth for Mocks**: All mock data for external APIs must be stored as `.json` files in `__fixtures__`. MSW handlers and test assertions MUST import these fixtures. Never use inline, hardcoded mock response objects.
+- **Database Mocks**: When mocking database entities (Drizzle schemas), always use the Test Data Builder factories from `src/test/factories.ts` (e.g., `buildRaceAnalysis()`). Never use inline, hardcoded mock database objects.
 
 ## MSW patterns
 

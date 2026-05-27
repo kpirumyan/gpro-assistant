@@ -121,6 +121,10 @@ The API token is stored in the database (not `.env.local`). The Settings page fo
 
 Tests are written before (or alongside) production code. Tests must never be weakened to make a fix pass.
 
+### Test Data Builders for Database
+
+When mocking database entities for unit or component tests, we use the Factory pattern (Test Data Builders) located in `src/test/factories.ts`. This ensures mock objects are strictly typed against Drizzle ORM schemas and reduces boilerplate.
+
 ### Co-location of architecture diagrams
 
 For complex domain logic, calculators, and services (especially inside `src/lib/`), we maintain a `README.md` containing public API documentation and Mermaid architecture diagrams directly within the service's directory. This keeps the design close to the implementation.
