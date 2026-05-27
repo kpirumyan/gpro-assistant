@@ -5,75 +5,46 @@ import type { RaceAnalysisResponse } from "../gpro/types";
 
 export interface SyncResult {
   syncedCount: number;
-  stoppedReason: "already_exists" | "not_found" | "error" | "limit_reached";
+  stoppedReason: "already_exists" | "not_found" | "error" | "limit_reached" | "completed";
   lastRaceChecked?: { season: number; race: number };
 }
 
 /**
- * Synchronizes race history by fetching past races in reverse chronological order.
- * Stops when a race is already in the database or when the API returns a 404 (race not found).
+ * Fetches and saves a batch of specific missing races.
+ * Stops immediately if the API returns a 404 (race doesn't exist yet) or throws an error.
  */
-export async function syncRaceHistory(
+export async function syncRacesBatch(
   token: string,
-  startSeason: number,
-  startRace: number,
-  maxRacesToSync: number = 20
+  racesToFetch: { season: number; race: number }[]
 ): Promise<SyncResult> {
-  let currentSeason = startSeason;
-  let currentRace = startRace;
   let syncedCount = 0;
-  let stoppedReason: SyncResult["stoppedReason"] = "limit_reached";
+  let lastRaceChecked: { season: number; race: number } | undefined = undefined;
 
-  while (syncedCount < maxRacesToSync) {
-    // Check if race exists in DB
-    const existing = await db.query.raceAnalysis.findFirst({
-      where: (ra, { and, eq }) => and(eq(ra.season, currentSeason), eq(ra.race, currentRace)),
-    });
-
-    if (existing) {
-      console.log(`Race S${currentSeason} R${currentRace} already exists in DB. Stopping sync.`);
-      stoppedReason = "already_exists";
-      break;
-    }
-
+  for (const raceInfo of racesToFetch) {
+    lastRaceChecked = raceInfo;
     try {
-      console.log(`Fetching race analysis for S${currentSeason} R${currentRace}...`);
-      const data = await fetchRaceAnalysis(token, currentSeason, currentRace);
+      console.log(`Fetching race analysis for S${raceInfo.season} R${raceInfo.race}...`);
+      const data = await fetchRaceAnalysis(token, raceInfo.season, raceInfo.race);
       
       // Save data
-      await saveRaceAnalysisData(currentSeason, currentRace, data);
+      await saveRaceAnalysisData(raceInfo.season, raceInfo.race, data);
       syncedCount++;
-
-      // Move to previous race
-      currentRace--;
-      if (currentRace < 1) {
-        currentSeason--;
-        currentRace = 17; // Assuming max 17 races per season, if it's less, 404 will handle it.
-      }
-      
-      // Safety break to avoid negative seasons
-      if (currentSeason < 1) {
-         stoppedReason = "not_found";
-         break;
-      }
 
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : String(error);
-      console.log(`Failed to fetch S${currentSeason} R${currentRace}: ${msg}`);
-      if (msg.includes("not found")) {
-        // Normal stop condition: previous race hasn't happened or doesn't exist
-        stoppedReason = "not_found";
+      console.log(`Failed to fetch S${raceInfo.season} R${raceInfo.race}: ${msg}`);
+      if (msg.toLowerCase().includes("not found")) {
+        return { syncedCount, stoppedReason: "not_found", lastRaceChecked };
       } else {
-        stoppedReason = "error";
+        return { syncedCount, stoppedReason: "error", lastRaceChecked };
       }
-      break;
     }
   }
 
   return { 
     syncedCount, 
-    stoppedReason,
-    lastRaceChecked: { season: currentSeason, race: currentRace }
+    stoppedReason: "completed",
+    lastRaceChecked 
   };
 }
 
@@ -276,3 +247,107 @@ export function calculateFuelAnalytics(data: Partial<RaceAnalysisResponse>): Fue
 
   return results;
 }
+
+/**
+ * Generates a flat chronological array of { season, race } objects.
+ * Assumes a maximum of 17 races per season.
+ */
+export function generateRaceRange(
+  fromSeason: number,
+  fromRace: number,
+  toSeason: number,
+  toRace: number
+): { season: number; race: number }[] {
+  const result: { season: number; race: number }[] = [];
+
+  if (fromSeason > toSeason || (fromSeason === toSeason && fromRace > toRace)) {
+    throw new Error('Invalid range: from > to');
+  }
+
+  let currentSeason = fromSeason;
+  let currentRace = fromRace;
+
+  while (currentSeason < toSeason || (currentSeason === toSeason && currentRace <= toRace)) {
+    result.push({ season: currentSeason, race: currentRace });
+    currentRace++;
+    if (currentRace > 17) {
+      currentRace = 1;
+      currentSeason++;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Queries the database for existing races within the given range.
+ * Returns an array of { season, race } objects using an optimized query.
+ */
+export async function getExistingRacesInRange(
+  fromSeason: number,
+  fromRace: number,
+  toSeason: number,
+  toRace: number
+): Promise<{ season: number; race: number }[]> {
+  if (fromSeason > toSeason || (fromSeason === toSeason && fromRace > toRace)) {
+    throw new Error('Invalid range: from > to');
+  }
+
+  const existingRaces = await db.query.raceAnalysis.findMany({
+    where: (ra, { and, or, eq, gte, lte, gt, lt }) => {
+      if (fromSeason === toSeason) {
+        return and(
+          eq(ra.season, fromSeason),
+          gte(ra.race, fromRace),
+          lte(ra.race, toRace)
+        );
+      }
+
+      return or(
+        // Races in the first season, from the starting race onwards
+        and(eq(ra.season, fromSeason), gte(ra.race, fromRace)),
+        // Races in strictly intermediate seasons
+        and(gt(ra.season, fromSeason), lt(ra.season, toSeason)),
+        // Races in the final season, up to the ending race
+        and(eq(ra.season, toSeason), lte(ra.race, toRace))
+      );
+    },
+    columns: {
+      season: true,
+      race: true,
+    },
+    orderBy: (ra, { asc }) => [asc(ra.season), asc(ra.race)],
+  });
+
+  return existingRaces;
+}
+
+/**
+ * Prepares the sync operation by generating the full range of races and 
+ * filtering out the ones that already exist in the database.
+ * Returns an array of { season, race } that are missing and need to be synced.
+ */
+export async function prepareSync(
+  fromSeason: number,
+  fromRace: number,
+  toSeason: number,
+  toRace: number
+): Promise<{ season: number; race: number }[]> {
+  const fullRange = generateRaceRange(fromSeason, fromRace, toSeason, toRace);
+  const existingRaces = await getExistingRacesInRange(fromSeason, fromRace, toSeason, toRace);
+
+  const missingRaces: { season: number; race: number }[] = [];
+  let existingIdx = 0;
+
+  for (const r of fullRange) {
+    const er = existingRaces[existingIdx];
+    if (er && er.season === r.season && er.race === r.race) {
+      existingIdx++; // Skip this race as it already exists
+    } else {
+      missingRaces.push(r);
+    }
+  }
+
+  return missingRaces;
+}
+

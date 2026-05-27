@@ -1,5 +1,158 @@
-import { describe, it, expect } from 'vitest';
-import { calculateFuelAnalytics } from './race-analysis.service';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { calculateFuelAnalytics, generateRaceRange, getExistingRacesInRange, prepareSync, syncRacesBatch } from './race-analysis.service';
+import { fetchRaceAnalysis } from '../gpro/client';
+import { db } from '../db';
+
+vi.mock('../db', () => ({
+  db: {
+    query: {
+      raceAnalysis: {
+        findMany: vi.fn(),
+        findFirst: vi.fn()
+      }
+    },
+    transaction: vi.fn()
+  }
+}));
+
+vi.mock('../gpro/client', () => ({
+  fetchRaceAnalysis: vi.fn()
+}));
+
+describe('getExistingRacesInRange', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should query DB and return existing races', async () => {
+    vi.mocked(db.query.raceAnalysis.findMany).mockResolvedValue([
+      { id: 1, createdAt: new Date(), updatedAt: new Date(), season: 100, race: 16, group: 'A', rawData: {} }
+    ]);
+
+    const result = await getExistingRacesInRange(100, 15, 100, 17);
+    
+    expect(db.query.raceAnalysis.findMany).toHaveBeenCalledTimes(1);
+    expect(result).toEqual([
+      expect.objectContaining({ season: 100, race: 16 })
+    ]);
+  });
+
+  it('should throw an error for invalid backward ranges', async () => {
+    await expect(getExistingRacesInRange(101, 2, 100, 16)).rejects.toThrow('Invalid range: from > to');
+  });
+});
+
+describe('prepareSync', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should generate range and filter out existing races', async () => {
+    vi.mocked(db.query.raceAnalysis.findMany).mockResolvedValue([
+      { id: 1, createdAt: new Date(), updatedAt: new Date(), season: 100, race: 16, group: 'A', rawData: {} }
+    ]);
+
+    const result = await prepareSync(100, 15, 100, 17);
+    
+    // full range: [100/15, 100/16, 100/17]
+    // existing: [100/16]
+    // missing: [100/15, 100/17]
+    expect(result).toEqual([
+      { season: 100, race: 15 },
+      { season: 100, race: 17 }
+    ]);
+  });
+
+  it('should return empty array if all races exist', async () => {
+    vi.mocked(db.query.raceAnalysis.findMany).mockResolvedValue([
+      { id: 1, createdAt: new Date(), updatedAt: new Date(), season: 100, race: 15, group: 'A', rawData: {} }
+    ]);
+
+    const result = await prepareSync(100, 15, 100, 15);
+    expect(result).toEqual([]);
+  });
+
+  it('should throw an error for invalid backward ranges', async () => {
+    await expect(prepareSync(101, 2, 100, 16)).rejects.toThrow('Invalid range: from > to');
+  });
+});
+
+describe('syncRacesBatch', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should fetch and save races successfully', async () => {
+    vi.mocked(fetchRaceAnalysis).mockResolvedValue({
+      carPower: 100,
+      startFuel: 100,
+      finishFuel: 10
+    } as unknown as Awaited<ReturnType<typeof fetchRaceAnalysis>>);
+
+    vi.mocked(db.transaction).mockImplementation(async () => {});
+
+    const result = await syncRacesBatch('token', [{ season: 100, race: 15 }, { season: 100, race: 16 }]);
+    
+    expect(fetchRaceAnalysis).toHaveBeenCalledTimes(2);
+    expect(db.transaction).toHaveBeenCalledTimes(2);
+    expect(result.syncedCount).toBe(2);
+    expect(result.stoppedReason).toBe('completed');
+  });
+
+  it('should stop and return not_found if API throws 404 error', async () => {
+    vi.mocked(fetchRaceAnalysis).mockRejectedValue(new Error('Race analysis not found (404)'));
+    vi.mocked(db.transaction).mockImplementation(async () => {});
+
+    const result = await syncRacesBatch('token', [{ season: 100, race: 15 }, { season: 100, race: 16 }]);
+    
+    expect(fetchRaceAnalysis).toHaveBeenCalledTimes(1);
+    expect(db.transaction).not.toHaveBeenCalled();
+    expect(result.syncedCount).toBe(0);
+    expect(result.stoppedReason).toBe('not_found');
+    expect(result.lastRaceChecked).toEqual({ season: 100, race: 15 });
+  });
+
+  it('should stop and return error for other API errors', async () => {
+    vi.mocked(fetchRaceAnalysis).mockRejectedValue(new Error('Internal Server Error'));
+
+    const result = await syncRacesBatch('token', [{ season: 100, race: 15 }]);
+    
+    expect(result.syncedCount).toBe(0);
+    expect(result.stoppedReason).toBe('error');
+  });
+});
+
+describe('generateRaceRange', () => {
+  it('should generate races within the same season', () => {
+    const range = generateRaceRange(100, 15, 100, 17);
+    expect(range).toEqual([
+      { season: 100, race: 15 },
+      { season: 100, race: 16 },
+      { season: 100, race: 17 }
+    ]);
+  });
+
+  it('should generate races across multiple seasons', () => {
+    const range = generateRaceRange(100, 16, 101, 2);
+    expect(range).toEqual([
+      { season: 100, race: 16 },
+      { season: 100, race: 17 },
+      { season: 101, race: 1 },
+      { season: 101, race: 2 }
+    ]);
+  });
+
+  it('should throw an error for invalid backward ranges', () => {
+    expect(() => generateRaceRange(101, 2, 100, 16)).toThrowError('Invalid range: from > to');
+  });
+
+  it('should handle single race range', () => {
+    const range = generateRaceRange(100, 15, 100, 15);
+    expect(range).toEqual([
+      { season: 100, race: 15 }
+    ]);
+  });
+});
 
 describe('calculateFuelAnalytics', () => {
   it('should return empty array if no laps or startFuel', () => {
