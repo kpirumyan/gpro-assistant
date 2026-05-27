@@ -12,7 +12,7 @@ Single-user Next.js app for personal use. Fetches game data from the GPRO API, v
 
 ## Workflow
 
-Every non-trivial task follows these phases:
+Tasks follow these phases (used by `/interactive` and `/goal` modes):
 
 1. **Plan** — Research the task, create an implementation plan artifact. **Stop and wait for user approval.**
 2. **Post-Approval Setup** — Once the plan is approved, perform the following setup steps:
@@ -25,15 +25,17 @@ Every non-trivial task follows these phases:
 5. **Review** — Run the code review checklist (see `.agents/skills/code-review.md`). Fix any issues found.
 6. **Commit** — Conventional Commits format. One commit = one logical change. Feature + its tests = one commit.
 
-For trivial tasks (typo fix, config tweak), skip the plan/setup phases but still test and review.
+Do NOT automatically decide to skip the Plan/Setup phases and commit right away unless the user explicitly provides the `/quick-fix` command.
 
 ## Interaction mode
 
 The agent must support the following interaction modes, controlled by user commands:
-- `/interactive` — Switch the agent to interactive mode. Stop for approval after the **Plan** phase, after the **Test** phase, and before committing.
-- `/goal` — Switch the agent to autonomous mode. The agent will run tasks autonomously without stopping for intermediate approvals until the final goal is met.
+- `/goal` — Switch the agent to autonomous mode. The agent will run tasks autonomously without stopping for intermediate approvals until the final goal is met (uses the full Workflow).
+- `/interactive` — Switch the agent to interactive mode. Uses the full Workflow, but stops for user approval after the **Plan** phase, after the **Test** phase, and before committing.
+- `/ask` — Simple question/answer mode. The agent acts as an advisor, answers questions, and asks clarifying questions if needed. The agent MUST NOT write code, run modifying commands, or create commits in this mode.
+- `/quick-fix` — Quick bugfix mode. The agent skips the Plan and Post-Approval Setup phases, jumps straight to fixing the issue, tests it, and commits it. Use this only when explicitly requested for trivial tasks.
 
-**Current Mode: interactive** (default unless `/goal` is explicitly specified in the conversation or request). Always respect this mode and do not proceed to execution/autonomous running if in interactive mode.
+**Current Mode: interactive** (default unless another mode is explicitly specified in the conversation or request). Always respect this mode and do not proceed to automatic fixes or execution if in `/interactive` or `/ask` mode.
 
 ## Error handling
 
