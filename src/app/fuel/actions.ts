@@ -26,12 +26,14 @@ export async function syncRacesData(): Promise<SyncRacesState> {
 
     try {
       // 1. Try to fetch calendar to find the current active race and its season
-      const calendar = await fetchCalendar(credentials.token) as Array<Record<string, unknown>>;
-      if (Array.isArray(calendar) && calendar.length > 0) {
-        const currentRace = calendar.find(
+      const calendarData = await fetchCalendar(credentials.token) as { events?: Array<Record<string, unknown>> };
+      const calendarEvents = calendarData?.events;
+
+      if (Array.isArray(calendarEvents) && calendarEvents.length > 0) {
+        const currentRace = calendarEvents.find(
           (r) => r.isCurrentRace === 1 || r.isCurrentRace === "1"
         );
-        const targetRace = currentRace || calendar[calendar.length - 1];
+        const targetRace = currentRace || calendarEvents[calendarEvents.length - 1];
         
         if (targetRace) {
           if (targetRace.season) {
