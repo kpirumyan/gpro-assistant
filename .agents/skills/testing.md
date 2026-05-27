@@ -16,6 +16,7 @@ Not installed: Jest, Playwright, Cypress.
 
 | Command                 | Description                            |
 | ----------------------- | -------------------------------------- |
+| `npm run typecheck`     | Check TypeScript types (`tsc --noEmit`) |
 | `npm run test`          | Run all tests once                     |
 | `npm run test:watch`    | Watch mode (use while developing)      |
 | `npm run test:coverage` | Run with coverage report (`coverage/`) |
@@ -63,7 +64,7 @@ Not installed: Jest, Playwright, Cypress.
 
 ## Pre-commit
 
-Husky runs `npm run precommit` → `npm run test` then `npm run lint` on every `git commit`. If either fails, the commit is blocked. Skip only in emergencies: `git commit --no-verify`.
+Husky runs `npm run precommit` → `npm run typecheck`, `npm run test`, then `npm run lint` on every `git commit`. If any fails, the commit is blocked. Skip only in emergencies: `git commit --no-verify`.
 
 ## Backlog (deferred)
 

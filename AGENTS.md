@@ -21,7 +21,7 @@ Tasks follow these phases (used by `/grill-me` and `/goal` modes):
    - Create and save the `task.md` checklist in that directory.
    - Create and save a Mermaid diagram (e.g., `diagram.md`) representing the architecture/plan in that directory, formatted so it can be viewed using the Mermaid Previewer extension in VS Code.
 3. **Implement** — Write code following project conventions. TDD-first internally: write the test, then the code to pass it — deliver both together without pausing between them. If database schema changes are made, generate and apply migrations (`npm run db:generate` and `npm run db:migrate`).
-4. **Test** — Run `npm run test` and `npm run lint`. Show results. **Stop and wait for user approval.**
+4. **Test** — Run `npm run typecheck`, `npm run test`, and `npm run lint` (or simply `npm run precommit`). Show results. **Stop and wait for user approval.**
 5. **Review** — Run the code review checklist (see `.agents/skills/code-review.md`). Fix any issues found.
 6. **Commit** — Conventional Commits format. One commit = one logical change. Feature + its tests = one commit.
 
