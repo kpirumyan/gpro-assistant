@@ -1,23 +1,57 @@
 "use client";
 
 import { useActionState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
-import { syncCarData, type SyncCarState } from "@/app/car/actions";
-import { StatBar } from "./StatBar";
+import { syncDriverData, type SyncDriverState } from "@/app/driver/actions";
+import { StatBar } from "@/components/StatBar";
 
-type CarPartData = {
+const ClientDate = dynamic(() => import("@/components/ClientDate").then((mod) => mod.ClientDate), { ssr: false });
+
+type DriverData = {
   name: string;
-  level: number;
-  wear: number;
+  overall: number;
+  concentration: number;
+  talent: number;
+  aggression: number;
+  experience: number;
+  technicalInsight: number;
+  stamina: number;
+  charisma: number;
+  motivation: number;
+  reputation: number;
+  weight: number;
+  age: number;
+  energy: number;
+  updatedAt: Date;
 };
 
-type CarPanelProps = {
-  parts: CarPartData[];
+type DriverPanelProps = {
+  data: DriverData | null;
 };
 
-export function CarPanel({ parts }: CarPanelProps) {
-  const [state, formAction, isPending] = useActionState<SyncCarState, FormData>(
-    syncCarData,
+const SKILL_FIELDS = [
+  { key: "overall", label: "Overall", min: 0, max: 250 },
+  { key: "concentration", label: "Concentration", min: 0, max: 250 },
+  { key: "talent", label: "Talent", min: 0, max: 250 },
+  { key: "aggression", label: "Aggression", min: 0, max: 250 },
+  { key: "experience", label: "Experience", min: 0, max: 250 },
+  { key: "technicalInsight", label: "Technical Insight", min: 0, max: 250 },
+  { key: "stamina", label: "Stamina", min: 0, max: 250 },
+  { key: "charisma", label: "Charisma", min: 0, max: 250 },
+  { key: "motivation", label: "Motivation", min: 0, max: 250 },
+  { key: "reputation", label: "Reputation", min: 0, max: 250 },
+] as const;
+
+const ATTRIBUTE_FIELDS = [
+  { key: "energy", label: "Energy", min: 0, max: 100, unit: "%" },
+  { key: "weight", label: "Weight", min: 50, max: 120, unit: "kg" },
+  { key: "age", label: "Age", min: 17, max: 50, unit: "yr" },
+] as const;
+
+export function DriverPanel({ data }: DriverPanelProps) {
+  const [state, formAction, isPending] = useActionState<SyncDriverState, FormData>(
+    syncDriverData,
     {}
   );
 
@@ -26,11 +60,12 @@ export function CarPanel({ parts }: CarPanelProps) {
       <div className="flex items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-            Car
+            Driver Profile
           </h2>
-          {parts.length > 0 && (
+          {data && (
             <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-              {parts.length} components loaded
+              {data.name} · last synced{" "}
+              <ClientDate date={data.updatedAt} fallback={"..."} />
             </p>
           )}
         </div>
@@ -85,30 +120,50 @@ export function CarPanel({ parts }: CarPanelProps) {
         </div>
       )}
 
-      {parts.length > 0 ? (
-        <div className="mt-6 space-y-5">
-          {parts.map((part) => (
-            <div
-              key={part.name}
-              className="rounded-xl border border-zinc-100 bg-zinc-50/50 p-4 dark:border-zinc-800 dark:bg-zinc-900/40"
-            >
-              <h3 className="mb-3 text-sm font-semibold text-zinc-800 dark:text-zinc-200">
-                {part.name}
-              </h3>
-              <div className="space-y-2">
-                <StatBar label="Level" value={part.level} min={1} max={9} />
-                <StatBar label="Wear" value={part.wear} min={0} max={100} unit="%" invertColors />
-              </div>
+      {data ? (
+        <div className="mt-6 space-y-6">
+          <div>
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+              Skills
+            </h3>
+            <div className="space-y-2">
+              {SKILL_FIELDS.map(({ key, label, min, max }) => (
+                <StatBar
+                  key={key}
+                  label={label}
+                  value={data[key]}
+                  min={min}
+                  max={max}
+                />
+              ))}
             </div>
-          ))}
+          </div>
+
+          <div className="border-t border-zinc-200 pt-6 dark:border-zinc-800">
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+              Attributes
+            </h3>
+            <div className="space-y-2">
+              {ATTRIBUTE_FIELDS.map(({ key, label, min, max, unit }) => (
+                <StatBar
+                  key={key}
+                  label={label}
+                  value={data[key]}
+                  min={min}
+                  max={max}
+                  unit={unit}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       ) : (
         <div className="mt-8 flex flex-col items-center justify-center py-12 text-center">
           <svg className="size-12 text-zinc-300 dark:text-zinc-700" fill="none" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0H6.75m11.25 0h2.625c.621 0 1.125-.504 1.125-1.125v-4.875c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v4.875c0 .621.504 1.125 1.125 1.125" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
           </svg>
           <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
-            No car data yet. Click <strong>Sync</strong> to load from the GPRO API.
+            No driver data yet. Click <strong>Sync</strong> to load from the GPRO API.
           </p>
         </div>
       )}

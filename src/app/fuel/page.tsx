@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { PageShell } from "@/components/PageShell";
-import { FuelSyncPanel } from "@/components/FuelSyncPanel";
+import { FuelSyncPanel } from "./_components/FuelSyncPanel";
 import { getFuelAnalyticsList } from "@/lib/db/queries";
 
 export const metadata: Metadata = {

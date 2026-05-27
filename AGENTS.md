@@ -12,7 +12,7 @@ Single-user Next.js app for personal use. Fetches game data from the GPRO API, v
 
 ## Workflow
 
-Tasks follow these phases (used by `/interactive` and `/goal` modes):
+Tasks follow these phases (used by `/grill-me` and `/goal` modes):
 
 1. **Plan** — Research the task, create an implementation plan artifact. **Stop and wait for user approval.**
 2. **Post-Approval Setup** — Once the plan is approved, perform the following setup steps:
@@ -31,13 +31,13 @@ Do NOT automatically decide to skip the Plan/Setup phases and commit right away 
 
 The agent must support the following interaction modes, controlled by user commands:
 - `/goal` — Switch the agent to autonomous mode. The agent will run tasks autonomously without stopping for intermediate approvals until the final goal is met (uses the full Workflow).
-- `/interactive` — Switch the agent to interactive mode. Uses the full Workflow, but stops for user approval after the **Plan** phase, after the **Test** phase, and before committing.
+- `/grill-me` — Switch the agent to interactive mode. Uses the full Workflow, but stops for user approval after the **Plan** phase, after the **Test** phase, and before committing.
 - `/ask` — Simple question/answer mode. The agent acts as an advisor, answers questions, and asks clarifying questions if needed. The agent MUST NOT write code, run modifying commands, or create commits in this mode.
 - `/quick-fix` — Quick bugfix mode. The agent skips the Plan and Post-Approval Setup phases, jumps straight to fixing the issue, tests it, and commits it. Use this only when explicitly requested for trivial tasks.
 
 **User Questions Rule:** Whenever asking the user a question that requires a "Yes" or "No" answer (or similar clear choices), you MUST use the `ask_question` tool to provide clickable buttons for the user to select their response.
 
-**Current Mode: interactive** (default unless another mode is explicitly specified in the conversation or request). Always respect this mode and do not proceed to automatic fixes or execution if in `/interactive` or `/ask` mode.
+**Current Mode: ask** (default unless another mode is explicitly specified in the conversation or request). Always respect this mode and do not proceed to automatic fixes or execution if in `/grill-me` or `/ask` mode.
 
 ## Error handling
 

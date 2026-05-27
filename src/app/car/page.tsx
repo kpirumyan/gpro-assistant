@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/PageShell";
-import { CarPanel } from "@/components/CarPanel";
+import { CarPanel } from "./_components/CarPanel";
 import { getCarParts } from "@/lib/db/queries";
 
 export const metadata: Metadata = {

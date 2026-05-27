@@ -40,23 +40,26 @@ gpro-assistant/
 │   │   ├── page.tsx            # Home (/)
 │   │   ├── globals.css         # Global styles + Tailwind
 │   │   ├── driver/
+│   │   │   ├── _components/    # Driver-specific UI components
 │   │   │   ├── page.tsx        # /driver
 │   │   │   └── actions.ts      # Server actions for driver data
 │   │   ├── car/
+│   │   │   ├── _components/    # Car-specific UI components
 │   │   │   ├── page.tsx        # /car
 │   │   │   └── actions.ts      # Server actions for car data
-│   │   ├── fuel/page.tsx       # /fuel (placeholder)
+│   │   ├── fuel/
+│   │   │   ├── _components/    # Fuel-specific UI components
+│   │   │   └── page.tsx        # /fuel
 │   │   ├── tires/page.tsx      # /tires (placeholder)
 │   │   ├── setup/page.tsx      # /setup (placeholder)
 │   │   └── settings/
+│   │       ├── _components/    # Settings-specific UI components
 │   │       ├── page.tsx        # /settings
 │   │       └── page.test.tsx   # Settings tests
 │   ├── components/             # Shared React components
 │   │   ├── AppNav.tsx          # Navigation bar
 │   │   ├── PageShell.tsx       # Page wrapper (title + description)
-│   │   ├── SettingsApiKeyForm.tsx  # API key form
-│   │   ├── DriverPanel.tsx     # Displays driver skills and attributes
-│   │   ├── CarPanel.tsx        # Displays car part levels and wear
+│   │   ├── ClientDate.tsx      # Date formatter component
 │   │   └── StatBar.tsx         # Reusable gradient stat bar
 │   ├── lib/                    # Domain logic (keep pages thin)
 │   │   ├── gpro/               # GPRO API client, types, fixtures
@@ -118,6 +121,11 @@ The API token is stored in the database (not `.env.local`). The Settings page fo
 
 Tests are written before (or alongside) production code. Tests must never be weakened to make a fix pass.
 
+### Co-location of architecture diagrams
+
+For complex domain logic, calculators, and services (especially inside `src/lib/`), we maintain a `README.md` containing public API documentation and Mermaid architecture diagrams directly within the service's directory. This keeps the design close to the implementation.
+
+
 
 ## Architecture Decision Records (ADR)
 
@@ -144,3 +152,10 @@ Tests are written before (or alongside) production code. Tests must never be wea
 **Context**: Need readable git history and potential for automated changelogs.
 **Decision**: All commits follow Conventional Commits format (`type(scope): description`).
 **Consequence**: Consistent, searchable git log.
+
+### ADR-005: Co-location of architecture diagrams
+
+**Context**: Complex business logic (like calculators or API synchronizations) is hard to maintain without visual architecture diagrams, but global documentation folders easily get out of sync.
+**Decision**: Keep Mermaid diagrams and documentation inside the specific service directories in `src/lib/` (e.g. in a local `README.md`).
+**Consequence**: Diagrams are highly visible to developers touching the code, raising the likelihood of keeping them updated.
+

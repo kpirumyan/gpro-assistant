@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/PageShell";
-import { DriverPanel } from "@/components/DriverPanel";
+import { DriverPanel } from "./_components/DriverPanel";
 import { getDriverProfile } from "@/lib/db/queries";
 
 export const metadata: Metadata = {

@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import SettingsPage from "./page";
-import { SettingsApiKeyForm } from "@/components/SettingsApiKeyForm";
+import { SettingsApiKeyForm } from "./_components/SettingsApiKeyForm";
 import * as actions from "@/app/settings/actions";
 import * as queries from "@/lib/db/queries";
 

@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { PageShell } from "@/components/PageShell";
-import { SettingsApiKeyForm } from "@/components/SettingsApiKeyForm";
+import { SettingsApiKeyForm } from "./_components/SettingsApiKeyForm";
 import { getGproCredentials } from "@/lib/db/queries";
 
 export const metadata: Metadata = {
