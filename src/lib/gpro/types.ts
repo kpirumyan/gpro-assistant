@@ -75,6 +75,7 @@ export interface RaceAnalysisResponse {
   startFuel?: number;
   finishFuel?: number;
   pits?: Array<{
+    lap?: number;
     fuelLeft?: number;
     refilledTo?: number;
     [key: string]: unknown;
