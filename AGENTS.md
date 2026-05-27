@@ -35,6 +35,8 @@ The agent must support the following interaction modes, controlled by user comma
 - `/ask` — Simple question/answer mode. The agent acts as an advisor, answers questions, and asks clarifying questions if needed. The agent MUST NOT write code, run modifying commands, or create commits in this mode.
 - `/quick-fix` — Quick bugfix mode. The agent skips the Plan and Post-Approval Setup phases, jumps straight to fixing the issue, tests it, and commits it. Use this only when explicitly requested for trivial tasks.
 
+**User Questions Rule:** Whenever asking the user a question that requires a "Yes" or "No" answer (or similar clear choices), you MUST use the `ask_question` tool to provide clickable buttons for the user to select their response.
+
 **Current Mode: interactive** (default unless another mode is explicitly specified in the conversation or request). Always respect this mode and do not proceed to automatic fixes or execution if in `/interactive` or `/ask` mode.
 
 ## Error handling
