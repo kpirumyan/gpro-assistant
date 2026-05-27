@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getLatestSyncedRaceAction, prepareSyncAction, syncRaceBatchAction } from './actions';
+import { buildRaceAnalysis } from '@/test/factories';
 import { prepareSync, syncRacesBatch } from '@/lib/services/race-analysis.service';
 import { getGproCredentials } from '@/lib/db/queries';
 import { db } from '@/lib/db';
@@ -35,10 +36,9 @@ describe('Race Analysis Server Actions', () => {
   describe('getLatestSyncedRaceAction', () => {
     it('returns the latest synced race if found', async () => {
       // Arrange
-      vi.mocked(db.query.raceAnalysis.findFirst).mockResolvedValue({
-        season: 103,
-        race: 17,
-      } as unknown as Awaited<ReturnType<typeof db.query.raceAnalysis.findFirst>>);
+      vi.mocked(db.query.raceAnalysis.findFirst).mockResolvedValue(
+        buildRaceAnalysis({ season: 103, race: 17 })
+      );
 
       // Act
       const result = await getLatestSyncedRaceAction();

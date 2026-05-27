@@ -5,7 +5,7 @@ import Link from "next/link";
 import { type SyncRacesState } from "@/app/fuel/actions";
 
 // Temporary mock action until Task 3 is implemented
-async function syncRacesData(prevState: SyncRacesState, formData: FormData): Promise<SyncRacesState> {
+async function syncRacesData(_prevState: SyncRacesState, _formData: FormData): Promise<SyncRacesState> {
   return { message: "Not implemented yet" };
 }
 import type { FuelAnalyticsListEntry } from "@/lib/db/queries";

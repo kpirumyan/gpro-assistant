@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { calculateFuelAnalytics, generateRaceRange, getExistingRacesInRange, prepareSync, syncRacesBatch } from './race-analysis.service';
+import { buildRaceAnalysis } from '../../test/factories';
 import { fetchRaceAnalysis } from '../gpro/client';
 import { db } from '../db';
 
@@ -26,7 +27,7 @@ describe('getExistingRacesInRange', () => {
 
   it('should query DB and return existing races', async () => {
     vi.mocked(db.query.raceAnalysis.findMany).mockResolvedValue([
-      { id: 1, createdAt: new Date(), updatedAt: new Date(), season: 100, race: 16, group: 'A', rawData: {} }
+      buildRaceAnalysis({ season: 100, race: 16 })
     ]);
 
     const result = await getExistingRacesInRange(100, 15, 100, 17);
@@ -49,7 +50,7 @@ describe('prepareSync', () => {
 
   it('should generate range and filter out existing races', async () => {
     vi.mocked(db.query.raceAnalysis.findMany).mockResolvedValue([
-      { id: 1, createdAt: new Date(), updatedAt: new Date(), season: 100, race: 16, group: 'A', rawData: {} }
+      buildRaceAnalysis({ season: 100, race: 16 })
     ]);
 
     const result = await prepareSync(100, 15, 100, 17);
@@ -65,7 +66,7 @@ describe('prepareSync', () => {
 
   it('should return empty array if all races exist', async () => {
     vi.mocked(db.query.raceAnalysis.findMany).mockResolvedValue([
-      { id: 1, createdAt: new Date(), updatedAt: new Date(), season: 100, race: 15, group: 'A', rawData: {} }
+      buildRaceAnalysis({ season: 100, race: 15 })
     ]);
 
     const result = await prepareSync(100, 15, 100, 15);

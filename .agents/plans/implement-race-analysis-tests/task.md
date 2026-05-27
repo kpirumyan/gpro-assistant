@@ -1,12 +1,15 @@
-# Race Analysis Sync
-
-This is the main checklist for the Race Analysis Sync feature implementation.
-Tasks are broken down into separate files to build logic step-by-step.
-
-- [x] **Task 1: Service Layer** (`src/lib/services/race-analysis.service.ts`)
-  - [x] Create `generateRaceRange(fromSeason, fromRace, toSeason, toRace)`
-  - [x] Create `getExistingRacesInRange(fromSeason, fromRace, toSeason, toRace)`
-  - [x] Create `prepareSync(...)` returning only missing races.
-  - [x] Create `syncRacesBatch(token, missingRaces)` handling chunks and DB transaction.
-- [x] **Task 2: Server Actions** (`src/app/fuel/actions.ts`)
-- [ ] Task 3: [UI Component](./task-3-ui-component.md)
+- [x] Create `src/test/factories.ts` with Test Data Builder pattern
+  - [x] `buildRaceAnalysis`
+  - [x] `buildGproCredentials`
+  - [x] `buildDriverProfile`
+  - [x] `buildCarPart`
+  - [x] `buildRaceFuelAnalytics`
+  - [x] `buildRaceCarSnapshot`
+  - [x] `buildRaceDriverSnapshot`
+- [x] Refactor `src/lib/services/race-analysis.service.test.ts`
+  - [x] Replace inline mock objects with `buildRaceAnalysis`
+- [x] Refactor `src/app/fuel/actions.test.ts`
+  - [x] Replace inline mock objects with `buildRaceAnalysis`
+- [x] Run `npm run typecheck`
+- [x] Run `npm run test`
+- [x] Run `npm run lint`
