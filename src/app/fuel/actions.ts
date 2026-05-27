@@ -21,8 +21,8 @@ export async function syncRacesData(): Promise<SyncRacesState> {
       return { error: "No API key configured. Please add one in Settings." };
     }
 
-    let season = 103; // Safe default for 2026 if all else fails
-    let race = 17;
+    let season: number | undefined;
+    let race: number | undefined;
 
     try {
       // 1. Try to fetch calendar to find the current active race and its season
@@ -31,30 +31,23 @@ export async function syncRacesData(): Promise<SyncRacesState> {
         const currentRace = calendar.find(
           (r) => r.isCurrentRace === 1 || r.isCurrentRace === "1"
         );
-        if (currentRace) {
-          if (currentRace.season) {
-            season = Number(currentRace.season);
+        const targetRace = currentRace || calendar[calendar.length - 1];
+        
+        if (targetRace) {
+          if (targetRace.season) {
+            season = Number(targetRace.season);
           }
-          if (currentRace.idx) {
-            race = Number(currentRace.idx);
-          }
-        } else {
-          // If no active race is marked, try to get the latest one from the list
-          const latestRace = calendar[calendar.length - 1];
-          if (latestRace) {
-            if (latestRace.season) {
-              season = Number(latestRace.season);
-            }
-            if (latestRace.idx) {
-              race = Number(latestRace.idx);
-            }
+          if (targetRace.idx) {
+            race = Number(targetRace.idx);
           }
         }
       }
     } catch (calendarError) {
       console.warn("Failed to fetch calendar, falling back to database checks:", calendarError);
-      
-      // 2. Fallback: try to see what season we last synced
+    }
+
+    // 2. Fallback: try to see what season we last synced if API fetch failed
+    if (season === undefined || race === undefined) {
       const latestDbEntry = await db.query.raceAnalysis.findFirst({
         orderBy: [desc(raceAnalysis.season), desc(raceAnalysis.race)],
       });
@@ -63,6 +56,10 @@ export async function syncRacesData(): Promise<SyncRacesState> {
         season = latestDbEntry.season;
         race = latestDbEntry.race;
       }
+    }
+
+    if (season === undefined || race === undefined) {
+      return { error: "Failed to determine current season and race. GPRO API is unavailable and database is empty." };
     }
 
     // Call the synchronization service
