@@ -163,3 +163,10 @@ For complex domain logic, calculators, and services (especially inside `src/lib/
 **Decision**: Keep Mermaid diagrams and documentation inside the specific service directories in `src/lib/` (e.g. in a local `README.md`).
 **Consequence**: Diagrams are highly visible to developers touching the code, raising the likelihood of keeping them updated.
 
+### ADR-006: Custom Test Data Builders for Database Mocks
+
+**Context**: Need a standardized, type-safe way to mock database entities (Drizzle schemas) in tests without massive inline object boilerplate.
+**Decision**: Implement custom Factory functions (Test Data Builders) in `src/test/factories.ts` using plain TypeScript.
+**Alternatives considered**: Using `fishery` + `faker`. Rejected for now to avoid unnecessary dependencies, as the project's data structures are mostly numerical and straightforward.
+**Consequence**: Test files are much cleaner. If schemas become deeply relational in the future, the `.build()` interface can easily be swapped to use `fishery` under the hood.
+
