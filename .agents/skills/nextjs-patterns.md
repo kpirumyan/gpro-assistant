@@ -88,6 +88,12 @@ src/lib/
 - **Server Actions**: for mutations (form submissions, DB writes)
 - **Route Handlers**: `src/app/api/{route}/route.ts` for REST endpoints if needed
 
+### Client Components & useEffect (CRITICAL RULE)
+
+- **Never** use `useEffect` for initial data fetching or setting default state on mount if that data can be fetched on the server.
+- **Instead**, fetch the data in the parent Server Component and pass it down as initial props to the Client Component. Use these props to initialize state (e.g., `useState(initialData)`).
+- `useEffect` should only be used for synchronization with external systems, subscriptions, or reacting to client-side state changes, NOT for initial hydration or avoiding Server Components.
+
 ## Styling
 
 - **Tailwind CSS v4** with `@tailwindcss/postcss`
