@@ -9,4 +9,5 @@ Tasks are broken down into separate files to build logic step-by-step.
   - [x] Create `prepareSync(...)` returning only missing races.
   - [x] Create `syncRacesBatch(token, missingRaces)` handling chunks and DB transaction.
 - [x] **Task 2: Server Actions** (`src/app/fuel/actions.ts`)
-- [ ] Task 3: [UI Component](./task-3-ui-component.md)
+- [x] Task 3: [UI Component](./task-3-ui-component.md)
+
