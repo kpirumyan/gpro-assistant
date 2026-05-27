@@ -15,6 +15,7 @@ Single-user Next.js app for personal use. Fetches game data from the GPRO API, v
 Tasks follow these phases (used by `/grill-me` and `/goal` modes):
 
 1. **Plan** — Research the task, create an implementation plan artifact. **Stop and wait for user approval.**
+   - **MANDATORY**: Your `implementation_plan.md` MUST include a "Documentation Updates" section. You MUST explicitly state whether the task introduces new patterns, files, directories, or libraries, and what updates will be made to `ARCHITECTURE.md` or `.agents/skills/`. If no updates are needed, you must prove why.
 2. **Post-Approval Setup** — Once the plan is approved, perform the following setup steps:
    - Create a directory in `.agents/plans/` named after the current git worktree/branch (e.g., `.agents/plans/<worktree-name>`).
    - Save the approved `implementation_plan.md` in that directory.
@@ -82,6 +83,7 @@ Read `ARCHITECTURE.md` before making structural changes. **Update it** when the 
 At commit time, check whether these files need updating:
 - `README.md` — routes, scripts, prerequisites
 - `ARCHITECTURE.md` — structure, patterns, decisions
+  - **TABOO:** Never skip this. If you introduce a new design pattern (even in tests), you MUST update this file.
 - `.env.example` — new environment variables
 
 ## Skills

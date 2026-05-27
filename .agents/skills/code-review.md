@@ -33,6 +33,8 @@ Run through every item before committing. Fix any issues found.
 
 - [ ] `README.md` — is it still accurate? (routes, scripts, prerequisites)
 - [ ] `ARCHITECTURE.md` — did the structure, data flow, or patterns change?
+  - **TABOO / CRITICAL RULE:** If you added a new design pattern (like a Test Data Builder), a new folder, or a new library, and you do NOT update `ARCHITECTURE.md` to document it, you have FAILED your instructions.
+  - **MANDATORY:** Before running `git commit`, you MUST output in the chat your explicit reasoning: *"Does this task introduce new patterns or structural changes? [Yes/No]. Therefore I will [update ARCHITECTURE.md / leave it as is]."*
 - [ ] `.env.example` — were new environment variables introduced?
 
 ### 5. Commit message
