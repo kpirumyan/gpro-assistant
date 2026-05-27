@@ -16,7 +16,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "precommit": "npm run test && npm run lint",
+    "typecheck": "tsc --noEmit",
+    "precommit": "npm run typecheck && npm run test && npm run lint",
     "prepare": "husky"
   },
   "dependencies": {
