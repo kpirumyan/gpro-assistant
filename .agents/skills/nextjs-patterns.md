@@ -47,10 +47,6 @@ src/app/
   - Event handlers (`onClick`, `onChange`)
   - Third-party client-only libraries
 
-### Hydration
-
-- **Never** use `useEffect` just to set a `mounted` state to bypass hydration mismatches. This causes cascading renders and is an anti-pattern according to React documentation.
-
 ### React Documentation
 
 - Always refer to React documentation when in doubt about hooks or component lifecycle.
