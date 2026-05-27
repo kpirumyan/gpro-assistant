@@ -5,6 +5,10 @@ Read this skill before creating routes, components, or data fetching logic.
 > **Critical**: This project uses Next.js 16. APIs may differ from training data.
 > Always read `node_modules/next/dist/docs/` before implementing new patterns.
 
+## General Project Rules
+
+- **Strict No-Workarounds Policy**: As a strict project rule, **no suppressions or workarounds are allowed** anywhere in the codebase (including `eslint-disable` for hook dependencies, `@ts-ignore`, or `suppressHydrationWarning`). Always fix the underlying issue.
+
 ## App Router
 
 This project uses the App Router exclusively. No Pages Router.
@@ -45,9 +49,7 @@ src/app/
 
 ### Hydration
 
-- **Never** use `suppressHydrationWarning` to fix hydration mismatches. As a strict project rule, **no suppressions or workarounds are allowed** anywhere in the codebase (including `eslint-disable` for hook dependencies or `@ts-ignore`). Always fix the underlying issue.
 - **Never** use `useEffect` just to set a `mounted` state to bypass hydration mismatches. This causes cascading renders and is an anti-pattern according to React documentation.
-- **Instead**, use `next/dynamic` with `ssr: false` to create client-only components for values that differ between server and client (like localized dates).
 
 ### React Documentation
 
