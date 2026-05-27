@@ -6,7 +6,7 @@ Read this skill and run through the checklist **before every commit**.
 
 Run through every item before committing. Fix any issues found.
 
-### 1. Tests and lint
+### 1. Typecheck, tests and lint
 
 - [ ] `npm run typecheck` — no TypeScript errors
 - [ ] `npm run test` — all tests pass
