@@ -5,6 +5,7 @@ import SettingsPage from "./page";
 import { SettingsApiKeyForm } from "./_components/SettingsApiKeyForm";
 import * as actions from "@/app/settings/actions";
 import * as queries from "@/lib/db/queries";
+import { buildGproCredentials } from "@/test/factories";
 
 vi.mock("@/app/settings/actions", () => ({
   saveApiKey: vi.fn(),
@@ -63,7 +64,7 @@ describe("SettingsApiKeyForm", () => {
 
 describe("SettingsPage", () => {
   it("renders the settings page with the form when key is saved", async () => {
-    vi.mocked(queries.getGproCredentials).mockResolvedValue({ token: "existing_token" });
+    vi.mocked(queries.getGproCredentials).mockResolvedValue(buildGproCredentials({ token: "existing_token" }));
 
     render(await SettingsPage());
 

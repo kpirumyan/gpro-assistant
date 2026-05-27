@@ -2,12 +2,13 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { DriverPanel } from "./DriverPanel";
 import driverProfileFixture from "@/lib/gpro/__fixtures__/driver-profile.json";
+import { buildDriverProfile } from "@/test/factories";
 
 vi.mock("@/app/driver/actions", () => ({
   syncDriverData: vi.fn(),
 }));
 
-const mockDriverData = {
+const mockDriverData = buildDriverProfile({
   name: driverProfileFixture.driName,
   overall: driverProfileFixture.overall,
   concentration: driverProfileFixture.concentration,
@@ -23,7 +24,7 @@ const mockDriverData = {
   age: driverProfileFixture.age,
   energy: driverProfileFixture.energy,
   updatedAt: new Date("2025-01-15T10:00:00Z"),
-};
+});
 
 describe("DriverPanel", () => {
   it("shows the sync button", () => {
