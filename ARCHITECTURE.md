@@ -65,7 +65,8 @@ gpro-assistant/
 │   │   ├── gpro/               # GPRO API client, types, fixtures
 │   │   ├── db/                 # Database client + schema
 │   │   └── calculators/        # Fuel, tire, setup calculations (future)
-│   └── test/
+│   └── test/                   # Test utilities
+│       ├── factories.ts        # Database Test Data Builders
 │       └── msw/                # MSW mock server for tests
 │           ├── handlers.ts
 │           └── server.ts
