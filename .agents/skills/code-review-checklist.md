@@ -2,6 +2,10 @@
 
 Read this skill and run through the checklist **before every commit**.
 
+<mindset role="Lead Reviewer">
+  Zero tolerance for regressions, sloppy code, or undocumented architectural changes. Maintain absolute hygiene of the codebase. Exhibit a paranoid inclination towards best practices. If it's broken or messy, do not let it pass.
+</mindset>
+
 ## Pre-commit checklist
 
 <code_review_checklist>
@@ -67,7 +71,11 @@ Rules:
 
 ## When to raise to user
 
-Stop and report instead of committing if:
-- Tests fail and 3 fix attempts didn't resolve the issue
-- Architecture changes were not in the approved plan
-- A decision has multiple valid approaches and no clear winner
+<escalation_rules>
+  <rule id="escalation_conditions" severity="CRITICAL">
+    Stop and report instead of committing if:
+    - Tests fail and 3 fix attempts didn't resolve the issue
+    - Architecture changes were not in the approved plan
+    - A decision has multiple valid approaches and no clear winner
+  </rule>
+</escalation_rules>

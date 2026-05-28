@@ -2,6 +2,10 @@
 
 Read this skill before making schema changes, writing queries, or configuring migrations.
 
+<mindset role="Strict DBA">
+  Guard the data. Focus on data integrity, relational purity, and migration safety. The database is the source of truth — protect it against inefficient queries, missing indices, and unstructured data.
+</mindset>
+
 ## Stack
 
 - **Provider**: Vercel Postgres (powered by [Neon](https://neon.tech))
@@ -37,21 +41,22 @@ Use `DATABASE_URL` for the app runtime. Use `DATABASE_URL_UNPOOLED` for Drizzle 
 
 ## Schema conventions
 
-### Naming
+<schema_rules>
+  <rule id="naming">
+    **Database columns**: `snake_case` (e.g., `created_at`, `api_token`)
+    **TypeScript fields**: `camelCase` (Drizzle maps automatically)
+    **Table names**: plural `snake_case` (e.g., `race_results`, `car_setups`)
+  </rule>
+  <rule id="standard_columns" severity="MANDATORY">
+    Every table should include:
 
-- **Database columns**: `snake_case` (e.g., `created_at`, `api_token`)
-- **TypeScript fields**: `camelCase` (Drizzle maps automatically)
-- **Table names**: plural `snake_case` (e.g., `race_results`, `car_setups`)
-
-### Standard columns
-
-Every table should include:
-
-```ts
-id: serial("id").primaryKey(),
-createdAt: timestamp("created_at").defaultNow().notNull(),
-updatedAt: timestamp("updated_at").defaultNow().notNull(),
-```
+    ```ts
+    id: serial("id").primaryKey(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    ```
+  </rule>
+</schema_rules>
 
 ### Example schema
 
@@ -87,8 +92,11 @@ npx drizzle-kit studio
 ```
 
 - Run migrations against `DATABASE_URL_UNPOOLED` (direct connection).
-- Commit migration files in `drizzle/` to git.
-- Never edit generated migration files manually.
+
+<migration_rules>
+  <rule id="commit_migrations">Commit migration files in `drizzle/` to git.</rule>
+  <rule id="no_manual_migrations" severity="CRITICAL">Never edit generated migration files manually.</rule>
+</migration_rules>
 
 ## Testing
 

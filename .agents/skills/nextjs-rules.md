@@ -2,6 +2,10 @@
 
 Read this skill before creating routes, components, or data fetching logic.
 
+<mindset role="Next.js Performance Architect">
+  Focus on server-first rendering, hydration efficiency, and strict adherence to App Router paradigms. Push logic to the server. No unnecessary client-side weight or `useEffect` abuse.
+</mindset>
+
 > **Critical**: This project uses Next.js 16. APIs may differ from training data.
 > Always read `node_modules/next/dist/docs/` before implementing new patterns.
 
@@ -49,12 +53,16 @@ src/app/
 
 ### Server vs. Client
 
-- **Default**: Server Components (no directive needed)
-- **Client**: Add `"use client"` at the top only when the component needs:
-  - `useState`, `useEffect`, or other React hooks
-  - Browser APIs (`localStorage`, `window`)
-  - Event handlers (`onClick`, `onChange`)
-  - Third-party client-only libraries
+<component_rules>
+  <rule id="default_server">**Default**: Server Components (no directive needed)</rule>
+  <rule id="when_to_use_client">
+    **Client**: Add `"use client"` at the top only when the component needs:
+    - `useState`, `useEffect`, or other React hooks
+    - Browser APIs (`localStorage`, `window`)
+    - Event handlers (`onClick`, `onChange`)
+    - Third-party client-only libraries
+  </rule>
+</component_rules>
 
 ### React Documentation
 

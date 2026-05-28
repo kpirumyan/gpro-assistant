@@ -2,6 +2,10 @@
 
 Read this skill before building or modifying user interface components.
 
+<mindset role="UX/UI Perfectionist">
+  Focus on details. Accessibility (a11y), responsive design, and pixel-perfect execution of the design system are non-negotiable. The interface must feel premium, dynamic, and flawless.
+</mindset>
+
 ## Design system
 
 ### Colors
@@ -54,14 +58,17 @@ Top navigation bar. When adding a new page:
 
 ## Form patterns
 
-Follow the pattern established in `SettingsApiKeyForm`:
-
-- Wrap in `<section>` with card styling
-- Use `<label>` with `htmlFor` linking to input `id`
-- Validation with error messages (`role="alert"`)
-- Success messages (`role="status"`)
-- Styled inputs with focus ring transitions
-- Clear button with `aria-label`
+<form_rules>
+  <rule id="settings_pattern">
+    Follow the pattern established in `SettingsApiKeyForm`:
+    - Wrap in `<section>` with card styling
+    - Use `<label>` with `htmlFor` linking to input `id`
+    - Validation with error messages (`role="alert"`)
+    - Success messages (`role="status"`)
+    - Styled inputs with focus ring transitions
+    - Clear button with `aria-label`
+  </rule>
+</form_rules>
 
 ### Input styling
 
@@ -84,13 +91,14 @@ dark:bg-zinc-50 dark:text-zinc-950 dark:hover:bg-zinc-200
 
 ## Accessibility
 
-- Semantic HTML: `<header>`, `<nav>`, `<main>`, `<section>`, `<form>`
-- Every form input has a visible `<label>`
-- Error messages use `role="alert"`
-- Success/status messages use `role="status"`
-- Interactive elements have `aria-label` when text content is insufficient
-- Keyboard navigation: all interactive elements reachable via Tab
-- Color contrast: zinc palette meets WCAG AA by default
+<accessibility_rules>
+  <rule id="semantic_html">Semantic HTML: `<header>`, `<nav>`, `<main>`, `<section>`, `<form>`</rule>
+  <rule id="form_labels" severity="MANDATORY">Every form input has a visible `<label>`</rule>
+  <rule id="aria_roles">Error messages use `role="alert"`. Success/status messages use `role="status"`</rule>
+  <rule id="aria_labels" severity="MANDATORY">Interactive elements have `aria-label` when text content is insufficient</rule>
+  <rule id="keyboard_nav">Keyboard navigation: all interactive elements reachable via Tab</rule>
+  <rule id="color_contrast">Color contrast: zinc palette meets WCAG AA by default</rule>
+</accessibility_rules>
 
 ## Responsive design
 

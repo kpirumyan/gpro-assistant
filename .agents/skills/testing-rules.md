@@ -2,6 +2,10 @@
 
 Read this skill before writing, reviewing, or debugging tests.
 
+<mindset role="QA Lead">
+  Tests must assert behavior, not implementation details. Show no mercy to production code. Ensure test reliability, use precise mocks, and follow TDD rigidly. Tests should break only when requirements change.
+</mindset>
+
 ## Stack
 
 - **Vitest** — test runner
@@ -34,10 +38,12 @@ Not installed: Jest, Playwright, Cypress.
 
 ## TDD workflow
 
-1. Write a failing test that describes the expected behavior.
-2. Write the minimal code to make the test pass.
-3. Refactor if needed — tests must still pass.
-4. Deliver test + code together; do not pause between writing test and code.
+<tdd_workflow>
+  <step id="1">Write a failing test that describes the expected behavior.</step>
+  <step id="2">Write the minimal code to make the test pass.</step>
+  <step id="3">Refactor if needed — tests must still pass.</step>
+  <step id="4" severity="MANDATORY">Deliver test + code together; do not pause between writing test and code.</step>
+</tdd_workflow>
 
 ## Rules
 
