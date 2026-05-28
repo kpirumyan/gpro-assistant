@@ -1,24 +1,24 @@
-# Обязательное использование RAG (React/Next.js)
+# Mandatory Usage of RAG (React/Next.js)
 
-**Зачем нужен этот навык:**
-Моя (Antigravity) встроенная база знаний может опираться на более старые версии React и Next.js. Из-за "обманчивой самоуверенности" я могу сгенерировать устаревший код. Чтобы этого избежать, я ОБЯЗАН использовать актуальную документацию из RAG.
+**Why this skill is needed:**
+My (Antigravity) internal knowledge base may rely on older versions of React and Next.js. Due to "deceptive self-confidence", I might generate outdated code. To prevent this, I MUST use the up-to-date documentation from RAG.
 
-## Команды RAG
-Доступный RAG для React:
+## RAG Commands
+Currently available RAG for React:
 ```bash
-npm run ask-react-rag --new "Ваш запрос к документации"
+npm run ask-react-rag --new "Your query to the documentation"
 ```
-*(В будущем могут быть добавлены другие RAG, например, для Next.js)*
+*(Other RAGs may be added in the future, e.g., for Next.js)*
 
-## Жесткие правила применения
+## Strict Usage Rules
 
-1. **Разработка новой фичи (New Feature):** 
-   Я **ВСЕГДА** и **ОБЯЗАТЕЛЬНО** обращаюсь к RAG (по React, Next.js и т.д., в зависимости от задачи) перед тем, как приступить к архитектуре или написанию кода. Никакой самонадеянности — я должен сверять паттерны с актуальной докой.
-2. **Быстрые правки (Quick Fix):** 
-   Использование RAG остается **на мое усмотрение** (если я абсолютно уверен, что фикс тривиален, например, исправление опечатки, стилей или простой логики).
+1. **Developing a New Feature:** 
+   I **ALWAYS** and **MANDATORILY** query the RAG (for React, Next.js, etc., depending on the task) before starting the architecture or writing code. No assumptions allowed — I must verify patterns with the current documentation.
+2. **Quick Fixes:** 
+   Using RAG remains **at my discretion** (if I am absolutely sure the fix is trivial, e.g., fixing a typo, basic styling, or simple logic).
 
-## В каком месте воркфлоу применяется RAG?
+## When to apply RAG in the workflow?
 
-1. **Фаза "Plan" (Research) — Обязательно:** Я формирую план *только после* того, как задам ключевые архитектурные вопросы RAG-скрипту и получу подтверждение правильности моих намерений из современной документации.
-2. **Фаза "Implement" (Кодинг):** Если во время работы над фичей возникает неочевидный нюанс, я забыл синтаксис нового хука или не могу победить ошибку.
-3. **Фаза "Review" (Code Review):** Во время проверки кода (Code Review Checklist) я могу запросить у RAG информацию о "best practices" по написанному куску кода, чтобы убедиться, что он соответствует современным стандартам фреймворка.
+1. **Phase "Plan" (Research) — Mandatory:** I form the plan *only after* asking key architectural questions to the RAG script and receiving confirmation of my intentions from modern documentation.
+2. **Phase "Implement" (Coding):** If a non-obvious nuance arises during feature development, I forget the syntax of a new hook, or I cannot resolve an error.
+3. **Phase "Review" (Code Review):** During the code review (Code Review Checklist), I can query the RAG for "best practices" regarding the written code snippet to ensure it meets modern framework standards.
