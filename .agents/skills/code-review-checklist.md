@@ -28,6 +28,7 @@ Read this skill and run through the checklist **before every commit**.
     <check id="component_tests">New or changed components have co-located `.test.tsx` tests (if they contain logic beyond simple rendering)</check>
     <check id="test_behavior">Tests assert behavior, not implementation details</check>
     <check id="mock_data">No hardcoded API mock data in tests or MSW handlers — they must import and use `.json` fixtures from `__fixtures__`</check>
+    <check id="no_redundant_tests">No redundant or unnecessary tests — avoid duplicate test cases, testing trivial code without logic (like static rendering), or testing obsolete behavior</check>
   </stage>
 
   <stage id="4" name="Documentation">
