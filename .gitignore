@@ -38,6 +38,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# agents
+.agents/plans/
+.agents/rag-sessions/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

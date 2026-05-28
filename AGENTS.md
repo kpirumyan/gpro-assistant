@@ -84,9 +84,9 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 
 ## Language rules
 
-<language_rules>
+<language_rules severity="CRITICAL">
   <rule id="code_english">English only: all source code comments and Git commit messages.</rule>
-  <rule id="chat_native">Chat conversation &amp; artifacts (implementation plans, walkthroughs, etc.): user's language.</rule>
+  <rule id="chat_native" severity="CRITICAL_TABOO">Chat conversation AND ALL ARTIFACTS (implementation_plan.md, walkthrough.md, task.md) MUST BE IN THE USER'S NATIVE LANGUAGE (e.g. Russian). NEVER WRITE ARTIFACTS IN ENGLISH IF THE USER SPEAKS RUSSIAN. IT IS STRICTLY FORBIDDEN TO REVERT TO ENGLISH IN PLANS.</rule>
 </language_rules>
 
 ## Terminal rules

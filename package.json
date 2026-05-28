@@ -18,7 +18,8 @@
     "db:studio": "drizzle-kit studio",
     "typecheck": "tsc --noEmit",
     "precommit": "npm run typecheck && npm run test && npm run lint",
-    "prepare": "husky"
+    "prepare": "husky",
+    "ask-react-rag": "tsx scripts/ask-react-rag.ts"
   },
   "dependencies": {
     "@vercel/postgres": "^0.10.0",

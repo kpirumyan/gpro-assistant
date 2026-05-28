@@ -34,6 +34,8 @@ gpro-assistant/
 │       ├── ui-styling-rules.md
 │       └── db-conventions.md
 ├── drizzle/                    # Generated DB migration files (future)
+├── scripts/                    # Utility scripts (e.g., RAG integration)
+│   └── ask-react-rag.ts
 ├── public/                     # Static assets
 ├── src/
 │   ├── app/                    # Next.js App Router pages
@@ -177,3 +179,9 @@ Next.js App (React UI)
 **Decision**: Implement custom Factory functions (Test Data Builders) in `src/test/factories.ts` using plain TypeScript.
 **Alternatives considered**: Using `fishery` + `faker`. Rejected for now to avoid unnecessary dependencies, as the project's data structures are mostly numerical and straightforward.
 **Consequence**: Test files are much cleaner. If schemas become deeply relational in the future, the `.build()` interface can easily be swapped to use `fishery` under the hood.
+
+### ADR-007: Local RAG Integration via CLI Scripts
+
+**Context**: The agent (Antigravity) needs access to specific framework documentation (e.g., React 19) without consuming massive token context or hallucinating features.
+**Decision**: Use AnythingLLM as a local RAG server. Create domain-specific CLI scripts (e.g., `npm run ask-react-rag`) that the agent can invoke to query the workspace.
+**Consequence**: The agent can autonomously retrieve precise, version-matched documentation. It enforces a JSON-only response format for programmatic parsing and maintains conversation threads in `.agents/rag-sessions/` to allow follow-up clarifications.
