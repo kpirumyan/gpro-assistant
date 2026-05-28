@@ -33,9 +33,9 @@ Read this skill and run through the checklist **before every commit**.
   <stage id="4" name="Documentation">
     <check id="readme_sync">`README.md` — is it still accurate? (routes, scripts, prerequisites)</check>
     <check id="architecture_sync">
-      <description>`ARCHITECTURE.md` — did the structure, data flow, or patterns change?</description>
-      <rule severity="CRITICAL">If you added a new design pattern (like a Test Data Builder), a new folder, or a new library, and you do NOT update `ARCHITECTURE.md` to document it, you have FAILED your instructions.</rule>
-      <rule severity="MANDATORY">Before running `git commit`, you MUST output in the chat your explicit reasoning: *"Does this task introduce new patterns or structural changes? [Yes/No]. Therefore I will [update ARCHITECTURE.md / leave it as is]."*</rule>
+      <description>`.agents/ARCHITECTURE.md` — did the structure, data flow, or patterns change?</description>
+      <rule severity="CRITICAL">If you added a new design pattern (like a Test Data Builder), a new folder, or a new library, and you do NOT update `.agents/ARCHITECTURE.md` to document it, you have FAILED your instructions.</rule>
+      <rule severity="MANDATORY">Before running `git commit`, you MUST output in the chat your explicit reasoning: *"Does this task introduce new patterns or structural changes? [Yes/No]. Therefore I will [update .agents/ARCHITECTURE.md / leave it as is]."*</rule>
     </check>
     <check id="env_sync">`.env.example` — were new environment variables introduced?</check>
   </stage>

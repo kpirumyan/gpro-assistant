@@ -24,14 +24,15 @@ Living document describing the project structure, data flow, and key decisions. 
 ```
 gpro-assistant/
 ├── .agents/                    # Agent configuration
+│   ├── ARCHITECTURE.md         # This file
 │   ├── plugins/                # Agent plugins (chrome-devtools, modern-web-guidance)
 │   └── skills/                 # Skill files loaded by agent on demand
-│       ├── testing.md
-│       ├── api-integration.md
-│       ├── nextjs-patterns.md
-│       ├── code-review.md
-│       ├── ui-patterns.md
-│       └── database.md
+│       ├── testing-rules.md
+│       ├── api-integration-rules.md
+│       ├── nextjs-rules.md
+│       ├── code-review-checklist.md
+│       ├── ui-styling-rules.md
+│       └── db-conventions.md
 ├── drizzle/                    # Generated DB migration files (future)
 ├── public/                     # Static assets
 ├── src/
@@ -71,12 +72,12 @@ gpro-assistant/
 │           ├── handlers.ts
 │           └── server.ts
 ├── AGENTS.md                   # Agent rules (always loaded)
-├── ARCHITECTURE.md             # This file
 ├── README.md                   # Project overview for humans
 ├── .agentignore                # Files excluded from agent context
 ├── .env.example                # Environment variable template
 ├── vitest.config.ts            # Vitest configuration
 └── vitest.setup.ts             # Test setup (jest-dom, MSW lifecycle)
+
 ```
 
 ## Data flow

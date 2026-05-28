@@ -19,18 +19,18 @@
 - Перевод раздела **Interaction mode** в теги `<interaction_modes>` и `<mode>`.
 - Обновление таблицы **Skills** и добавление относительных ссылок на все файлы скиллов и `ARCHITECTURE.md`, чтобы агент никогда не терял к ним доступ.
 
-#### [MODIFY] [code-review.md](../../skills/code-review.md)
+#### [MODIFY] [code-review-checklist.md](../../skills/code-review-checklist.md)
 - Перевод раздела **Pre-commit checklist** в структурированный XML `<code_review_checklist>` с этапами `<stage>` и проверками `<check>`. Это снизит вероятность пропуска пунктов перед коммитом.
 
-#### [MODIFY] [nextjs-patterns.md](../../skills/nextjs-patterns.md)
+#### [MODIFY] [nextjs-rules.md](../../skills/nextjs-rules.md)
 - Оборачивание "Strict No-Workarounds Policy" и "Client Components & useEffect (CRITICAL RULE)" в теги `<critical_constraints>`.
 
-#### [MODIFY] [testing.md](../../skills/testing.md)
+#### [MODIFY] [testing-rules.md](../../skills/testing-rules.md)
 - Перевод маркированного списка **Rules** в тег `<testing_rules>` с отдельными элементами `<rule>`, включая правило "Single Source of Truth for Mocks".
 
 ### Архитектура
 
-#### [MODIFY] [ARCHITECTURE.md](../../../ARCHITECTURE.md)
+#### [MODIFY] [ARCHITECTURE.md](../../ARCHITECTURE.md)
 - Перевод раздела **Key patterns** в тег `<architecture_patterns>` для более четкого обозначения паттернов проектирования.
 
 ## Verification Plan

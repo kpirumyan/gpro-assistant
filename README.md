@@ -61,7 +61,7 @@ Vitest + React Testing Library + MSW. Every `git commit` runs `npm run test` and
 
 ## Architecture
 
-See **[ARCHITECTURE.md](ARCHITECTURE.md)** for project structure, data flow, patterns, and architecture decision records.
+See **[.agents/ARCHITECTURE.md](.agents/ARCHITECTURE.md)** for project structure, data flow, patterns, and architecture decision records.
 
 ## Deploy (Vercel)
 

@@ -16,7 +16,7 @@ Single-user Next.js app for personal use. Fetches game data from the GPRO API, v
   <description>Tasks follow these phases (used by `/grill-me` and `/goal` modes):</description>
   <phase name="Plan" requires_approval="true">
     <action>Research the task, create an implementation plan artifact. Stop and wait for user approval.</action>
-    <mandatory>Your `implementation_plan.md` MUST include a "Documentation Updates" section. You MUST explicitly state whether the task introduces new patterns, files, directories, or libraries, and what updates will be made to `ARCHITECTURE.md` or `.agents/skills/`. If no updates are needed, you must prove why.</mandatory>
+    <mandatory>Your `implementation_plan.md` MUST include a "Documentation Updates" section. You MUST explicitly state whether the task introduces new patterns, files, directories, or libraries, and what updates will be made to `.agents/ARCHITECTURE.md` or `.agents/skills/`. If no updates are needed, you must prove why.</mandatory>
   </phase>
   <phase name="Post-Approval Setup" requires_approval="false">
     <action>Once the plan is approved, perform the following setup steps:</action>
@@ -32,7 +32,7 @@ Single-user Next.js app for personal use. Fetches game data from the GPRO API, v
     <action>Run `npm run typecheck`, `npm run test`, and `npm run lint` (or simply `npm run precommit`). Show results. Stop and wait for user approval.</action>
   </phase>
   <phase name="Review" requires_approval="false">
-    <action>Run the code review checklist (see `.agents/skills/code-review.md`). Fix any issues found.</action>
+    <action>Run the code review checklist (see `.agents/skills/code-review-checklist.md`). Fix any issues found.</action>
   </phase>
   <phase name="Commit" requires_approval="false">
     <action>Conventional Commits format. One commit = one logical change. Feature + its tests = one commit.</action>
@@ -95,13 +95,13 @@ CRITICAL SECURITY RULE: Strictly respect `.agentignore`. You MUST NEVER read, se
 
 ## Architecture
 
-Read `ARCHITECTURE.md` before making structural changes. **Update it** when the project structure, data flow, or key patterns change. This file is the agent's "memory" between sessions.
+Read `.agents/ARCHITECTURE.md` before making structural changes. **Update it** when the project structure, data flow, or key patterns change. This file is the agent's "memory" between sessions.
 
 ## Documentation maintenance
 
 At commit time, check whether these files need updating:
 - `README.md` — routes, scripts, prerequisites
-- `ARCHITECTURE.md` — structure, patterns, decisions
+- `.agents/ARCHITECTURE.md` — structure, patterns, decisions
   - **TABOO:** Never skip this. If you introduce a new design pattern (even in tests), you MUST update this file.
 - `.env.example` — new environment variables
 
@@ -111,10 +111,10 @@ These are absolute links to all context files available to you. Use them to open
 
 | Area | File Link | Description |
 |------|-----------|-------------|
-| Architecture | [ARCHITECTURE.md](./ARCHITECTURE.md) | Project structure, data flow, architecture decisions |
-| Testing | [testing.md](./.agents/skills/testing.md) | Writing or reviewing tests |
-| API Integration | [api-integration.md](./.agents/skills/api-integration.md) | Working with GPRO API |
-| Next.js Patterns | [nextjs-patterns.md](./.agents/skills/nextjs-patterns.md) | Creating routes, components, data fetching |
-| Code Review | [code-review.md](./.agents/skills/code-review.md) | Before every commit |
-| UI Patterns | [ui-patterns.md](./.agents/skills/ui-patterns.md) | Building or modifying UI |
-| Database | [database.md](./.agents/skills/database.md) | Schema changes, queries, migrations |
+| Architecture | [ARCHITECTURE.md](./.agents/ARCHITECTURE.md) | Project structure, data flow, architecture decisions |
+| Testing | [testing-rules.md](./.agents/skills/testing-rules.md) | Writing or reviewing tests |
+| API Integration | [api-integration-rules.md](./.agents/skills/api-integration-rules.md) | Working with GPRO API |
+| Next.js Patterns | [nextjs-rules.md](./.agents/skills/nextjs-rules.md) | Creating routes, components, data fetching |
+| Code Review | [code-review-checklist.md](./.agents/skills/code-review-checklist.md) | Before every commit |
+| UI Patterns | [ui-styling-rules.md](./.agents/skills/ui-styling-rules.md) | Building or modifying UI |
+| Database | [db-conventions.md](./.agents/skills/db-conventions.md) | Schema changes, queries, migrations |
