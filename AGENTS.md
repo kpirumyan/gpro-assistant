@@ -132,3 +132,4 @@ These are absolute links to all context files available to you. Use them to open
 | Code Review | [code-review-checklist.md](./.agents/skills/code-review-checklist.md) | Before every commit |
 | UI Patterns | [ui-styling-rules.md](./.agents/skills/ui-styling-rules.md) | Building or modifying UI |
 | Database | [db-conventions.md](./.agents/skills/db-conventions.md) | Schema changes, queries, migrations |
+| RAG Usage | [use-rag.md](./.agents/skills/use-rag.md) | Strict rules for using the AnythingLLM RAG CLI |
