@@ -101,6 +101,12 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
   <rule id="worktree_env_copy">If operating in a git worktree and `.env.local` is missing, you MUST automatically copy `.env.local` from the original parent repository (read the `.git` file to find the original path) before running any commands that require environment variables (like `npm run db:migrate`).</rule>
 </environment_rules>
 
+## RAG & Agent Interaction Rules
+
+<rag_rules>
+  <rule id="rag_quality_control" severity="CRITICAL">When querying the local RAG agent (via `npm run ask-react-rag` or similar), strictly validate its responses. If the RAG agent returns an error, says it cannot find the information, or hallucinates/provides low-quality or irrelevant answers (especially since it might use a lightweight model like Gemini Flash 3.1 Lite), you MUST immediately HALT execution and notify the user. Propose either adjusting the agent's settings (temperature, context) in AnythingLLM, or "firing" the model to switch to a smarter one. Never proceed with code generation using bad RAG data.</rule>
+</rag_rules>
+
 ## Architecture
 
 Read `.agents/ARCHITECTURE.md` before making structural changes. **Update it** when the project structure, data flow, or key patterns change. This file is the agent's "memory" between sessions.
