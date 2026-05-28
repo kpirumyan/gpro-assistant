@@ -2,7 +2,7 @@ name: Gitleaks
 
 on:
   push:
-    branches: [main, master]
+    # Запуск на любой push во все ветки для предотвращения утечки секретов
   pull_request:
     branches: [main, master]
 
