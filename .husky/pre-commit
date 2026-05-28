@@ -1,1 +1,7 @@
+if command -v gitleaks &> /dev/null; then
+  gitleaks protect --verbose --staged
+else
+  echo "Warning: gitleaks CLI is not installed. Secrets scan skipped."
+fi
+
 npm run precommit
