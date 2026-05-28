@@ -1,0 +1,12 @@
+- [x] modify `AGENTS.md`
+  - [x] Wrap Workflow in XML
+  - [x] Wrap Interaction Modes in XML
+  - [x] Add absolute links to all context files
+- [x] modify `code-review.md`
+  - [x] Convert checklist to `<code_review_checklist>`
+- [x] modify `nextjs-patterns.md`
+  - [x] Wrap constraints in `<critical_constraints>`
+- [x] modify `testing.md`
+  - [x] Wrap rules in `<testing_rules>`
+- [x] modify `ARCHITECTURE.md`
+  - [x] Wrap Key Patterns in `<architecture_patterns>`

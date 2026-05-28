@@ -5,9 +5,18 @@ Read this skill before creating routes, components, or data fetching logic.
 > **Critical**: This project uses Next.js 16. APIs may differ from training data.
 > Always read `node_modules/next/dist/docs/` before implementing new patterns.
 
-## General Project Rules
-
-- **Strict No-Workarounds Policy**: As a strict project rule, **no suppressions or workarounds are allowed** anywhere in the codebase (including `eslint-disable` for hook dependencies, `@ts-ignore`, or `suppressHydrationWarning`). Always fix the underlying issue.
+<critical_constraints>
+  <rule id="no_suppressions" severity="FATAL">
+    <description>Strict No-Workarounds Policy</description>
+    <action>As a strict project rule, **no suppressions or workarounds are allowed** anywhere in the codebase (including `eslint-disable` for hook dependencies, `@ts-ignore`, or `suppressHydrationWarning`). Always fix the underlying issue.</action>
+  </rule>
+  <rule id="use_effect_hydration" severity="CRITICAL">
+    <description>Client Components & useEffect</description>
+    <action>**Never** use `useEffect` for initial data fetching or setting default state on mount if that data can be fetched on the server.</action>
+    <action>**Instead**, fetch the data in the parent Server Component and pass it down as initial props to the Client Component. Use these props to initialize state (e.g., `useState(initialData)`).</action>
+    <action>`useEffect` should only be used for synchronization with external systems, subscriptions, or reacting to client-side state changes, NOT for initial hydration or avoiding Server Components.</action>
+  </rule>
+</critical_constraints>
 
 ## App Router
 
@@ -85,12 +94,6 @@ src/lib/
 - **Server Components**: fetch data directly (async component functions)
 - **Server Actions**: for mutations (form submissions, DB writes)
 - **Route Handlers**: `src/app/api/{route}/route.ts` for REST endpoints if needed
-
-### Client Components & useEffect (CRITICAL RULE)
-
-- **Never** use `useEffect` for initial data fetching or setting default state on mount if that data can be fetched on the server.
-- **Instead**, fetch the data in the parent Server Component and pass it down as initial props to the Client Component. Use these props to initialize state (e.g., `useState(initialData)`).
-- `useEffect` should only be used for synchronization with external systems, subscriptions, or reacting to client-side state changes, NOT for initial hydration or avoiding Server Components.
 
 ## Styling
 

@@ -41,12 +41,20 @@ Not installed: Jest, Playwright, Cypress.
 
 ## Rules
 
-- **Never change tests to make a fix pass.** Fix production code (or MSW mocks / fixtures) instead.
-- Only edit tests when the user explicitly asks to add, update, or remove test coverage.
-- Every new module in `src/lib/` should have a co-located `.test.ts` file.
-- Component tests go in a co-located `.test.tsx` file next to the component.
-- **Single Source of Truth for Mocks**: All mock data for external APIs must be stored as `.json` files in `__fixtures__`. MSW handlers and test assertions MUST import these fixtures. Never use inline, hardcoded mock response objects.
-- **Database Mocks**: When mocking database entities (Drizzle schemas), always use the Test Data Builder factories from `src/test/factories.ts` (e.g., `buildRaceAnalysis()`). Never use inline, hardcoded mock database objects.
+<testing_rules>
+  <rule id="never_weaken_tests" severity="CRITICAL">**Never change tests to make a fix pass.** Fix production code (or MSW mocks / fixtures) instead.</rule>
+  <rule id="explicit_test_edits">Only edit tests when the user explicitly asks to add, update, or remove test coverage.</rule>
+  <rule id="co_locate_lib_tests">Every new module in `src/lib/` should have a co-located `.test.ts` file.</rule>
+  <rule id="co_locate_components">Component tests go in a co-located `.test.tsx` file next to the component.</rule>
+  <rule id="single_source_mocks" severity="CRITICAL">
+    <description>**Single Source of Truth for Mocks**</description>
+    <action>All mock data for external APIs must be stored as `.json` files in `__fixtures__`. MSW handlers and test assertions MUST import these fixtures. Never use inline, hardcoded mock response objects.</action>
+  </rule>
+  <rule id="database_mocks" severity="CRITICAL">
+    <description>**Database Mocks**</description>
+    <action>When mocking database entities (Drizzle schemas), always use the Test Data Builder factories from `src/test/factories.ts` (e.g., `buildRaceAnalysis()`). Never use inline, hardcoded mock database objects.</action>
+  </rule>
+</testing_rules>
 
 ## MSW patterns
 

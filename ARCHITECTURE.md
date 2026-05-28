@@ -106,31 +106,37 @@ Next.js App (React UI)
 
 ## Key patterns
 
-### Server-first rendering
-
-Pages are Server Components by default. Only add `"use client"` when the component needs hooks, browser APIs, or event handlers.
-
-### Thin pages, rich lib
-
-Pages (`src/app/**/page.tsx`) compose components and call domain logic. Business logic lives in `src/lib/`.
-
-### GPRO API token in database
-
-The API token is stored in the database (not `.env.local`). The Settings page form writes/reads it. This allows the user to update it without redeploying.
-
-### TDD-first development
-
-Tests are written before (or alongside) production code. Tests must never be weakened to make a fix pass.
-
-### Test Data Builders for Database
-
-When mocking database entities for unit or component tests, we use the Factory pattern (Test Data Builders) located in `src/test/factories.ts`. This ensures mock objects are strictly typed against Drizzle ORM schemas and reduces boilerplate.
-
-### Co-location of architecture diagrams
-
-For complex domain logic, calculators, and services (especially inside `src/lib/`), we maintain a `README.md` containing public API documentation and Mermaid architecture diagrams directly within the service's directory. This keeps the design close to the implementation.
-
-
+<architecture_patterns>
+  <pattern id="server_first_rendering">
+    <name>Server-first rendering</name>
+    <description>Pages are Server Components by default. Only add `"use client"` when the component needs hooks, browser APIs, or event handlers.</description>
+  </pattern>
+  
+  <pattern id="thin_pages_rich_lib">
+    <name>Thin pages, rich lib</name>
+    <description>Pages (`src/app/**/page.tsx`) compose components and call domain logic. Business logic lives in `src/lib/`.</description>
+  </pattern>
+  
+  <pattern id="db_api_token">
+    <name>GPRO API token in database</name>
+    <description>The API token is stored in the database (not `.env.local`). The Settings page form writes/reads it. This allows the user to update it without redeploying.</description>
+  </pattern>
+  
+  <pattern id="tdd_first">
+    <name>TDD-first development</name>
+    <description>Tests are written before (or alongside) production code. Tests must never be weakened to make a fix pass.</description>
+  </pattern>
+  
+  <pattern id="test_data_builders">
+    <name>Test Data Builders for Database</name>
+    <description>When mocking database entities for unit or component tests, we use the Factory pattern (Test Data Builders) located in `src/test/factories.ts`. This ensures mock objects are strictly typed against Drizzle ORM schemas and reduces boilerplate.</description>
+  </pattern>
+  
+  <pattern id="colocation_of_diagrams">
+    <name>Co-location of architecture diagrams</name>
+    <description>For complex domain logic, calculators, and services (especially inside `src/lib/`), we maintain a `README.md` containing public API documentation and Mermaid architecture diagrams directly within the service's directory. This keeps the design close to the implementation.</description>
+  </pattern>
+</architecture_patterns>
 
 ## Architecture Decision Records (ADR)
 
@@ -170,4 +176,3 @@ For complex domain logic, calculators, and services (especially inside `src/lib/
 **Decision**: Implement custom Factory functions (Test Data Builders) in `src/test/factories.ts` using plain TypeScript.
 **Alternatives considered**: Using `fishery` + `faker`. Rejected for now to avoid unnecessary dependencies, as the project's data structures are mostly numerical and straightforward.
 **Consequence**: Test files are much cleaner. If schemas become deeply relational in the future, the `.build()` interface can easily be swapped to use `fishery` under the hood.
-
