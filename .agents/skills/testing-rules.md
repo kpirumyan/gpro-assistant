@@ -54,6 +54,10 @@ Not installed: Jest, Playwright, Cypress.
     <description>**Database Mocks**</description>
     <action>When mocking database entities (Drizzle schemas), always use the Test Data Builder factories from `src/test/factories.ts` (e.g., `buildRaceAnalysis()`). Never use inline, hardcoded mock database objects.</action>
   </rule>
+  <rule id="avoid_redundant_tests">
+    <description>**Avoid Redundant Tests when Writing**</description>
+    <action>Do not write redundant or unnecessary tests — avoid duplicate test cases covering identical scenarios, testing trivial code without logic (like static rendering of fixed props), or testing obsolete behavior.</action>
+  </rule>
 </testing_rules>
 
 ## MSW patterns
