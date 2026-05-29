@@ -18,6 +18,7 @@ Read this skill and run through the checklist **before every commit**.
   </stage>
 
   <stage id="2" name="Code quality">
+    <check id="single_component_per_file">Never have multiple components in one file. Extract them to separate files.</check>
     <check id="no_console_logs">No `console.log` / `console.debug` / `console.warn` left in production code (only `console.error` is acceptable for genuine errors)</check>
     <check id="no_any_types">No `any` types — use proper TypeScript types</check>
     <check id="no_suppressions">No suppressions — never use `@ts-ignore`, `eslint-disable`, `suppressHydrationWarning`, or similar workarounds to silence errors. Always fix the root cause properly.</check>

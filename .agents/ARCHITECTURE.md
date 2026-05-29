@@ -111,6 +111,11 @@ Next.js App (React UI)
 ## Key patterns
 
 <architecture_patterns>
+  <pattern id="single_component_per_file">
+    <name>Single component per file</name>
+    <description>Never have multiple React components in one file. Each component should be extracted to its own file.</description>
+  </pattern>
+  
   <pattern id="server_first_rendering">
     <name>Server-first rendering</name>
     <description>Pages are Server Components by default. Only add `"use client"` when the component needs hooks, browser APIs, or event handlers.</description>
