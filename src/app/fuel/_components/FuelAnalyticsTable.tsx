@@ -27,17 +27,32 @@ export function FuelAnalyticsTable({ data }: Props) {
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800 text-sm">
-              {data.map((entry) => {
-                const label = entry.type === "stint" ? `Stint ${entry.stintIndex}` : "Full Race";
-                const minStr = parseFloat(entry.avgFuelPerLapMin).toFixed(3);
-                const maxStr = parseFloat(entry.avgFuelPerLapMax).toFixed(3);
-                return (
-                  <tr 
-                    key={entry.id} 
-                    className={`hover:bg-zinc-50/50 dark:hover:bg-zinc-800/10 ${
-                      entry.type === "full_race" ? "bg-zinc-50/30 dark:bg-zinc-900/20 font-medium" : ""
-                    }`}
-                  >
+              {(() => {
+                let currentRace = "";
+                let isAlternate = false;
+
+                return data.map((entry) => {
+                  const raceStr = `S${entry.season} R${entry.race}`;
+                  if (raceStr !== currentRace) {
+                    currentRace = raceStr;
+                    isAlternate = !isAlternate;
+                  }
+
+                  const label = entry.type === "stint" ? `Stint ${entry.stintIndex}` : "Full Race";
+                  const minStr = parseFloat(entry.avgFuelPerLapMin).toFixed(3);
+                  const maxStr = parseFloat(entry.avgFuelPerLapMax).toFixed(3);
+                  
+                  const bgClass = isAlternate 
+                    ? "bg-zinc-100 dark:bg-zinc-800/40 hover:bg-zinc-200/70 dark:hover:bg-zinc-700/40" 
+                    : "bg-white dark:bg-transparent hover:bg-zinc-50 dark:hover:bg-zinc-800/20";
+
+                  return (
+                    <tr 
+                      key={entry.id} 
+                      className={`transition-colors ${bgClass} ${
+                        entry.type === "full_race" ? "font-medium" : ""
+                      }`}
+                    >
                     <td className="px-6 py-4 font-medium text-zinc-900 dark:text-zinc-100">
                       S{entry.season} R{entry.race}
                     </td>
@@ -75,7 +90,8 @@ export function FuelAnalyticsTable({ data }: Props) {
                     </td>
                   </tr>
                 );
-              })}
+                });
+              })()}
             </tbody>
           </table>
         </div>
