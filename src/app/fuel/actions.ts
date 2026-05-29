@@ -39,8 +39,8 @@ export async function syncRaceBatchAction(
     // We can clear cache so UI components that rely on DB get refreshed.
     revalidatePath("/fuel");
 
-    if (result.stoppedReason === "error") {
-       return { success: false, error: `Sync stopped prematurely due to an error. Synced: ${result.syncedCount}` };
+    if (result.stoppedReason !== "completed") {
+       return { success: false, error: `Sync stopped prematurely. Reason: ${result.stoppedReason}. Synced: ${result.syncedCount}` };
     }
 
     return { success: true, syncedCount: result.syncedCount };

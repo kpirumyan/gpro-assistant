@@ -84,25 +84,7 @@ describe('Race Analysis Server Actions', () => {
       ]);
     });
 
-    it('returns error with stoppedReason if sync fails with error', async () => {
-      // Arrange
-      vi.mocked(getGproCredentials).mockResolvedValue({ token: 'test-token' });
-      vi.mocked(syncRacesBatch).mockResolvedValue({
-        syncedCount: 1,
-        stoppedReason: 'error',
-      });
-
-      // Act
-      const result = await syncRaceBatchAction([
-        { season: 103, race: 15 },
-        { season: 103, race: 16 },
-      ]);
-
-      // Assert
-      expect(result).toEqual({ success: false, error: 'Sync stopped prematurely due to an error. Synced: 1' });
-    });
-
-    it('returns success if sync stops with not_found', async () => {
+    it('returns error with stoppedReason if sync fails', async () => {
       // Arrange
       vi.mocked(getGproCredentials).mockResolvedValue({ token: 'test-token' });
       vi.mocked(syncRacesBatch).mockResolvedValue({
@@ -117,7 +99,7 @@ describe('Race Analysis Server Actions', () => {
       ]);
 
       // Assert
-      expect(result).toEqual({ success: true, syncedCount: 1 });
+      expect(result).toEqual({ success: false, error: 'Sync stopped prematurely. Reason: not_found. Synced: 1' });
     });
     
     it('returns general error on throw', async () => {
