@@ -13,14 +13,16 @@ interface RagResponse {
   status: 'success' | 'error' | 'unreachable';
   answer?: string;
   errorDetails?: string;
-  threadSlug?: string;
+  sessionId?: string;
 }
 
 const SESSION_FILE = path.resolve(process.cwd(), '.agents/rag-sessions/next.json');
 
 function exitWithJson(data: RagResponse) {
   console.log(JSON.stringify(data, null, 2));
-  process.exit(data.status === 'success' ? 0 : 1);
+  if (data.status !== 'success') {
+    process.exitCode = 1;
+  }
 }
 
 async function main() {
@@ -44,7 +46,7 @@ async function main() {
   }
 
   // Handle session (threadSlug)
-  let threadSlug: string | undefined;
+  let sessionId: string | undefined;
 
   // Ensure directory exists
   const sessionDir = path.dirname(SESSION_FILE);
@@ -53,16 +55,58 @@ async function main() {
   }
 
   if (isNew) {
+    sessionId = `rag-session-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+    fs.writeFileSync(SESSION_FILE, JSON.stringify({ sessionId }));
+  } else {
     if (fs.existsSync(SESSION_FILE)) {
-      fs.unlinkSync(SESSION_FILE);
+      try {
+        const sessionData = JSON.parse(fs.readFileSync(SESSION_FILE, 'utf8'));
+        sessionId = sessionData.sessionId;
+      } catch {
+        // Ignore parse errors
+      }
     }
-  } else if (fs.existsSync(SESSION_FILE)) {
-    try {
-      const sessionData = JSON.parse(fs.readFileSync(SESSION_FILE, 'utf8'));
-      threadSlug = sessionData.threadSlug;
-    } catch {
-      // Ignore parse errors, just start a new thread
+    
+    // If no session existed, create one
+    if (!sessionId) {
+      sessionId = `rag-session-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+      fs.writeFileSync(SESSION_FILE, JSON.stringify({ sessionId }));
     }
+  }
+
+  // Check if workspace has documents
+  try {
+    const checkUrl = `${baseUrl.replace(/\/$/, '')}/api/v1/workspace/${slug}`;
+    const checkResponse = await fetch(checkUrl, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!checkResponse.ok) {
+      return exitWithJson({
+        status: 'error',
+        errorDetails: `Failed to verify workspace "${slug}". API returned HTTP ${checkResponse.status}`
+      });
+    }
+
+    const wsData = await checkResponse.json();
+    const documents = wsData.workspace?.[0]?.documents;
+
+    if (!documents || documents.length === 0) {
+      return exitWithJson({
+        status: 'error',
+        errorDetails: `CRITICAL ERROR: Workspace "${slug}" has 0 documents! The RAG database is empty. Please upload the documentation files to AnythingLLM.`
+      });
+    }
+  } catch (error: unknown) {
+    const err = error as Error;
+    return exitWithJson({
+      status: 'unreachable',
+      errorDetails: `Failed to connect to AnythingLLM to verify workspace documents: ${err.message || String(error)}`
+    });
   }
 
   const url = `${baseUrl.replace(/\/$/, '')}/api/v1/workspace/${slug}/chat`;
@@ -71,8 +115,8 @@ async function main() {
     mode: 'chat',
   };
 
-  if (threadSlug) {
-    bodyPayload.threadSlug = threadSlug;
+  if (sessionId) {
+    bodyPayload.sessionId = sessionId;
   }
 
   try {
@@ -95,19 +139,10 @@ async function main() {
 
     const data = await response.json();
     const answer = data.textResponse;
-
-    // Save the thread string if we got one so conversation continues
-    if (data.chatId || data.id) {
-        // AnythingLLM returns a chat structure, sometimes the threadSlug is returned inside a thread object
-    }
-    // AnythingLLM usually uses the same thread or returns thread info.
-    // If it returns a thread identifier, we'd save it here.
-    // Let's inspect the response thread structure.
-    
     exitWithJson({
       status: 'success',
       answer,
-      threadSlug // Just echoing back what we sent, since anythingllm API auto-resolves thread by slug
+      sessionId
     });
 
   } catch (error: unknown) {
