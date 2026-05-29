@@ -107,6 +107,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 
 <environment_rules>
   <rule id="worktree_env_copy">If operating in a git worktree and `.env.local` is missing, you MUST automatically copy `.env.local` from the original parent repository (read the `.git` file to find the original path) before running any commands that require environment variables (like `npm run db:migrate`).</rule>
+  <rule id="no_env_workarounds" severity="CRITICAL">You MUST NEVER use workarounds to access `.env.local` or `.env` in terminal commands (e.g. `source .env.local`, `export $(cat .env.local)`). If a script cannot access environment variables, STOP immediately and report the issue to the user. Do not try to bypass script bugs by loading secrets via shell commands.</rule>
 </environment_rules>
 
 ## Architecture
@@ -119,6 +120,7 @@ Read `.agents/ARCHITECTURE.md` before making structural changes. **Update it** w
   <rule id="readme">At commit time, check if `README.md` needs updating (routes, scripts, prerequisites).</rule>
   <rule id="architecture" severity="TABOO">At commit time, check if `.agents/ARCHITECTURE.md` needs updating (structure, patterns, decisions). Never skip this. If you introduce a new design pattern (even in tests), you MUST update this file.</rule>
   <rule id="env_example">At commit time, check if `.env.example` needs updating if new environment variables were introduced.</rule>
+  <rule id="self_correction" severity="CRITICAL">Whenever you make a critical error, discover a bug in your own workflow, or learn a required workaround, you MUST immediately document it in the relevant `.agents/` rules file or `AGENTS.md`. Do not simply apologize and promise to remember it — write it down so future agent sessions will not repeat the mistake.</rule>
 </documentation_maintenance>
 
 ## Context Files Index

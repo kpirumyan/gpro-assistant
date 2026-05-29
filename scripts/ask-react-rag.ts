@@ -1,11 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import dotenv from 'dotenv';
 import 'dotenv/config';
 
 // Load .env.local manually if dotenv/config didn't pick it up
 const envLocalPath = path.resolve(process.cwd(), '.env.local');
 if (fs.existsSync(envLocalPath)) {
-  import('dotenv').then(dotenv => dotenv.config({ path: envLocalPath }));
+  dotenv.config({ path: envLocalPath });
 }
 
 interface RagResponse {

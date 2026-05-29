@@ -10,7 +10,11 @@ My (Antigravity) internal knowledge base may rely on older versions of React and
 ## RAG Commands
 Currently available RAG for React:
 ```bash
-npm run ask-react-rag --new "Your query to the documentation"
+# IMPORTANT: On Windows Git Bash, you MUST use `--` before arguments with spaces 
+# so that npm doesn't strip quotes, OR use npx tsx directly!
+npm run ask-react-rag -- --new "Your query to the documentation"
+# OR
+npx tsx scripts/ask-react-rag.ts --new "Your query to the documentation"
 ```
 *(Other RAGs may be added in the future, e.g., for Next.js)*
 
@@ -23,6 +27,9 @@ npm run ask-react-rag --new "Your query to the documentation"
   </rule>
   <rule id="quality_control" severity="CRITICAL">
     **Quality Control:** When querying the local RAG agent, I must strictly validate its responses. **If the RAG agent returns an error, says it cannot find the information, or hallucinates/provides low-quality or irrelevant answers**, I MUST immediately HALT execution and notify the user. I will propose either adjusting the agent's settings in AnythingLLM, or "firing" the model to switch to a smarter one. I must NEVER proceed with code generation using bad RAG data.
+  </rule>
+  <rule id="language" severity="MANDATORY">
+    **Language:** I must ALWAYS communicate with the RAG (the "librarian") in English. All queries passed to the `--new` flag must be formulated in English to ensure the highest quality of search and response from the documentation.
   </rule>
 </rag_rules>
 
