@@ -162,6 +162,7 @@ export function calculateFuelAnalytics(data: Partial<RaceAnalysisResponse>): Fue
   let fullRaceConsumedMin = 0;
   let fullRaceConsumedMax = 0;
   let fullRaceLapsAnalyzed = 0;
+  let fullRaceFastLaps = 0;
   let validStintsCount = 0;
 
   // API always returns lap 0 at index 0, so total driven laps is laps.length - 1
@@ -191,7 +192,7 @@ export function calculateFuelAnalytics(data: Partial<RaceAnalysisResponse>): Fue
     const startFuel = i === 0 ? data.startFuel : pits[i - 1].refilledTo;
     
     // Determine end lap for this stint
-    const currentStintEndLap = isLastStint ? totalDrivenLaps : (pits[i].lap || totalDrivenLaps);
+    const currentStintEndLap = isLastStint ? totalDrivenLaps : (pits[i].lap ?? totalDrivenLaps);
     
     if (startFuel === undefined) {
        currentStintStartLap = currentStintEndLap + 1;
@@ -214,11 +215,8 @@ export function calculateFuelAnalytics(data: Partial<RaceAnalysisResponse>): Fue
     const consumedMin = startFuel - maxFinishFuel;
     const consumedMax = startFuel - minFinishFuel;
 
-    // Count laps for this stint
-    let lapsInStint = 0;
-    for (let lapNum = currentStintStartLap; lapNum <= currentStintEndLap; lapNum++) {
-      if (laps[lapNum]) lapsInStint++;
-    }
+    // Lap count is pure arithmetic: start and end laps are already known from pit data
+    const lapsInStint = currentStintEndLap - currentStintStartLap + 1;
 
     // Count fast laps by intersecting the pre-built boostLapSet with this stint's range
     const fastLapsInStint = [...boostLapSet]
@@ -239,21 +237,22 @@ export function calculateFuelAnalytics(data: Partial<RaceAnalysisResponse>): Fue
       fullRaceConsumedMin += consumedMin;
       fullRaceConsumedMax += consumedMax;
       fullRaceLapsAnalyzed += lapsInStint;
+      fullRaceFastLaps += fastLapsInStint;
       validStintsCount++;
     }
 
     currentStintStartLap = currentStintEndLap + 1;
   }
 
-  // Aggregate full race stats from valid stints.
-  // fullRaceFastLaps = boostLapSet.size because the Set holds every fast lap index
-  // across the whole race exactly once (overlaps already deduplicated).
+  // Aggregate full race stats only from valid stints (>= 10 laps).
+  // fastLapsCount is accumulated per-stint to stay consistent with lapsAnalyzed:
+  // if a short stint is excluded, its boost laps are excluded too.
   if (validStintsCount > 0) {
     results.push({
       type: 'full_race',
       stintIndex: null,
       lapsAnalyzed: fullRaceLapsAnalyzed,
-      fastLapsCount: boostLapSet.size,
+      fastLapsCount: fullRaceFastLaps,
       avgFuelPerLapMin: fullRaceConsumedMin / fullRaceLapsAnalyzed,
       avgFuelPerLapMax: fullRaceConsumedMax / fullRaceLapsAnalyzed
     });

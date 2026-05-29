@@ -328,6 +328,6 @@ describe('calculateFuelAnalytics', () => {
 
     expect(stint1?.fastLapsCount).toBe(2);
     expect(stint2?.fastLapsCount).toBe(1);
-    expect(fullRace?.fastLapsCount).toBe(3); // boostLapSet.size = 3
+    expect(fullRace?.fastLapsCount).toBe(3); // 2 from stint 1 + 1 from stint 2
   });
 });
