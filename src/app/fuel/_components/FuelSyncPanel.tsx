@@ -38,7 +38,7 @@ export function FuelSyncPanel({ latestSyncedRace }: FuelSyncPanelProps) {
             </p>
           </div>
 
-          <form onSubmit={handlePrepare} className="flex flex-col gap-4">
+          <form action={handlePrepare} className="flex flex-col gap-4">
             <div className="flex items-center gap-4">
               <label className="flex items-center gap-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 <input

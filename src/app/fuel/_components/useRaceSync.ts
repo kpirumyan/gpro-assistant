@@ -21,8 +21,7 @@ export function useRaceSync(latestSyncedRace: { season: number; race: number } |
     syncMode === "range" &&
     (fromSeason > toSeason || (fromSeason === toSeason && fromRace > toRace));
 
-  const handlePrepare = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handlePrepare = () => {
     if (isBackward) return;
 
     setError(null);
