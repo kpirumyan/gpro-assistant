@@ -49,4 +49,11 @@ Read this skill before running commands in the terminal or scripting integration
          ```
     </workaround>
   </rule>
+
+  <rule id="powershell_npx_execution_policy" severity="MANDATORY">
+    <description>**PowerShell Execution Policy Blocking npx/npm Wrapper Scripts**</description>
+    <action>On Windows, calling `npx` or `npm` inside PowerShell may attempt to load `npx.ps1` or `npm.ps1`. If script execution is restricted on the system, this fails with a `SecurityError (UnauthorizedAccess / PSSecurityException)`.</action>
+    <workaround>Use `npx.cmd` or `npm.cmd` explicitly instead of `npx` or `npm` when running node tools from PowerShell to bypass the script execution policy restrictions.</workaround>
+  </rule>
 </terminal_rules>
+
