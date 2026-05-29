@@ -175,7 +175,7 @@ export async function fetchHistoryCalendar(token: string, season: number): Promi
   if (!token) throw new Error("API token is required");
   if (!season) throw new Error("Season parameter is required");
 
-  const response = await fetch(`${GPRO_API_BASE_URL}/HistoryCalendar?S=${season}&table=Calendar`, {
+  const response = await fetch(`${GPRO_API_BASE_URL}/History?table=Calendar&season=${season}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,

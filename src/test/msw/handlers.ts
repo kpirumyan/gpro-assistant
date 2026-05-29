@@ -61,11 +61,18 @@ export const handlers: HttpHandler[] = [
     return HttpResponse.json({ error: "Not Found" }, { status: 404 });
   }),
 
-  http.get("https://gpro.net/en/backend/api/v2/HistoryCalendar", ({ request }) => {
-    if (isAuthorized(request)) {
-      return HttpResponse.json(historyCalendarFixture, { status: 200 });
+  http.get("https://gpro.net/en/backend/api/v2/History", ({ request }) => {
+    const url = new URL(request.url);
+    const table = url.searchParams.get("table");
+    
+    if (table === "Calendar") {
+      if (isAuthorized(request)) {
+        return HttpResponse.json(historyCalendarFixture, { status: 200 });
+      }
+      return HttpResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    return HttpResponse.json({ error: "Unauthorized" }, { status: 401 });
+    
+    return HttpResponse.json({ error: "Not Found" }, { status: 404 });
   }),
 
   http.get("https://gpro.net/en/backend/api/v2/TrackProfile", ({ request }) => {
