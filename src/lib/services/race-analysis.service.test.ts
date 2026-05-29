@@ -167,7 +167,8 @@ describe('calculateFuelAnalytics', () => {
     const data = {
       startFuel: 100,
       finishFuel: 50,
-      laps: Array(10).fill({ boostLap: 0 }),
+      // laps[0] = pre-start, laps[1..10] = driven (10 real laps)
+      laps: Array(11).fill({ boostLap: 0 }),
       pits: []
     };
 
@@ -192,7 +193,7 @@ describe('calculateFuelAnalytics', () => {
     const data = {
       startFuel: 100,
       finishFuel: 10,
-      laps: Array(20).fill({ boostLap: 0 }).map((_, i) => ({ boostLap: i === 0 ? 1 : 0 })), // 1 fast lap at the start
+      laps: Array(21).fill({ boostLap: 0 }).map((_, i) => ({ boostLap: i === 1 ? 1 : 0 })), // boost at lap 1 → fast laps: 1, 2, 3
       pits: [
         {
           lap: 10,
@@ -219,7 +220,7 @@ describe('calculateFuelAnalytics', () => {
     expect(stint1?.avgFuelPerLapMin).toBeCloseTo(8.7);
     expect(stint1?.avgFuelPerLapMax).toBeCloseTo(9.0);
     expect(stint1?.lapsAnalyzed).toBe(10);
-    expect(stint1?.fastLapsCount).toBe(1);
+    expect(stint1?.fastLapsCount).toBe(3); // laps 1, 2, 3 are fast
 
     const stint2 = results.find(r => r.type === 'stint' && r.stintIndex === 2);
     expect(stint2?.avgFuelPerLapMin).toBeCloseTo(7.0);
@@ -239,7 +240,9 @@ describe('calculateFuelAnalytics', () => {
     const data = {
       startFuel: 100,
       finishFuel: 10,
-      laps: Array(15).fill({ boostLap: 0 }),
+      // laps[0] = pre-start, laps[1..15] = driven (15 real laps)
+      // pit after lap 5: stint 1 = 5 laps (ignored), stint 2 = 10 laps (included)
+      laps: Array(16).fill({ boostLap: 0 }),
       pits: [
         {
           lap: 5, // 5 laps is < 10
@@ -258,5 +261,73 @@ describe('calculateFuelAnalytics', () => {
     const stint2 = results.find(r => r.type === 'stint');
     expect(stint2?.stintIndex).toBe(2);
     expect(stint2?.lapsAnalyzed).toBe(10);
+  });
+
+  it('should expand a single boost marker into a 3-lap window', () => {
+    const data = {
+      startFuel: 100,
+      finishFuel: 10,
+      // laps[0] = pre-start, laps[1..20] = driven. boost on lap 5 → fast: 5, 6, 7
+      laps: Array(21).fill({ boostLap: 0 }).map((_, i) => ({ boostLap: i === 5 ? 1 : 0 })),
+      pits: []
+    };
+
+    const results = calculateFuelAnalytics(data);
+    const fullRace = results.find(r => r.type === 'full_race');
+    expect(fullRace?.fastLapsCount).toBe(3);
+
+    const stint = results.find(r => r.type === 'stint');
+    expect(stint?.fastLapsCount).toBe(3);
+  });
+
+  it('should deduplicate overlapping boost windows', () => {
+    const data = {
+      startFuel: 100,
+      finishFuel: 10,
+      // boost on laps 5 and 7 → windows {5,6,7} ∪ {7,8,9} = {5,6,7,8,9} → 5 fast laps
+      laps: Array(21).fill({ boostLap: 0 }).map((_, i) => ({
+        boostLap: i === 5 || i === 7 ? 1 : 0,
+      })),
+      pits: []
+    };
+
+    const results = calculateFuelAnalytics(data);
+    const fullRace = results.find(r => r.type === 'full_race');
+    expect(fullRace?.fastLapsCount).toBe(5);
+  });
+
+  it('should cap the boost window at the last driven lap', () => {
+    const data = {
+      startFuel: 100,
+      finishFuel: 10,
+      // 15-lap race: laps[0..15]. boost on lap 14 → would try {14,15,16}, but 16 > 15 → {14,15}
+      laps: Array(16).fill({ boostLap: 0 }).map((_, i) => ({ boostLap: i === 14 ? 1 : 0 })),
+      pits: []
+    };
+
+    const results = calculateFuelAnalytics(data);
+    const fullRace = results.find(r => r.type === 'full_race');
+    expect(fullRace?.fastLapsCount).toBe(2); // only laps 14 and 15
+  });
+
+  it('should correctly split boost window across stint boundary', () => {
+    const data = {
+      startFuel: 100,
+      finishFuel: 10,
+      // 20-lap race, pit after lap 10. boost on lap 9 → window {9,10,11}
+      // stint 1 (laps 1-10): fast laps = {9,10} → 2
+      // stint 2 (laps 11-20): fast laps = {11} → 1
+      laps: Array(21).fill({ boostLap: 0 }).map((_, i) => ({ boostLap: i === 9 ? 1 : 0 })),
+      pits: [{ lap: 10, fuelLeft: 50, refilledTo: 80 }]
+    };
+
+    const results = calculateFuelAnalytics(data);
+    const stint1 = results.find(r => r.type === 'stint' && r.stintIndex === 1);
+    const stint2 = results.find(r => r.type === 'stint' && r.stintIndex === 2);
+    const fullRace = results.find(r => r.type === 'full_race');
+
+    expect(stint1?.fastLapsCount).toBe(2);
+    expect(stint2?.fastLapsCount).toBe(1);
+    expect(fullRace?.fastLapsCount).toBe(3); // boostLapSet.size = 3
   });
 });

@@ -55,5 +55,10 @@ Read this skill before running commands in the terminal or scripting integration
     <action>On Windows, calling `npx` or `npm` inside PowerShell may attempt to load `npx.ps1` or `npm.ps1`. If script execution is restricted on the system, this fails with a `SecurityError (UnauthorizedAccess / PSSecurityException)`.</action>
     <workaround>Use `npx.cmd` or `npm.cmd` explicitly instead of `npx` or `npm` when running node tools from PowerShell to bypass the script execution policy restrictions.</workaround>
   </rule>
+  <rule id="powershell_and_operator" severity="MANDATORY">
+    <description>**Chaining Commands in PowerShell**</description>
+    <action>Using the `&&` operator to chain commands (e.g. `npm run test && npm run lint`) fails in older versions of Windows PowerShell with `The token '&&' is not a valid statement separator in this version.`</action>
+    <workaround>Use `cmd.exe /c "command1 && command2"` to rely on cmd.exe's parsing, or run the commands sequentially using PowerShell's `;` separator, or run them in separate sequential commands.</workaround>
+  </rule>
 </terminal_rules>
 

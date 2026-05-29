@@ -162,8 +162,24 @@ export function calculateFuelAnalytics(data: Partial<RaceAnalysisResponse>): Fue
   let fullRaceConsumedMin = 0;
   let fullRaceConsumedMax = 0;
   let fullRaceLapsAnalyzed = 0;
-  let fullRaceFastLaps = 0;
   let validStintsCount = 0;
+
+  // API always returns lap 0 at index 0, so total driven laps is laps.length - 1
+  const totalDrivenLaps = laps.length - 1;
+
+  // Build the complete set of fast lap indices for the whole race.
+  // Each boostLap marker in the API expands to a 3-lap window (N, N+1, N+2).
+  // Math.min caps the window so it never exceeds the last driven lap.
+  // Overlapping windows are deduplicated automatically by the Set.
+  const boostLapSet = new Set<number>();
+  for (let i = 1; i <= totalDrivenLaps; i++) {
+    const lapBoost = laps[i]?.boostLap;
+    if (lapBoost && lapBoost > 0) {
+      for (let j = i; j <= Math.min(i + 2, totalDrivenLaps); j++) {
+        boostLapSet.add(j);
+      }
+    }
+  }
 
   let currentStintStartLap = 1;
   const PIT_STOP_FUEL_ERROR = 3; // The error margin "X% ... X+3%" interpreted as an absolute +3 value for safety.
@@ -175,7 +191,7 @@ export function calculateFuelAnalytics(data: Partial<RaceAnalysisResponse>): Fue
     const startFuel = i === 0 ? data.startFuel : pits[i - 1].refilledTo;
     
     // Determine end lap for this stint
-    const currentStintEndLap = isLastStint ? laps.length : (pits[i].lap || laps.length);
+    const currentStintEndLap = isLastStint ? totalDrivenLaps : (pits[i].lap || totalDrivenLaps);
     
     if (startFuel === undefined) {
        currentStintStartLap = currentStintEndLap + 1;
@@ -198,19 +214,16 @@ export function calculateFuelAnalytics(data: Partial<RaceAnalysisResponse>): Fue
     const consumedMin = startFuel - maxFinishFuel;
     const consumedMax = startFuel - minFinishFuel;
 
-    // Count laps and fast laps for this stint
+    // Count laps for this stint
     let lapsInStint = 0;
-    let fastLapsInStint = 0;
-    
     for (let lapNum = currentStintStartLap; lapNum <= currentStintEndLap; lapNum++) {
-      const lapData = laps[lapNum - 1];
-      if (lapData) {
-        lapsInStint++;
-        if (lapData.boostLap && lapData.boostLap > 0) {
-          fastLapsInStint++;
-        }
-      }
+      if (laps[lapNum]) lapsInStint++;
     }
+
+    // Count fast laps by intersecting the pre-built boostLapSet with this stint's range
+    const fastLapsInStint = [...boostLapSet]
+      .filter(l => l >= currentStintStartLap && l <= currentStintEndLap)
+      .length;
 
     // We only analyze long stints (>= 10 laps)
     if (lapsInStint >= 10) {
@@ -226,20 +239,21 @@ export function calculateFuelAnalytics(data: Partial<RaceAnalysisResponse>): Fue
       fullRaceConsumedMin += consumedMin;
       fullRaceConsumedMax += consumedMax;
       fullRaceLapsAnalyzed += lapsInStint;
-      fullRaceFastLaps += fastLapsInStint;
       validStintsCount++;
     }
 
     currentStintStartLap = currentStintEndLap + 1;
   }
 
-  // Aggregate full race stats from valid stints
+  // Aggregate full race stats from valid stints.
+  // fullRaceFastLaps = boostLapSet.size because the Set holds every fast lap index
+  // across the whole race exactly once (overlaps already deduplicated).
   if (validStintsCount > 0) {
     results.push({
       type: 'full_race',
       stintIndex: null,
       lapsAnalyzed: fullRaceLapsAnalyzed,
-      fastLapsCount: fullRaceFastLaps,
+      fastLapsCount: boostLapSet.size,
       avgFuelPerLapMin: fullRaceConsumedMin / fullRaceLapsAnalyzed,
       avgFuelPerLapMax: fullRaceConsumedMax / fullRaceLapsAnalyzed
     });

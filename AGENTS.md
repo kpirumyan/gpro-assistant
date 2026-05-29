@@ -42,8 +42,11 @@ Single-user Next.js app for personal use. Fetches game data from the GPRO API, v
   <phase name="Review" requires_approval="false">
     <action>Run the code review checklist (see `.agents/skills/code-review-checklist.md`). Fix any issues found.</action>
   </phase>
+  <phase name="Terminal Audit" requires_approval="false">
+    <action>MANDATORY CLOSING PHASE: Before your final commit, you MUST review all terminal command logs from the current session. If you encountered any errors or had to use any workarounds, you MUST document them in `.agents/skills/terminal-rules.md` (or the relevant rules file). This ensures your fixes to the rules are included in the commit.</action>
+  </phase>
   <phase name="Commit" requires_approval="false">
-    <action>Conventional Commits format. One commit = one logical change. Feature + its tests = one commit.</action>
+    <action>Conventional Commits format. One commit = one logical change. Feature + its tests = one commit. Ensure all changes (including updated agent rules) are included.</action>
   </phase>
   <critical_rule>Do NOT automatically decide to skip the Plan/Setup phases and commit right away unless the user explicitly provides the `/quick-fix` command.</critical_rule>
 </agent_workflow>
@@ -62,7 +65,7 @@ Single-user Next.js app for personal use. Fetches game data from the GPRO API, v
     <description>Simple question/answer mode. The agent acts as an advisor, answers questions, and asks clarifying questions if needed. The agent MUST NOT write code, run modifying commands, or create commits in this mode.</description>
   </mode>
   <mode command="/quick-fix">
-    <description>Quick bugfix mode. The agent skips the Plan and Post-Approval Setup phases, jumps straight to fixing the issue, tests it, and commits it. Use this only when explicitly requested for trivial tasks.</description>
+    <description>Quick bugfix mode. The agent skips the Plan and Post-Approval Setup phases, jumps straight to fixing the issue, tests it, performs the Terminal Audit, and commits it. Use this only when explicitly requested for trivial tasks.</description>
   </mode>
   <rule id="user_questions">Whenever asking the user a question that requires a "Yes" or "No" answer (or similar clear choices), you MUST use the `ask_question` tool to provide clickable buttons for the user to select their response.</rule>
 </interaction_modes>
