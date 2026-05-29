@@ -29,10 +29,10 @@ gpro-assistant/
 │   └── skills/                 # Skill files loaded by agent on demand
 │       ├── testing-rules.md
 │       ├── api-integration-rules.md
-│       ├── nextjs-rules.md
 │       ├── code-review-checklist.md
 │       ├── ui-styling-rules.md
-│       └── db-conventions.md
+│       ├── db-conventions.md
+│       └── rag-for-react-next-docs.md
 ├── drizzle/                    # Generated DB migration files (future)
 ├── scripts/                    # Utility scripts (e.g., RAG integration)
 │   └── ask-react-rag.ts

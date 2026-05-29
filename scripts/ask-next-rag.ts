@@ -16,7 +16,7 @@ interface RagResponse {
   threadSlug?: string;
 }
 
-const SESSION_FILE = path.resolve(process.cwd(), '.agents/rag-sessions/react.json');
+const SESSION_FILE = path.resolve(process.cwd(), '.agents/rag-sessions/next.json');
 
 function exitWithJson(data: RagResponse) {
   console.log(JSON.stringify(data, null, 2));
@@ -34,12 +34,12 @@ async function main() {
 
   const apiKey = process.env.ANYTHINGLLM_API_KEY;
   const baseUrl = process.env.ANYTHINGLLM_BASE_URL;
-  const slug = process.env.ANYTHINGLLM_REACT_WORKSPACE_SLUG;
+  const slug = process.env.ANYTHINGLLM_NEXT_WORKSPACE_SLUG;
 
   if (!apiKey || !baseUrl || !slug) {
     return exitWithJson({
       status: 'error',
-      errorDetails: 'Missing environment variables: ANYTHINGLLM_API_KEY, ANYTHINGLLM_BASE_URL, ANYTHINGLLM_REACT_WORKSPACE_SLUG'
+      errorDetails: 'Missing environment variables: ANYTHINGLLM_API_KEY, ANYTHINGLLM_BASE_URL, ANYTHINGLLM_NEXT_WORKSPACE_SLUG'
     });
   }
 

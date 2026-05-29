@@ -2,7 +2,7 @@
 
 # This is NOT the Next.js you know
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Use the RAG librarian (`npm run ask-next-rag`) to fetch modern documentation. Heed deprecation notices.
 
 <!-- END:nextjs-agent-rules -->
 
@@ -132,8 +132,7 @@ These are absolute links to all context files available to you. Use them to open
 | Architecture | [ARCHITECTURE.md](./.agents/ARCHITECTURE.md) | Project structure, data flow, architecture decisions |
 | Testing | [testing-rules.md](./.agents/skills/testing-rules.md) | Writing or reviewing tests |
 | API Integration | [api-integration-rules.md](./.agents/skills/api-integration-rules.md) | Working with GPRO API |
-| Next.js Patterns | [nextjs-rules.md](./.agents/skills/nextjs-rules.md) | Creating routes, components, data fetching |
 | Code Review | [code-review-checklist.md](./.agents/skills/code-review-checklist.md) | Before every commit |
 | UI Patterns | [ui-styling-rules.md](./.agents/skills/ui-styling-rules.md) | Building or modifying UI |
 | Database | [db-conventions.md](./.agents/skills/db-conventions.md) | Schema changes, queries, migrations |
-| RAG Usage | [use-rag.md](./.agents/skills/use-rag.md) | Strict rules for using the AnythingLLM RAG CLI |
+| RAG Usage | [rag-for-react-next-docs.md](./.agents/skills/rag-for-react-next-docs.md) | Strict rules for using the AnythingLLM RAG CLI |

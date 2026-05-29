@@ -1,4 +1,4 @@
-# Mandatory Usage of RAG (React/Next.js)
+# Mandatory Usage of RAG (React & Next.js)
 
 **Why this skill is needed:**
 My (Antigravity) internal knowledge base may rely on older versions of React and Next.js. Due to "deceptive self-confidence", I might generate outdated code. To prevent this, I MUST use the up-to-date documentation from RAG.
@@ -8,7 +8,10 @@ My (Antigravity) internal knowledge base may rely on older versions of React and
 </mindset>
 
 ## RAG Commands
-Currently available RAG for React:
+
+Currently available RAGs:
+
+### React Docs
 ```bash
 # IMPORTANT: On Windows Git Bash, you MUST use `--` before arguments with spaces 
 # so that npm doesn't strip quotes, OR use npx tsx directly!
@@ -16,11 +19,17 @@ npm run ask-react-rag -- --new "Your query to the documentation"
 # OR
 npx tsx scripts/ask-react-rag.ts --new "Your query to the documentation"
 ```
-*(Other RAGs may be added in the future, e.g., for Next.js)*
+
+### Next.js Docs
+```bash
+npm run ask-next-rag -- --new "Your query to the Next.js App Router documentation"
+# OR
+npx tsx scripts/ask-next-rag.ts --new "Your query to the Next.js App Router documentation"
+```
 
 <rag_rules>
   <rule id="new_feature" severity="MANDATORY">
-    **Developing a New Feature:** I **ALWAYS** and **MANDATORILY** query the RAG (for React, Next.js, etc., depending on the task) before starting the architecture or writing code. No assumptions allowed — I must verify patterns with the current documentation.
+    **Developing a New Feature:** I **ALWAYS** and **MANDATORILY** query the RAG (for React or Next.js depending on the task) before starting the architecture or writing code. No assumptions allowed — I must verify patterns with the current documentation.
   </rule>
   <rule id="quick_fixes">
     **Quick Fixes:** Using RAG remains **at my discretion** (if I am absolutely sure the fix is trivial, e.g., fixing a typo, basic styling, or simple logic).
