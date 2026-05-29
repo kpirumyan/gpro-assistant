@@ -55,5 +55,11 @@ Read this skill before running commands in the terminal or scripting integration
     <action>On Windows, calling `npx` or `npm` inside PowerShell may attempt to load `npx.ps1` or `npm.ps1`. If script execution is restricted on the system, this fails with a `SecurityError (UnauthorizedAccess / PSSecurityException)`.</action>
     <workaround>Use `npx.cmd` or `npm.cmd` explicitly instead of `npx` or `npm` when running node tools from PowerShell to bypass the script execution policy restrictions.</workaround>
   </rule>
+
+  <rule id="terminal_error_check" severity="MANDATORY">
+    <description>**Post-Execution Terminal Error Check**</description>
+    <action>Whenever you run any commands in the terminal during a turn, you MUST review the complete output of ALL executed commands before formulating your final response to the user. Look for any warnings, non-zero exit codes, permission denials, execution policy blocks, or failed checks.</action>
+    <requirement>If any command fails, prints an error, or requires a workaround, you MUST immediately document the error and the required workaround in the appropriate `.agents/` rules file (like `terminal-rules.md`) and state this in your response to the user. Do not wait for the user to point out the error.</requirement>
+  </rule>
 </terminal_rules>
 
