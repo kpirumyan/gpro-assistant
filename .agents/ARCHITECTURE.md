@@ -67,6 +67,7 @@ gpro-assistant/
 │   ├── lib/                    # Domain logic (keep pages thin)
 │   │   ├── gpro/               # GPRO API client, types, fixtures
 │   │   ├── db/                 # Database client + schema
+│   │   ├── constants.ts        # Shared application-level constants
 │   │   └── calculators/        # Fuel, tire, setup calculations (future)
 │   └── test/                   # Test utilities
 │       ├── factories.ts        # Database Test Data Builders

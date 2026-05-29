@@ -1,5 +1,6 @@
 import { useState, useRef, useTransition } from "react";
 import { prepareSyncAction, syncRaceBatchAction } from "@/app/fuel/actions";
+import { SYNC_CHUNK_SIZE } from "@/lib/constants";
 
 export function useRaceSync(latestSyncedRace: { season: number; race: number } | null) {
   const [syncMode, setSyncMode] = useState<"single" | "range">("single");
@@ -59,7 +60,7 @@ export function useRaceSync(latestSyncedRace: { season: number; race: number } |
     cancelRef.current = false;
 
     startTransition(async () => {
-      const CHUNK_SIZE = 5;
+      const CHUNK_SIZE = SYNC_CHUNK_SIZE;
       let syncedCount = 0;
 
       for (let i = 0; i < missingRaces.length; i += CHUNK_SIZE) {
@@ -91,20 +92,26 @@ export function useRaceSync(latestSyncedRace: { season: number; race: number } |
     cancelRef.current = true;
   };
 
+  const handleCancelConfirm = () => {
+    setStep("idle");
+    setMissingRaces([]);
+  };
+
   return {
     syncMode, setSyncMode,
     fromSeason, setFromSeason,
     fromRace, setFromRace,
     toSeason, setToSeason,
     toRace, setToRace,
-    step, setStep,
-    error, setError,
-    message, setMessage,
-    missingRaces, setMissingRaces,
+    step,
+    error,
+    message,
+    missingRaces,
     progress,
     isBackward,
     handlePrepare,
     handleStartSync,
-    handleCancel
+    handleCancel,
+    handleCancelConfirm,
   };
 }

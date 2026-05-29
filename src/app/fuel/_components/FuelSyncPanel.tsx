@@ -3,6 +3,127 @@
 import Link from "next/link";
 import { useRaceSync } from "./useRaceSync";
 
+// ---------------------------------------------------------------------------
+// Local sub-components (private to this file)
+// ---------------------------------------------------------------------------
+
+type SyncConfirmPromptProps = {
+  raceCount: number;
+  onConfirm: () => void;
+  onCancel: () => void;
+};
+
+function SyncConfirmPrompt({ raceCount, onConfirm, onCancel }: SyncConfirmPromptProps) {
+  return (
+    <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-900/50 dark:bg-blue-900/20">
+      <p className="text-sm text-blue-800 dark:text-blue-300">
+        You are about to sync <strong>{raceCount}</strong> missing races. This will consume {raceCount} API credits.
+      </p>
+      <div className="mt-3 flex items-center gap-3">
+        <button
+          onClick={onConfirm}
+          className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+        >
+          Confirm Sync
+        </button>
+        <button
+          onClick={onCancel}
+          className="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-900/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+type SyncProgressBarProps = {
+  progress: number;
+  total: number;
+  onCancel: () => void;
+};
+
+function SyncProgressBar({ progress, total, onCancel }: SyncProgressBarProps) {
+  const percent = Math.round((progress / total) * 100);
+  return (
+    <div className="mt-4 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          Syncing {progress} / {total} races...
+        </span>
+        <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          {percent}%
+        </span>
+      </div>
+      <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+        <div
+          className="h-full bg-zinc-900 transition-all duration-300 dark:bg-zinc-50"
+          style={{ width: `${percent}%` }}
+        />
+      </div>
+      <div className="mt-4 flex justify-end">
+        <button
+          onClick={onCancel}
+          className="inline-flex items-center justify-center rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-600/20 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40"
+        >
+          Cancel Sync
+        </button>
+      </div>
+    </div>
+  );
+}
+
+type SyncStatusAlertProps = {
+  error: string | null;
+  message: string | null;
+  isIdle: boolean;
+};
+
+function SyncStatusAlert({ error, message, isIdle }: SyncStatusAlertProps) {
+  if (error === "AUTH_ERROR") {
+    return (
+      <div
+        role="alert"
+        className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400"
+      >
+        Invalid or expired API token. Please update your API key in{" "}
+        <Link href="/settings" className="font-semibold underline hover:text-red-800 dark:hover:text-red-300">
+          Settings
+        </Link>
+        .
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div
+        role="alert"
+        className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400"
+      >
+        {error}
+      </div>
+    );
+  }
+
+  if (message && isIdle) {
+    return (
+      <div
+        role="status"
+        className="mt-4 rounded-xl border border-green-200 bg-green-50 p-3 text-sm font-medium text-green-700 dark:border-green-900/50 dark:bg-green-900/20 dark:text-green-400"
+      >
+        {message}
+      </div>
+    );
+  }
+
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// Public component
+// ---------------------------------------------------------------------------
+
 type FuelSyncPanelProps = {
   latestSyncedRace: { season: number; race: number } | null;
 };
@@ -14,15 +135,16 @@ export function FuelSyncPanel({ latestSyncedRace }: FuelSyncPanelProps) {
     fromRace, setFromRace,
     toSeason, setToSeason,
     toRace, setToRace,
-    step, setStep,
+    step,
     error,
     message,
-    missingRaces, setMissingRaces,
+    missingRaces,
     progress,
     isBackward,
     handlePrepare,
     handleStartSync,
-    handleCancel
+    handleCancel,
+    handleCancelConfirm,
   } = useRaceSync(latestSyncedRace);
 
   return (
@@ -131,7 +253,7 @@ export function FuelSyncPanel({ latestSyncedRace }: FuelSyncPanelProps) {
               </div>
             )}
 
-            {step === "idle" || step === "preparing" || step === "confirm" ? (
+            {(step === "idle" || step === "preparing" || step === "confirm") && (
               <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center mt-2">
                 <button
                   type="submit"
@@ -156,82 +278,26 @@ export function FuelSyncPanel({ latestSyncedRace }: FuelSyncPanelProps) {
                   )}
                 </button>
               </div>
-            ) : null}
+            )}
           </form>
 
           {step === "confirm" && (
-            <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-900/50 dark:bg-blue-900/20">
-              <p className="text-sm text-blue-800 dark:text-blue-300">
-                You are about to sync <strong>{missingRaces.length}</strong> missing races. This will consume {missingRaces.length} API credits.
-              </p>
-              <div className="mt-3 flex items-center gap-3">
-                <button
-                  onClick={handleStartSync}
-                  className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
-                >
-                  Confirm Sync
-                </button>
-                <button
-                  onClick={() => { setStep("idle"); setMissingRaces([]); }}
-                  className="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-900/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
+            <SyncConfirmPrompt
+              raceCount={missingRaces.length}
+              onConfirm={handleStartSync}
+              onCancel={handleCancelConfirm}
+            />
           )}
 
           {step === "syncing" && (
-            <div className="mt-4 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                  Syncing {progress} / {missingRaces.length} races...
-                </span>
-                <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                  {Math.round((progress / missingRaces.length) * 100)}%
-                </span>
-              </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
-                <div
-                  className="h-full bg-zinc-900 transition-all duration-300 dark:bg-zinc-50"
-                  style={{ width: `${(progress / missingRaces.length) * 100}%` }}
-                />
-              </div>
-              <div className="mt-4 flex justify-end">
-                <button
-                  onClick={handleCancel}
-                  className="inline-flex items-center justify-center rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-600/20 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40"
-                >
-                  Cancel Sync
-                </button>
-              </div>
-            </div>
+            <SyncProgressBar
+              progress={progress}
+              total={missingRaces.length}
+              onCancel={handleCancel}
+            />
           )}
 
-          {error === "AUTH_ERROR" ? (
-            <div
-              role="alert"
-              className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400"
-            >
-              Invalid or expired API token. Please update your API key in <Link href="/settings" className="font-semibold underline hover:text-red-800 dark:hover:text-red-300">Settings</Link>.
-            </div>
-          ) : error && (
-            <div
-              role="alert"
-              className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400"
-            >
-              {error}
-            </div>
-          )}
-
-          {message && step === "idle" && (
-            <div
-              role="status"
-              className="mt-4 rounded-xl border border-green-200 bg-green-50 p-3 text-sm font-medium text-green-700 dark:border-green-900/50 dark:bg-green-900/20 dark:text-green-400"
-            >
-              {message}
-            </div>
-          )}
+          <SyncStatusAlert error={error} message={message} isIdle={step === "idle"} />
         </div>
       </section>
     </div>

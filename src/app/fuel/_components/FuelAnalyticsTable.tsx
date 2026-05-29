@@ -1,4 +1,10 @@
-export function FuelAnalyticsTable({ data }: { data: import("@/lib/db/queries").FuelAnalyticsListEntry[] }) {
+import type { FuelAnalyticsListEntry } from "@/lib/db/queries";
+
+type Props = {
+  data: FuelAnalyticsListEntry[];
+};
+
+export function FuelAnalyticsTable({ data }: Props) {
   return (
     <section className="rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900/60 overflow-hidden">
       <div className="p-6 border-b border-zinc-200 dark:border-zinc-800">

@@ -154,6 +154,19 @@ export async function upsertCarParts(parts: CarPartResponse[]): Promise<void> {
   }
 }
 
+// --- Fuel / Race Sync ---
+
+/**
+ * Returns the most recently synced race (season + race number), or null if
+ * no race data has been synced yet.
+ */
+export async function getLatestSyncedRace(): Promise<{ season: number; race: number } | null> {
+  const latestDbEntry = await db.query.rawRaceData.findFirst({
+    orderBy: [desc(rawRaceData.season), desc(rawRaceData.race)],
+  });
+  return latestDbEntry ? { season: latestDbEntry.season, race: latestDbEntry.race } : null;
+}
+
 export type FuelAnalyticsListEntry = {
   id: number;
   season: number;

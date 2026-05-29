@@ -3,27 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { getGproCredentials } from "@/lib/db/queries";
 import { prepareSync, syncRacesBatch } from "@/lib/services/race-analysis.service";
-import { db } from "@/lib/db";
-import { rawRaceData } from "@/lib/db/schema";
-import { desc } from "drizzle-orm";
 
 export type SyncRacesState = {
   message?: string;
   error?: string;
   syncedCount?: number;
 };
-
-export async function getLatestSyncedRaceAction(): Promise<{ season: number; race: number } | null> {
-  const latestDbEntry = await db.query.rawRaceData.findFirst({
-    orderBy: [desc(rawRaceData.season), desc(rawRaceData.race)],
-  });
-
-  if (latestDbEntry) {
-    return { season: latestDbEntry.season, race: latestDbEntry.race };
-  }
-
-  return null;
-}
 
 export async function prepareSyncAction(
   fromSeason: number,

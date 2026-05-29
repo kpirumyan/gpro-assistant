@@ -2,8 +2,7 @@ import { Metadata } from "next";
 import { PageShell } from "@/components/PageShell";
 import { FuelSyncPanel } from "./_components/FuelSyncPanel";
 import { FuelAnalyticsTable } from "./_components/FuelAnalyticsTable";
-import { getFuelAnalyticsList } from "@/lib/db/queries";
-import { getLatestSyncedRaceAction } from "./actions";
+import { getFuelAnalyticsList, getLatestSyncedRace } from "@/lib/db/queries";
 
 export const metadata: Metadata = {
   title: "Fuel consumption — GPRO Assistant",
@@ -11,7 +10,7 @@ export const metadata: Metadata = {
 
 export default async function FuelPage() {
   const data = await getFuelAnalyticsList();
-  const latestSyncedRace = await getLatestSyncedRaceAction();
+  const latestSyncedRace = await getLatestSyncedRace();
 
   return (
     <PageShell
