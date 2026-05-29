@@ -247,7 +247,7 @@ export function calculateFuelAnalytics(data: Partial<RaceAnalysisResponse>): Fue
   // Aggregate full race stats only from valid stints (>= 10 laps).
   // fastLapsCount is accumulated per-stint to stay consistent with lapsAnalyzed:
   // if a short stint is excluded, its boost laps are excluded too.
-  if (validStintsCount > 0) {
+  if (validStintsCount > 0 && fullRaceLapsAnalyzed === totalDrivenLaps) {
     results.push({
       type: 'full_race',
       stintIndex: null,

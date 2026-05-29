@@ -256,7 +256,7 @@ describe('calculateFuelAnalytics', () => {
     
     // Stint 1: 5 laps (ignored)
     // Stint 2: 10 laps (included)
-    expect(results).toHaveLength(2); // 1 stint + 1 full race
+    expect(results).toHaveLength(1); // 1 stint, no full race since a stint was dropped
 
     const stint2 = results.find(r => r.type === 'stint');
     expect(stint2?.stintIndex).toBe(2);
