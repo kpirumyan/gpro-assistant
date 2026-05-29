@@ -8,8 +8,9 @@ Read this skill before running commands in the terminal or scripting integration
 
 ## Stack & Shells
 - **Primary Shell**: Windows PowerShell (within the agent runtime).
-- **Bash Wrapper**: Git Bash on Windows (via `& "C:\Program Files\Git\bin\bash.exe" -c "..."`).
-  * Used for Node.js/npm-related tasks (like `npm run dev` or tests) to ensure environment variables are correctly resolved from the host.
+  * PowerShell is the primary and preferred shell for all commands (Git, npm, Node.js, etc.) because they are natively available in the Windows PATH, execute faster, and avoid complex nested escaping.
+- **Git Bash on Windows** (via `& "C:\Program Files\Git\bin\bash.exe" -c "..."`):
+  * Use **only** when specifically running a `.sh` shell script or unix-only command utilities. Do not use for standard `npm`, `git`, or `node` commands to prevent unnecessary nesting and quoting issues.
 
 ---
 

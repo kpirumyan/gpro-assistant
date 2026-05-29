@@ -100,7 +100,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 ## Terminal rules
 
 <terminal_rules>
-  <rule id="git_bash_on_windows">Always use Git Bash terminal on Windows (via `&amp; "C:\Program Files\Git\bin\bash.exe" -c "..."`) for running commands instead of Windows PowerShell or default `bash` (which resolves to WSL bash where Windows Node.js/npm is missing).</rule>
+  <rule id="powershell_primary_on_windows">Always use Windows PowerShell as the primary shell. All system tools (git, npm, Node.js) are natively available in the PATH. Avoid using standard `bash` command as it may resolve to WSL bash where Windows Node.js is missing. If Git Bash is specifically needed for a bash script, invoke it via `& "C:\Program Files\Git\bin\bash.exe" -c "..."`, but otherwise prefer standard PowerShell.</rule>
 </terminal_rules>
 
 ## Environment rules
