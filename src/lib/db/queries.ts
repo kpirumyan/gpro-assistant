@@ -1,6 +1,6 @@
 import { eq, desc } from "drizzle-orm";
 import { db } from "./index";
-import { gproCredentials, driverProfiles, carParts, rawRaceData, raceFuelAnalytics } from "./schema";
+import { gproCredentials, driverProfiles, carParts, rawRaceData, raceFuelAnalytics, tracks } from "./schema";
 import type { DriverProfileResponse, CarPartResponse } from "@/lib/gpro/types";
 
 // --- GPRO Credentials ---
@@ -178,6 +178,7 @@ export type FuelAnalyticsListEntry = {
   fastLapsCount: number;
   avgFuelPerLapMin: string;
   avgFuelPerLapMax: string;
+  trackFuelConsumption: string | null;
   createdAt: Date;
 };
 
@@ -195,10 +196,12 @@ export async function getFuelAnalyticsList(): Promise<FuelAnalyticsListEntry[]> 
         fastLapsCount: raceFuelAnalytics.fastLapsCount,
         avgFuelPerLapMin: raceFuelAnalytics.avgFuelPerLapMin,
         avgFuelPerLapMax: raceFuelAnalytics.avgFuelPerLapMax,
+        trackFuelConsumption: tracks.fuelConsumption,
         createdAt: raceFuelAnalytics.createdAt,
       })
       .from(raceFuelAnalytics)
       .innerJoin(rawRaceData, eq(raceFuelAnalytics.rawRaceDataId, rawRaceData.id))
+      .leftJoin(tracks, eq(rawRaceData.trackId, tracks.id))
       .orderBy(
         desc(rawRaceData.season),
         desc(rawRaceData.race),

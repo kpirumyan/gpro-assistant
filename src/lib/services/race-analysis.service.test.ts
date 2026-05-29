@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { calculateFuelAnalytics, generateRaceRange, getExistingRacesInRange, prepareSync, syncRacesBatch } from './race-analysis.service';
 import { buildRawRaceData } from '../../test/factories';
-import { fetchRaceAnalysis } from '../gpro/client';
+import { fetchRaceAnalysis, fetchHistoryCalendar, fetchTrackProfile } from '../gpro/client';
 import { db } from '../db';
 
 vi.mock('../db', () => ({
@@ -10,14 +10,27 @@ vi.mock('../db', () => ({
       rawRaceData: {
         findMany: vi.fn(),
         findFirst: vi.fn()
+      },
+      seasonCalendars: {
+        findFirst: vi.fn()
+      },
+      tracks: {
+        findFirst: vi.fn()
       }
     },
-    transaction: vi.fn()
+    transaction: vi.fn(),
+    insert: vi.fn(() => ({
+      values: vi.fn(() => ({
+        onConflictDoNothing: vi.fn()
+      }))
+    }))
   }
 }));
 
 vi.mock('../gpro/client', () => ({
-  fetchRaceAnalysis: vi.fn()
+  fetchRaceAnalysis: vi.fn(),
+  fetchHistoryCalendar: vi.fn(),
+  fetchTrackProfile: vi.fn()
 }));
 
 describe('getExistingRacesInRange', () => {
@@ -89,6 +102,14 @@ describe('syncRacesBatch', () => {
       startFuel: 100,
       finishFuel: 10
     } as unknown as Awaited<ReturnType<typeof fetchRaceAnalysis>>);
+
+    vi.mocked(fetchHistoryCalendar).mockResolvedValue({
+      managers: [{ pos: 15, trackId: 1 }, { pos: 16, trackId: 2 }]
+    } as unknown as Awaited<ReturnType<typeof fetchHistoryCalendar>>);
+
+    vi.mocked(fetchTrackProfile).mockResolvedValue({
+      trackName: "Test Track"
+    } as unknown as Awaited<ReturnType<typeof fetchTrackProfile>>);
 
     vi.mocked(db.transaction).mockImplementation(async () => {});
 

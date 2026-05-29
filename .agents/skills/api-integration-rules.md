@@ -60,5 +60,6 @@ TypeScript interfaces/types that match the GPRO API response shapes. Keep in syn
 
 ## Reference
 
+- OpenAPI Spec: `src/lib/gpro/gpro-public-api.yml`
 - API documentation: [https://api.gpro.net](https://api.gpro.net)
 - Token management: [https://app.gpro.net/apiaccess](https://app.gpro.net/apiaccess)

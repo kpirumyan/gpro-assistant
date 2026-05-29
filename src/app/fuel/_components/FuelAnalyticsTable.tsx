@@ -22,6 +22,7 @@ export function FuelAnalyticsTable({ data }: Props) {
                 <th className="px-6 py-4">Type</th>
                 <th className="px-6 py-4">Laps</th>
                 <th className="px-6 py-4">Fast Laps</th>
+                <th className="px-6 py-4">Track Cons.</th>
                 <th className="px-6 py-4">Est. Consumption (L/lap)</th>
               </tr>
             </thead>
@@ -52,6 +53,21 @@ export function FuelAnalyticsTable({ data }: Props) {
                     </td>
                     <td className="px-6 py-4 text-zinc-600 dark:text-zinc-300">{entry.lapsAnalyzed}</td>
                     <td className="px-6 py-4 text-zinc-600 dark:text-zinc-300">{entry.fastLapsCount}</td>
+                    <td className="px-6 py-4">
+                      {entry.trackFuelConsumption ? (
+                        <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${
+                          entry.trackFuelConsumption.toLowerCase() === "very high" ? "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/10 dark:bg-red-400/10 dark:text-red-400" :
+                          entry.trackFuelConsumption.toLowerCase() === "high" ? "bg-orange-50 text-orange-700 ring-1 ring-inset ring-orange-600/10 dark:bg-orange-400/10 dark:text-orange-400" :
+                          entry.trackFuelConsumption.toLowerCase() === "medium" ? "bg-yellow-50 text-yellow-800 ring-1 ring-inset ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-500" :
+                          entry.trackFuelConsumption.toLowerCase() === "low" ? "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-400/10 dark:text-green-400" :
+                          "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/10 dark:bg-emerald-400/10 dark:text-emerald-400"
+                        }`}>
+                          {entry.trackFuelConsumption}
+                        </span>
+                      ) : (
+                        <span className="text-zinc-400 dark:text-zinc-600">-</span>
+                      )}
+                    </td>
                     <td className="px-6 py-4">
                       <span className="font-mono text-zinc-900 dark:text-zinc-100">
                         {minStr === maxStr ? `${minStr}` : `${minStr} - ${maxStr}`}

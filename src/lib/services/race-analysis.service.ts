@@ -1,7 +1,8 @@
 import { db } from "../db";
-import { rawRaceData, raceCarSnapshots, raceDriverSnapshots, raceFuelAnalytics } from "../db/schema";
-import { fetchRaceAnalysis } from "../gpro/client";
+import { rawRaceData, raceCarSnapshots, raceDriverSnapshots, raceFuelAnalytics, seasonCalendars, tracks } from "../db/schema";
+import { fetchRaceAnalysis, fetchHistoryCalendar, fetchTrackProfile } from "../gpro/client";
 import type { RaceAnalysisResponse } from "../gpro/types";
+import { eq, and } from "drizzle-orm";
 
 export interface SyncResult {
   syncedCount: number;
@@ -26,8 +27,68 @@ export async function syncRacesBatch(
       console.log(`Fetching race analysis for S${raceInfo.season} R${raceInfo.race}...`);
       const data = await fetchRaceAnalysis(token, raceInfo.season, raceInfo.race);
       
+      // Resolve trackId
+      let trackId: number | undefined = undefined;
+
+      const calendarEntry = await db.query.seasonCalendars.findFirst({
+        where: and(eq(seasonCalendars.season, raceInfo.season), eq(seasonCalendars.race, raceInfo.race))
+      });
+
+      if (!calendarEntry) {
+         console.log(`Fetching calendar for S${raceInfo.season}...`);
+         const calData = await fetchHistoryCalendar(token, raceInfo.season);
+         if (calData.managers && calData.managers.length > 0) {
+            for (const ev of calData.managers) {
+               if (ev.pos && ev.trackId) {
+                  const raceNum = Number(ev.pos);
+                  const tId = Number(ev.trackId);
+                  
+                  await db.insert(seasonCalendars).values({
+                     season: raceInfo.season,
+                     race: raceNum,
+                     trackId: tId
+                  }).onConflictDoNothing();
+
+                  if (raceNum === raceInfo.race) {
+                     trackId = tId;
+                  }
+               }
+            }
+         }
+      } else {
+         trackId = calendarEntry.trackId;
+      }
+
+      if (trackId) {
+         const trackEntry = await db.query.tracks.findFirst({ where: eq(tracks.id, trackId) });
+         if (!trackEntry) {
+            console.log(`Fetching track profile for Track ${trackId}...`);
+            const trackData = await fetchTrackProfile(token, trackId);
+            await db.insert(tracks).values({
+              id: trackId,
+              name: trackData.trackName || "Unknown",
+              power: trackData.power || 0,
+              acceleration: trackData.accel || 0,
+              handling: trackData.handl || 0,
+              downforce: trackData.downforce || "Unknown",
+              overtaking: trackData.overtaking || "Unknown",
+              suspRigidity: trackData.suspRigidity || "Unknown",
+              fuelConsumption: trackData.fuelConsumption || "Unknown",
+              tyreWear: trackData.tyreWear || "Unknown",
+              gripLevel: trackData.gripLevel || "Unknown",
+              laps: trackData.laps || 0,
+              raceDistance: trackData.raceDistance || "0",
+              lapDistance: trackData.lapDistance || "0",
+              avgSpeed: trackData.avgSpeed || "0",
+              timeInOutPits: trackData.timeInOutPits || "0",
+              nbTurns: trackData.nbTurns || 0,
+              category: trackData.category || "Unknown",
+            }).onConflictDoNothing();
+         }
+      }
+
       // Save data
-      await saveRaceAnalysisData(raceInfo.season, raceInfo.race, data);
+      await saveRaceAnalysisData(raceInfo.season, raceInfo.race, data, trackId);
       syncedCount++;
 
     } catch (error: unknown) {
@@ -51,12 +112,13 @@ export async function syncRacesBatch(
 /**
  * Saves the raw race data and extracts snapshots and fuel analytics.
  */
-export async function saveRaceAnalysisData(season: number, race: number, data: RaceAnalysisResponse) {
+export async function saveRaceAnalysisData(season: number, race: number, data: RaceAnalysisResponse, trackId?: number) {
   await db.transaction(async (tx) => {
     // 1. Insert raw_race_data
     const [insertedAnalysis] = await tx.insert(rawRaceData).values({
       season,
       race,
+      trackId,
       group: data.group ? String(data.group) : "Unknown",
       rawData: data as Record<string, unknown>,
     }).returning({ id: rawRaceData.id });

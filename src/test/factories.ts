@@ -58,6 +58,7 @@ export function buildRawRaceData(overrides?: Partial<typeof rawRaceData.$inferSe
     id: 1,
     season: 100,
     race: 1,
+    trackId: null,
     group: 'A',
     rawData: {},
     createdAt: new Date(),

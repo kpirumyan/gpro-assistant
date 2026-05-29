@@ -1,0 +1,16 @@
+{
+  "managers": [
+    {
+      "pos": "1",
+      "trackId": "1"
+    },
+    {
+      "pos": "2",
+      "trackId": "2"
+    },
+    {
+      "pos": "3",
+      "trackId": "3"
+    }
+  ]
+}

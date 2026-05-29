@@ -1,4 +1,4 @@
-import type { DriverProfileResponse, CarDataResponse, RaceAnalysisResponse } from "./types";
+import type { DriverProfileResponse, CarDataResponse, RaceAnalysisResponse, HistoryCalendarResponse, TrackProfileResponse } from "./types";
 
 export class AuthError extends Error {
   constructor(message = "Invalid or expired API token") {
@@ -168,3 +168,54 @@ export async function fetchCalendar(token: string): Promise<unknown> {
   return response.json();
 }
 
+/**
+ * Fetches the history calendar for a specific season.
+ */
+export async function fetchHistoryCalendar(token: string, season: number): Promise<HistoryCalendarResponse> {
+  if (!token) throw new Error("API token is required");
+  if (!season) throw new Error("Season parameter is required");
+
+  const response = await fetch(`${GPRO_API_BASE_URL}/HistoryCalendar?S=${season}&table=Calendar`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      throw new AuthError();
+    }
+    throw new Error(`GPRO API error: ${response.status} ${response.statusText}`);
+  }
+
+  return response.json() as Promise<HistoryCalendarResponse>;
+}
+
+/**
+ * Fetches track profile details by track id.
+ */
+export async function fetchTrackProfile(token: string, trackId: number | string): Promise<TrackProfileResponse> {
+  if (!token) throw new Error("API token is required");
+  if (!trackId) throw new Error("Track ID is required");
+
+  const response = await fetch(`${GPRO_API_BASE_URL}/TrackProfile?id=${trackId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      throw new AuthError();
+    }
+    throw new Error(`GPRO API error: ${response.status} ${response.statusText}`);
+  }
+
+  return response.json() as Promise<TrackProfileResponse>;
+}

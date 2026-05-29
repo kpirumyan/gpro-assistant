@@ -60,5 +60,10 @@ Read this skill before running commands in the terminal or scripting integration
     <action>Using the `&&` operator to chain commands (e.g. `npm run test && npm run lint`) fails in older versions of Windows PowerShell with `The token '&&' is not a valid statement separator in this version.`</action>
     <workaround>Use `cmd.exe /c "command1 && command2"` to rely on cmd.exe's parsing, or run the commands sequentially using PowerShell's `;` separator, or run them in separate sequential commands.</workaround>
   </rule>
+  <rule id="powershell_redirection_encoding" severity="MANDATORY">
+    <description>**PowerShell Output Redirection Encoding**</description>
+    <action>Using `>` or `>>` (or `echo`) to write or append to files in PowerShell can result in UTF-16LE encoding (which causes "Invalid character" TS/JS errors).</action>
+    <workaround>Use native file editing tools (like `write_to_file` or `replace_file_content`) instead of shell redirection to write code files. If terminal redirection is absolutely necessary, use `Out-File -Encoding utf8` or run it via `cmd /c`.</workaround>
+  </rule>
 </terminal_rules>
 

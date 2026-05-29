@@ -36,10 +36,45 @@ export const carParts = pgTable("car_parts", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const tracks = pgTable("tracks", {
+  id: integer("id").primaryKey(),
+  name: text("name").notNull(),
+  power: integer("power").notNull(),
+  acceleration: integer("acceleration").notNull(),
+  handling: integer("handling").notNull(),
+  downforce: text("downforce").notNull(),
+  overtaking: text("overtaking").notNull(),
+  suspRigidity: text("susp_rigidity").notNull(),
+  fuelConsumption: text("fuel_consumption").notNull(),
+  tyreWear: text("tyre_wear").notNull(),
+  gripLevel: text("grip_level").notNull(),
+  laps: integer("laps").notNull(),
+  raceDistance: text("race_distance").notNull(),
+  lapDistance: text("lap_distance").notNull(),
+  avgSpeed: text("avg_speed").notNull(),
+  timeInOutPits: text("time_in_out_pits").notNull(),
+  nbTurns: integer("nb_turns").notNull(),
+  category: text("category").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const seasonCalendars = pgTable("season_calendars", {
+  id: serial("id").primaryKey(),
+  season: integer("season").notNull(),
+  race: integer("race").notNull(),
+  trackId: integer("track_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  unique().on(table.season, table.race)
+]);
+
 export const rawRaceData = pgTable("raw_race_data", {
   id: serial("id").primaryKey(),
   season: integer("season").notNull(),
   race: integer("race").notNull(),
+  trackId: integer("track_id").references(() => tracks.id),
   group: text("group").notNull(),
   rawData: jsonb("raw_data").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

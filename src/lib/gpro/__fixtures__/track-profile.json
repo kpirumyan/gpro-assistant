@@ -1,0 +1,21 @@
+{
+  "loadingDataState": "Loaded",
+  "trackNotFoundNote": 0,
+  "trackName": "Melbourne",
+  "power": 18,
+  "accel": 16,
+  "handl": 8,
+  "downforce": "Medium",
+  "overtaking": "Normal",
+  "suspRigidity": "Medium",
+  "fuelConsumption": "High",
+  "tyreWear": "High",
+  "gripLevel": "Normal",
+  "laps": 58,
+  "raceDistance": "307.574",
+  "lapDistance": "5.303",
+  "avgSpeed": "225",
+  "timeInOutPits": "21",
+  "nbTurns": 16,
+  "category": "Street Circuit"
+}

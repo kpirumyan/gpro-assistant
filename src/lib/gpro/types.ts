@@ -86,3 +86,33 @@ export interface RaceAnalysisResponse {
   }>;
   [key: string]: unknown;
 }
+
+// --- Calendar ---
+export interface HistoryCalendarResponse {
+  managers?: Array<{
+    pos?: string | number;
+    trackId?: string | number;
+    [key: string]: unknown;
+  }>;
+}
+
+// --- Track Profile ---
+export interface TrackProfileResponse {
+  trackName?: string;
+  power?: number;
+  accel?: number;
+  handl?: number;
+  downforce?: string;
+  overtaking?: string;
+  suspRigidity?: string;
+  fuelConsumption?: string;
+  tyreWear?: string;
+  gripLevel?: string;
+  laps?: number;
+  raceDistance?: string;
+  lapDistance?: string;
+  avgSpeed?: string;
+  timeInOutPits?: string;
+  nbTurns?: number;
+  category?: string;
+}

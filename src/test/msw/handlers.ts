@@ -3,6 +3,8 @@ import driverProfileFixture from "@/lib/gpro/__fixtures__/driver-profile.json";
 import carDataFixture from "@/lib/gpro/__fixtures__/car-data.json";
 import calendarFixture from "@/lib/gpro/__fixtures__/calendar.json";
 import raceAnalysisFixture from "@/lib/gpro/__fixtures__/race-analysis.json";
+import historyCalendarFixture from "@/lib/gpro/__fixtures__/history-calendar.json";
+import trackProfileFixture from "@/lib/gpro/__fixtures__/track-profile.json";
 
 function isAuthorized(request: Request): boolean {
   return request.headers.get("Authorization") === "Bearer VALID_TOKEN";
@@ -57,5 +59,19 @@ export const handlers: HttpHandler[] = [
     }
 
     return HttpResponse.json({ error: "Not Found" }, { status: 404 });
+  }),
+
+  http.get("https://gpro.net/en/backend/api/v2/HistoryCalendar", ({ request }) => {
+    if (isAuthorized(request)) {
+      return HttpResponse.json(historyCalendarFixture, { status: 200 });
+    }
+    return HttpResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }),
+
+  http.get("https://gpro.net/en/backend/api/v2/TrackProfile", ({ request }) => {
+    if (isAuthorized(request)) {
+      return HttpResponse.json(trackProfileFixture, { status: 200 });
+    }
+    return HttpResponse.json({ error: "Unauthorized" }, { status: 401 });
   }),
 ];
