@@ -136,3 +136,4 @@ These are absolute links to all context files available to you. Use them to open
 | UI Patterns | [ui-styling-rules.md](./.agents/skills/ui-styling-rules.md) | Building or modifying UI |
 | Database | [db-conventions.md](./.agents/skills/db-conventions.md) | Schema changes, queries, migrations |
 | RAG Usage | [rag-for-react-next-docs.md](./.agents/skills/rag-for-react-next-docs.md) | Strict rules for using the AnythingLLM RAG CLI |
+| Terminal | [terminal-rules.md](./.agents/skills/terminal-rules.md) | Handling non-TTY shells, quoting in Windows PowerShell |
