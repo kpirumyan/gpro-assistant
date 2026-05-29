@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getGproCredentials } from "@/lib/db/queries";
 import { prepareSync, syncRacesBatch } from "@/lib/services/race-analysis.service";
 import { db } from "@/lib/db";
-import { raceAnalysis } from "@/lib/db/schema";
+import { rawRaceData } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
 
 export type SyncRacesState = {
@@ -14,8 +14,8 @@ export type SyncRacesState = {
 };
 
 export async function getLatestSyncedRaceAction(): Promise<{ season: number; race: number } | null> {
-  const latestDbEntry = await db.query.raceAnalysis.findFirst({
-    orderBy: [desc(raceAnalysis.season), desc(raceAnalysis.race)],
+  const latestDbEntry = await db.query.rawRaceData.findFirst({
+    orderBy: [desc(rawRaceData.season), desc(rawRaceData.race)],
   });
 
   if (latestDbEntry) {

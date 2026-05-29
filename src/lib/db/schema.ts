@@ -36,7 +36,7 @@ export const carParts = pgTable("car_parts", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const raceAnalysis = pgTable("race_analysis", {
+export const rawRaceData = pgTable("raw_race_data", {
   id: serial("id").primaryKey(),
   season: integer("season").notNull(),
   race: integer("race").notNull(),
@@ -44,15 +44,13 @@ export const raceAnalysis = pgTable("race_analysis", {
   rawData: jsonb("raw_data").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-}, (table) => {
-  return {
-    seasonRaceUnique: unique().on(table.season, table.race)
-  }
-});
+}, (table) => [
+  unique().on(table.season, table.race)
+]);
 
 export const raceFuelAnalytics = pgTable("race_fuel_analytics", {
   id: serial("id").primaryKey(),
-  raceAnalysisId: integer("race_analysis_id").references(() => raceAnalysis.id).notNull(),
+  rawRaceDataId: integer("raw_race_data_id").references(() => rawRaceData.id).notNull(),
   type: text("type").notNull(),
   stintIndex: integer("stint_index"),
   lapsAnalyzed: integer("laps_analyzed").notNull(),
@@ -65,7 +63,7 @@ export const raceFuelAnalytics = pgTable("race_fuel_analytics", {
 
 export const raceCarSnapshots = pgTable("race_car_snapshots", {
   id: serial("id").primaryKey(),
-  raceAnalysisId: integer("race_analysis_id").references(() => raceAnalysis.id).notNull(),
+  rawRaceDataId: integer("raw_race_data_id").references(() => rawRaceData.id).notNull(),
   power: integer("power").notNull(),
   handling: integer("handling").notNull(),
   acceleration: integer("acceleration").notNull(),
@@ -106,7 +104,7 @@ export const raceCarSnapshots = pgTable("race_car_snapshots", {
 
 export const raceDriverSnapshots = pgTable("race_driver_snapshots", {
   id: serial("id").primaryKey(),
-  raceAnalysisId: integer("race_analysis_id").references(() => raceAnalysis.id).notNull(),
+  rawRaceDataId: integer("raw_race_data_id").references(() => rawRaceData.id).notNull(),
   name: text("name").notNull(),
   overall: integer("overall").notNull(),
   concentration: integer("concentration").notNull(),

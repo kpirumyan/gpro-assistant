@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { raceAnalysis, raceCarSnapshots, raceDriverSnapshots, raceFuelAnalytics } from "../db/schema";
+import { rawRaceData, raceCarSnapshots, raceDriverSnapshots, raceFuelAnalytics } from "../db/schema";
 import { fetchRaceAnalysis } from "../gpro/client";
 import type { RaceAnalysisResponse } from "../gpro/types";
 
@@ -53,19 +53,19 @@ export async function syncRacesBatch(
  */
 export async function saveRaceAnalysisData(season: number, race: number, data: RaceAnalysisResponse) {
   await db.transaction(async (tx) => {
-    // 1. Insert race_analysis (Raw Data)
-    const [insertedAnalysis] = await tx.insert(raceAnalysis).values({
+    // 1. Insert raw_race_data
+    const [insertedAnalysis] = await tx.insert(rawRaceData).values({
       season,
       race,
       group: data.group ? String(data.group) : "Unknown",
       rawData: data as Record<string, unknown>,
-    }).returning({ id: raceAnalysis.id });
+    }).returning({ id: rawRaceData.id });
 
-    const raceAnalysisId = insertedAnalysis.id;
+    const rawRaceDataId = insertedAnalysis.id;
 
     // 2. Insert race_car_snapshots
     await tx.insert(raceCarSnapshots).values({
-      raceAnalysisId,
+      rawRaceDataId,
       power: data.carPower || 0,
       handling: data.handling || 0,
       acceleration: data.acceleration || 0,
@@ -107,7 +107,7 @@ export async function saveRaceAnalysisData(season: number, race: number, data: R
     // 3. Insert race_driver_snapshots
     if (data.driver) {
       await tx.insert(raceDriverSnapshots).values({
-        raceAnalysisId,
+        rawRaceDataId,
         name: data.driver.name || "Unknown",
         overall: data.driver.overall || 0,
         concentration: data.driver.concentration || 0,
@@ -129,7 +129,7 @@ export async function saveRaceAnalysisData(season: number, race: number, data: R
       await tx.insert(raceFuelAnalytics).values(
         analytics.map(a => ({
           ...a,
-          raceAnalysisId,
+          rawRaceDataId,
           avgFuelPerLapMin: a.avgFuelPerLapMin.toString(),
           avgFuelPerLapMax: a.avgFuelPerLapMax.toString(),
         }))
@@ -293,7 +293,7 @@ export async function getExistingRacesInRange(
     throw new Error('Invalid range: from > to');
   }
 
-  const existingRaces = await db.query.raceAnalysis.findMany({
+  const existingRaces = await db.query.rawRaceData.findMany({
     where: (ra, { and, or, eq, gte, lte, gt, lt }) => {
       if (fromSeason === toSeason) {
         return and(

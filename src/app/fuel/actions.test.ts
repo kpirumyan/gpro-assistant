@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getLatestSyncedRaceAction, prepareSyncAction, syncRaceBatchAction } from './actions';
-import { buildRaceAnalysis } from '@/test/factories';
+import { buildRawRaceData } from '@/test/factories';
 import { prepareSync, syncRacesBatch } from '@/lib/services/race-analysis.service';
 import { getGproCredentials } from '@/lib/db/queries';
 import { db } from '@/lib/db';
@@ -8,7 +8,7 @@ import { db } from '@/lib/db';
 vi.mock('@/lib/db', () => ({
   db: {
     query: {
-      raceAnalysis: {
+      rawRaceData: {
         findFirst: vi.fn(),
       },
     },
@@ -36,8 +36,8 @@ describe('Race Analysis Server Actions', () => {
   describe('getLatestSyncedRaceAction', () => {
     it('returns the latest synced race if found', async () => {
       // Arrange
-      vi.mocked(db.query.raceAnalysis.findFirst).mockResolvedValue(
-        buildRaceAnalysis({ season: 103, race: 17 })
+      vi.mocked(db.query.rawRaceData.findFirst).mockResolvedValue(
+        buildRawRaceData({ season: 103, race: 17 })
       );
 
       // Act
@@ -45,12 +45,12 @@ describe('Race Analysis Server Actions', () => {
 
       // Assert
       expect(result).toEqual({ season: 103, race: 17 });
-      expect(db.query.raceAnalysis.findFirst).toHaveBeenCalledTimes(1);
+      expect(db.query.rawRaceData.findFirst).toHaveBeenCalledTimes(1);
     });
 
     it('returns null if no race is found', async () => {
       // Arrange
-      vi.mocked(db.query.raceAnalysis.findFirst).mockResolvedValue(undefined);
+      vi.mocked(db.query.rawRaceData.findFirst).mockResolvedValue(undefined);
 
       // Act
       const result = await getLatestSyncedRaceAction();

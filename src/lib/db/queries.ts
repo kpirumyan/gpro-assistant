@@ -1,6 +1,6 @@
 import { eq, desc } from "drizzle-orm";
 import { db } from "./index";
-import { gproCredentials, driverProfiles, carParts, raceAnalysis, raceFuelAnalytics } from "./schema";
+import { gproCredentials, driverProfiles, carParts, rawRaceData, raceFuelAnalytics } from "./schema";
 import type { DriverProfileResponse, CarPartResponse } from "@/lib/gpro/types";
 
 // --- GPRO Credentials ---
@@ -173,9 +173,9 @@ export async function getFuelAnalyticsList(): Promise<FuelAnalyticsListEntry[]> 
     return await db
       .select({
         id: raceFuelAnalytics.id,
-        season: raceAnalysis.season,
-        race: raceAnalysis.race,
-        group: raceAnalysis.group,
+        season: rawRaceData.season,
+        race: rawRaceData.race,
+        group: rawRaceData.group,
         type: raceFuelAnalytics.type,
         stintIndex: raceFuelAnalytics.stintIndex,
         lapsAnalyzed: raceFuelAnalytics.lapsAnalyzed,
@@ -185,10 +185,10 @@ export async function getFuelAnalyticsList(): Promise<FuelAnalyticsListEntry[]> 
         createdAt: raceFuelAnalytics.createdAt,
       })
       .from(raceFuelAnalytics)
-      .innerJoin(raceAnalysis, eq(raceFuelAnalytics.raceAnalysisId, raceAnalysis.id))
+      .innerJoin(rawRaceData, eq(raceFuelAnalytics.rawRaceDataId, rawRaceData.id))
       .orderBy(
-        desc(raceAnalysis.season),
-        desc(raceAnalysis.race),
+        desc(rawRaceData.season),
+        desc(rawRaceData.race),
         desc(raceFuelAnalytics.type),
         raceFuelAnalytics.stintIndex
       );

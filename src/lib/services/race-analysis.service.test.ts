@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { calculateFuelAnalytics, generateRaceRange, getExistingRacesInRange, prepareSync, syncRacesBatch } from './race-analysis.service';
-import { buildRaceAnalysis } from '../../test/factories';
+import { buildRawRaceData } from '../../test/factories';
 import { fetchRaceAnalysis } from '../gpro/client';
 import { db } from '../db';
 
 vi.mock('../db', () => ({
   db: {
     query: {
-      raceAnalysis: {
+      rawRaceData: {
         findMany: vi.fn(),
         findFirst: vi.fn()
       }
@@ -26,13 +26,13 @@ describe('getExistingRacesInRange', () => {
   });
 
   it('should query DB and return existing races', async () => {
-    vi.mocked(db.query.raceAnalysis.findMany).mockResolvedValue([
-      buildRaceAnalysis({ season: 100, race: 16 })
+    vi.mocked(db.query.rawRaceData.findMany).mockResolvedValue([
+      buildRawRaceData({ season: 100, race: 16 })
     ]);
 
     const result = await getExistingRacesInRange(100, 15, 100, 17);
     
-    expect(db.query.raceAnalysis.findMany).toHaveBeenCalledTimes(1);
+    expect(db.query.rawRaceData.findMany).toHaveBeenCalledTimes(1);
     expect(result).toEqual([
       expect.objectContaining({ season: 100, race: 16 })
     ]);
@@ -49,8 +49,8 @@ describe('prepareSync', () => {
   });
 
   it('should generate range and filter out existing races', async () => {
-    vi.mocked(db.query.raceAnalysis.findMany).mockResolvedValue([
-      buildRaceAnalysis({ season: 100, race: 16 })
+    vi.mocked(db.query.rawRaceData.findMany).mockResolvedValue([
+      buildRawRaceData({ season: 100, race: 16 })
     ]);
 
     const result = await prepareSync(100, 15, 100, 17);
@@ -65,8 +65,8 @@ describe('prepareSync', () => {
   });
 
   it('should return empty array if all races exist', async () => {
-    vi.mocked(db.query.raceAnalysis.findMany).mockResolvedValue([
-      buildRaceAnalysis({ season: 100, race: 15 })
+    vi.mocked(db.query.rawRaceData.findMany).mockResolvedValue([
+      buildRawRaceData({ season: 100, race: 15 })
     ]);
 
     const result = await prepareSync(100, 15, 100, 15);

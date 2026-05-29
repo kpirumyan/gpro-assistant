@@ -43,6 +43,13 @@
       "when": 1779833460530,
       "tag": "0005_previous_champions",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1780070630022,
+      "tag": "0006_keen_turbo",
+      "breakpoints": true
     }
   ]
 }

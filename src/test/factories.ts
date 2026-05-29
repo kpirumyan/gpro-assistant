@@ -2,7 +2,7 @@ import {
   gproCredentials,
   driverProfiles,
   carParts,
-  raceAnalysis,
+  rawRaceData,
   raceFuelAnalytics,
   raceCarSnapshots,
   raceDriverSnapshots,
@@ -53,7 +53,7 @@ export function buildCarPart(overrides?: Partial<typeof carParts.$inferSelect>):
   };
 }
 
-export function buildRaceAnalysis(overrides?: Partial<typeof raceAnalysis.$inferSelect>): typeof raceAnalysis.$inferSelect {
+export function buildRawRaceData(overrides?: Partial<typeof rawRaceData.$inferSelect>): typeof rawRaceData.$inferSelect {
   return {
     id: 1,
     season: 100,
@@ -69,7 +69,7 @@ export function buildRaceAnalysis(overrides?: Partial<typeof raceAnalysis.$infer
 export function buildRaceFuelAnalytics(overrides?: Partial<typeof raceFuelAnalytics.$inferSelect>): typeof raceFuelAnalytics.$inferSelect {
   return {
     id: 1,
-    raceAnalysisId: 1,
+    rawRaceDataId: 1,
     type: 'stint',
     stintIndex: 1,
     lapsAnalyzed: 10,
@@ -85,7 +85,7 @@ export function buildRaceFuelAnalytics(overrides?: Partial<typeof raceFuelAnalyt
 export function buildRaceCarSnapshot(overrides?: Partial<typeof raceCarSnapshots.$inferSelect>): typeof raceCarSnapshots.$inferSelect {
   return {
     id: 1,
-    raceAnalysisId: 1,
+    rawRaceDataId: 1,
     power: 100,
     handling: 100,
     acceleration: 100,
@@ -107,7 +107,7 @@ export function buildRaceCarSnapshot(overrides?: Partial<typeof raceCarSnapshots
 export function buildRaceDriverSnapshot(overrides?: Partial<typeof raceDriverSnapshots.$inferSelect>): typeof raceDriverSnapshots.$inferSelect {
   return {
     id: 1,
-    raceAnalysisId: 1,
+    rawRaceDataId: 1,
     name: 'Test Driver',
     overall: 100,
     concentration: 100,
