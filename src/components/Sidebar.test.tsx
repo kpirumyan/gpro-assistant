@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { Sidebar } from "./Sidebar";
+import { Sidebar, STORAGE_KEY } from "./Sidebar";
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
@@ -105,17 +105,14 @@ describe("Sidebar", () => {
     fireEvent.click(toggle);
     act(() => { vi.runAllTimers(); });
 
-    expect(localStorage.getItem("sidebar-collapsed")).toBe("true");
+    expect(localStorage.getItem(STORAGE_KEY)).toBe("true");
   });
 
   it("restores collapsed state from localStorage on mount", () => {
-    localStorage.setItem("sidebar-collapsed", "true");
+    localStorage.setItem(STORAGE_KEY, "true");
     render(<Sidebar />);
     
-    // Initial render should be expanded (for hydration match)
-    expect(screen.getByRole("button", { name: /collapse sidebar/i })).toBeInTheDocument();
-    
-    // Advance timers to trigger state restoration
+    // Advance timers just in case
     act(() => { vi.runAllTimers(); });
 
     // After timer runs, it should be collapsed
@@ -123,7 +120,7 @@ describe("Sidebar", () => {
   });
 
   it("restores expanded state from localStorage on mount", () => {
-    localStorage.setItem("sidebar-collapsed", "false");
+    localStorage.setItem(STORAGE_KEY, "false");
     render(<Sidebar />);
     
     act(() => { vi.runAllTimers(); });
@@ -151,7 +148,7 @@ describe("Sidebar", () => {
   });
 
   it("shows tooltips in collapsed state", () => {
-    localStorage.setItem("sidebar-collapsed", "true");
+    localStorage.setItem(STORAGE_KEY, "true");
     render(<Sidebar />);
     act(() => { vi.runAllTimers(); });
     

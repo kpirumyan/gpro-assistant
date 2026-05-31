@@ -7,7 +7,7 @@ import { Menu, X } from "lucide-react";
 import { navLinks } from "@/lib/nav-links";
 import { SidebarTooltip } from "@/components/SidebarTooltip";
 
-const STORAGE_KEY = "sidebar-collapsed";
+export const STORAGE_KEY = "sidebar-collapsed";
 
 function readCollapsed(): boolean | null {
   if (typeof window === "undefined") return null;
@@ -34,17 +34,14 @@ export function Sidebar() {
   const pathname = usePathname();
 
   // Restore state from localStorage after hydration.
-  // setTimeout bypasses the strict react-hooks/set-state-in-effect rule
-  // by ensuring the state update happens asynchronously.
   useEffect(() => {
-    const timer = setTimeout(() => {
+    requestAnimationFrame(() => {
       const stored = readCollapsed();
       if (stored !== null) {
         setCollapsed(stored);
       }
       setMounted(true);
-    }, 0);
-    return () => clearTimeout(timer);
+    });
   }, []);
 
   const toggle = useCallback(() => {
@@ -55,23 +52,27 @@ export function Sidebar() {
     });
   }, []);
 
+  const transitionClass = mounted
+    ? "transition-all duration-200"
+    : "transition-none";
+
   return (
     <aside
       data-testid="sidebar"
       aria-label="Main navigation"
-      className={`flex h-screen shrink-0 flex-col border-r border-zinc-200 bg-white ease-in-out dark:border-zinc-800 dark:bg-zinc-950 ${
-        mounted ? "transition-all duration-200" : "transition-none"
-      } ${collapsed ? "w-16" : "w-60"}`}
+      className={`sticky top-0 flex h-screen shrink-0 flex-col border-r border-zinc-200 bg-white ease-in-out dark:border-zinc-800 dark:bg-zinc-950 ${transitionClass} w-16 ${
+        collapsed ? "" : "sm:w-60"
+      }`}
     >
       {/* Header: logo + toggle */}
       <div className="flex h-14 items-center border-b border-zinc-200 px-3 dark:border-zinc-800">
         <Link
           href="/"
-          className={`overflow-hidden whitespace-nowrap text-sm font-semibold text-zinc-900 dark:text-zinc-50 ${
-            mounted ? "transition-all duration-200" : "transition-none"
-          } ${collapsed ? "w-0 opacity-0" : "mr-auto w-auto opacity-100"}`}
+          className={`overflow-hidden whitespace-nowrap text-sm font-semibold text-zinc-900 dark:text-zinc-50 ${transitionClass} w-0 opacity-0 ${
+            collapsed ? "" : "sm:mr-auto sm:w-auto sm:opacity-100"
+          }`}
           tabIndex={collapsed ? -1 : 0}
-          aria-hidden={collapsed}
+          aria-hidden={collapsed || undefined}
         >
           GPRO Assistant
         </Link>
@@ -81,7 +82,7 @@ export function Sidebar() {
           onClick={toggle}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           aria-expanded={!collapsed}
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 ${
+          className={`hidden h-8 w-8 shrink-0 items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 sm:flex ${
             collapsed ? "mx-auto" : ""
           }`}
         >
@@ -93,7 +94,7 @@ export function Sidebar() {
         </button>
       </div>
 
-      {/* Navigation links - removed overflow-y-auto so tooltips are not clipped */}
+      {/* No overflow-y here — tooltips need to escape sidebar bounds */}
       <nav className="flex flex-1 flex-col gap-1 px-2 py-3">
         {navLinks.map(({ href, label, icon: Icon }) => {
           const isActive =
@@ -114,10 +115,10 @@ export function Sidebar() {
               >
                 <Icon size={18} className="shrink-0" aria-hidden="true" />
                 <span
-                  className={`overflow-hidden whitespace-nowrap ${
-                    mounted ? "transition-all duration-200" : "transition-none"
-                  } ${collapsed ? "w-0 opacity-0" : "w-auto opacity-100"}`}
-                  aria-hidden={collapsed}
+                  className={`overflow-hidden whitespace-nowrap ${transitionClass} w-0 opacity-0 ${
+                    collapsed ? "" : "sm:w-auto sm:opacity-100"
+                  }`}
+                  aria-hidden={collapsed || undefined}
                 >
                   {label}
                 </span>
