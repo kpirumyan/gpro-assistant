@@ -27,11 +27,11 @@ Single-user Next.js app for personal use. Fetches game data from the GPRO API, v
     <mandatory>Your `implementation_plan.md` MUST include a "Documentation Updates" section. You MUST explicitly state whether the task introduces new patterns, files, directories, or libraries, and what updates will be made to `.agents/ARCHITECTURE.md` or `.agents/skills/`. If no updates are needed, you must prove why.</mandatory>
   </phase>
   <phase name="Post-Approval Setup" requires_approval="false">
-    <action>Once the plan is approved, perform the following setup steps:</action>
+    <action>Once the plan is approved, perform the following setup steps. IMPORTANT: Step 3 (task.md) and Step 4 (Mermaid diagram) MUST ONLY be performed if the user provided the `/with-tasks` (or `/виз-таскс`) command modifier in their request.</action>
     <step>Create a directory in `.agents/plans/` named after the current git worktree/branch (e.g., `.agents/plans/<worktree-name>`).</step>
     <step>Save the approved `implementation_plan.md` in that directory.</step>
-    <step>Create and save the `task.md` checklist in that directory.</step>
-    <step>Create and save a Mermaid diagram (e.g., `diagram.md`) representing the architecture/plan in that directory, formatted so it can be viewed using the Mermaid Previewer extension in VS Code.</step>
+    <step condition="requires /with-tasks modifier">Create and save the `task.md` checklist in that directory.</step>
+    <step condition="requires /with-tasks modifier">Create and save a Mermaid diagram (e.g., `diagram.md`) representing the architecture/plan in that directory, formatted so it can be viewed using the Mermaid Previewer extension in VS Code.</step>
   </phase>
   <phase name="Implement" requires_approval="false">
     <action>Write code following project conventions. TDD-first internally: write the test, then the code to pass it — deliver both together without pausing between them. If database schema changes are made, generate and apply migrations (`npm run db:generate` and `npm run db:migrate`).</action>
@@ -66,6 +66,9 @@ Single-user Next.js app for personal use. Fetches game data from the GPRO API, v
   </mode>
   <mode command="/quick-fix">
     <description>Quick bugfix mode. The agent skips the Plan and Post-Approval Setup phases, jumps straight to fixing the issue, tests it, performs the Terminal Audit, and commits it. Use this only when explicitly requested for trivial tasks.</description>
+  </mode>
+  <mode command="/with-tasks">
+    <description>Command modifier (can be combined with other modes, e.g. `/goal /with-tasks` or `/виз-таскс`). Instructs the agent to generate `task.md` and a Mermaid diagram during the Post-Approval Setup phase. Without this modifier, the agent must NOT create these files.</description>
   </mode>
   <rule id="user_questions">Whenever asking the user a question that requires a "Yes" or "No" answer (or similar clear choices), you MUST use the `ask_question` tool to provide clickable buttons for the user to select their response.</rule>
 </interaction_modes>
