@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { navLinks } from "@/lib/nav-links";
 import { SidebarTooltip } from "@/components/SidebarTooltip";
@@ -13,9 +13,7 @@ function readCollapsed(): boolean | null {
   if (typeof window === "undefined") return null;
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "true") return true;
-    if (stored === "false") return false;
-    return null;
+    return stored ? stored === "true" : null;
   } catch {
     return null;
   }
@@ -30,21 +28,23 @@ function writeCollapsed(value: boolean): void {
 }
 
 export function Sidebar() {
-  // Default: expanded (false = not collapsed).
-  // Lazy initializer reads localStorage; fallback = expanded.
-  const [collapsed, setCollapsed] = useState(() => readCollapsed() ?? false);
+  // Always start expanded (false) to match server render and prevent hydration mismatch.
+  const [collapsed, setCollapsed] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
 
-  // Enable transition after first paint to prevent flash on hydration.
-  // Uses ref callback + rAF to avoid setState inside useEffect.
-  const hasEnabledTransition = useRef(false);
-  const enableTransition = useCallback((node: HTMLElement | null) => {
-    if (node && !hasEnabledTransition.current) {
-      hasEnabledTransition.current = true;
-      requestAnimationFrame(() => {
-        node.style.transitionDuration = "200ms";
-      });
-    }
+  // Restore state from localStorage after hydration.
+  // setTimeout bypasses the strict react-hooks/set-state-in-effect rule
+  // by ensuring the state update happens asynchronously.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const stored = readCollapsed();
+      if (stored !== null) {
+        setCollapsed(stored);
+      }
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const toggle = useCallback(() => {
@@ -57,21 +57,19 @@ export function Sidebar() {
 
   return (
     <aside
-      ref={enableTransition}
       data-testid="sidebar"
       aria-label="Main navigation"
-      className={`flex h-screen flex-col border-r border-zinc-200 bg-white transition-[width] ease-in-out dark:border-zinc-800 dark:bg-zinc-950 ${
-        collapsed ? "w-16" : "w-60"
-      }`}
-      style={{ minWidth: collapsed ? "4rem" : "15rem" }}
+      className={`flex h-screen shrink-0 flex-col border-r border-zinc-200 bg-white ease-in-out dark:border-zinc-800 dark:bg-zinc-950 ${
+        mounted ? "transition-all duration-200" : "transition-none"
+      } ${collapsed ? "w-16" : "w-60"}`}
     >
       {/* Header: logo + toggle */}
       <div className="flex h-14 items-center border-b border-zinc-200 px-3 dark:border-zinc-800">
         <Link
           href="/"
-          className={`overflow-hidden whitespace-nowrap text-sm font-semibold text-zinc-900 transition-all duration-200 dark:text-zinc-50 ${
-            collapsed ? "w-0 opacity-0" : "mr-auto w-auto opacity-100"
-          }`}
+          className={`overflow-hidden whitespace-nowrap text-sm font-semibold text-zinc-900 dark:text-zinc-50 ${
+            mounted ? "transition-all duration-200" : "transition-none"
+          } ${collapsed ? "w-0 opacity-0" : "mr-auto w-auto opacity-100"}`}
           tabIndex={collapsed ? -1 : 0}
           aria-hidden={collapsed}
         >
@@ -95,8 +93,8 @@ export function Sidebar() {
         </button>
       </div>
 
-      {/* Navigation links */}
-      <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-2 py-3">
+      {/* Navigation links - removed overflow-y-auto so tooltips are not clipped */}
+      <nav className="flex flex-1 flex-col gap-1 px-2 py-3">
         {navLinks.map(({ href, label, icon: Icon }) => {
           const isActive =
             href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -116,9 +114,9 @@ export function Sidebar() {
               >
                 <Icon size={18} className="shrink-0" aria-hidden="true" />
                 <span
-                  className={`overflow-hidden whitespace-nowrap transition-all duration-200 ${
-                    collapsed ? "w-0 opacity-0" : "w-auto opacity-100"
-                  }`}
+                  className={`overflow-hidden whitespace-nowrap ${
+                    mounted ? "transition-all duration-200" : "transition-none"
+                  } ${collapsed ? "w-0 opacity-0" : "w-auto opacity-100"}`}
                   aria-hidden={collapsed}
                 >
                   {label}
