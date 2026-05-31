@@ -70,6 +70,9 @@ Single-user Next.js app for personal use. Fetches game data from the GPRO API, v
   <mode command="/with-tasks">
     <description>Command modifier (can be combined with other modes, e.g. `/goal /with-tasks` or `/виз-таскс`). Instructs the agent to generate `task.md` and a Mermaid diagram during the Post-Approval Setup phase. Without this modifier, the agent must NOT create these files.</description>
   </mode>
+  <mode command="/debate">
+    <description>Triggers an automated debate between two subagents (Reviewer and Coder) on a specific topic. Detailed instructions on how to facilitate the debate are located in `.agents/debate.md`. The user will provide a topic and optionally the number of iterations (defaults to 5).</description>
+  </mode>
   <rule id="user_questions">Whenever asking the user a question that requires a "Yes" or "No" answer (or similar clear choices), you MUST use the `ask_question` tool to provide clickable buttons for the user to select their response.</rule>
 </interaction_modes>
 
