@@ -68,4 +68,19 @@ There are two execution modes:
             Append the full, chronological log of all messages exchanged during the debate, including any "Neutral Reminder" interventions made by the Orchestrator.
          4. Tell the user in chat: "I conducted a background debate on [topic]. The winner is [Choice]. Log saved to [path]."
   </phase>
+
+  <escalation_protocol>
+    <description>This protocol defines how normal coding cycles (Tester vs Coder, Reviewer vs Coder) are escalated into debates to prevent infinite loops.</description>
+    <step name="Fast Lane">
+      Normal cycles (TDD loop or Code Review loop) run without debates. The Critic (Tester/Reviewer) provides feedback, and the Actor (Coder) implements it. This loop has a STRICT LIMIT of exactly 3 iterations.
+    </step>
+    <step name="Freeze and Escalate">
+      If the Critic is still not satisfied after the 3rd iteration, the Orchestrator MUST freeze the coding process. The Orchestrator immediately launches a Silent Mode Debate between the two specific roles involved (e.g., Tester vs Coder, or Reviewer vs Coder). The Critic acts as Agent 1 and speaks first.
+    </step>
+    <step name="Resolution and Resume">
+      After the debate completes its iterations, the Orchestrator reads the log and renders a final Verdict. The Orchestrator then resumes the original workflow:
+      - If the Coder won: The phase is marked complete, move to the next phase (e.g. from Review to Terminal Audit).
+      - If the Critic won: The Orchestrator gives the Coder an unappealable directive based on the debate's outcome, forcing the Coder to implement it exactly as decided.
+    </step>
+  </escalation_protocol>
 </debate_workflow>

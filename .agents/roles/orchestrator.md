@@ -12,7 +12,7 @@
 <agent_workflow>
   <description>Tasks follow these phases (used by `/grill-me` and `/goal` modes):</description>
   <phase name="Plan" requires_approval="true">
-    <action>Invoke the **Chief Architect** subagent to research the task and create an `implementation_plan.md` artifact. Stop and wait for user approval.</action>
+    <action>Execute Dual Architecture Planning: Invoke two **Chief Architect** subagents in parallel to create competing drafts (`Draft A` and `Draft B`). Summarize the drafts for the user and collaborate to create a final `implementation_plan.md`. (If running in `/goal` mode, invoke only one Architect and use their plan directly).</action>
     <mandatory>The `implementation_plan.md` MUST include a "Documentation Updates" section. It MUST explicitly state whether the task introduces new patterns, files, directories, or libraries, and what updates will be made to `.agents/ARCHITECTURE.md` or `.agents/skills/`. If no updates are needed, it must prove why.</mandatory>
   </phase>
   <phase name="Post-Approval Setup" requires_approval="false">
@@ -23,13 +23,13 @@
     <step condition="requires /with-tasks modifier">Create and save a Mermaid diagram (e.g., `diagram.md`) representing the architecture/plan in that directory, formatted so it can be viewed using the Mermaid Previewer extension in VS Code.</step>
   </phase>
   <phase name="Implement" requires_approval="false">
-    <action>Following True TDD: First, invoke the **Tester** subagent to write failing (red) tests based strictly on the approved plan. Once tests are written and fail as expected, invoke the **Coder** subagent to implement the feature/fix to pass the tests. If database schema changes are made, run migrations (`npm run db:generate` and `npm run db:migrate`).</action>
+    <action>Following True TDD: First, invoke the **Tester** subagent to write failing (red) tests based strictly on the approved plan. Once tests are written and fail as expected, invoke the **Coder** subagent to implement the feature/fix to pass the tests. If database schema changes are made, run migrations (`npm run db:generate` and `npm run db:migrate`). STRICT LIMIT: Max 3 iterations of feedback between Tester and Coder. If unresolved, trigger Escalation Protocol.</action>
   </phase>
   <phase name="Test" requires_approval="true">
     <action>Run `npm run typecheck`, `npm run test`, and `npm run lint` (or simply `npm run precommit`). Show results. Stop and wait for user approval.</action>
   </phase>
   <phase name="Review" requires_approval="false">
-    <action>Invoke the **Reviewer** subagent to run the code review checklist (see `.agents/skills/code-review-checklist.md`). Then invoke the **Coder** to fix any issues found.</action>
+    <action>Invoke the **Reviewer** subagent to run the code review checklist (see `.agents/skills/code-review-checklist.md`). Then invoke the **Coder** to fix any issues found. STRICT LIMIT: Max 3 iterations of feedback. If the Reviewer is still not satisfied, trigger the Escalation Protocol (Silent Mode Debate) as defined in `.agents/debate.md`. Upon rendering a verdict, you MUST Resume Workflow: if Coder wins, move to next phase; if Reviewer wins, issue unappealable directive to Coder and resume coding.</action>
   </phase>
   <phase name="Terminal Audit" requires_approval="false">
     <action>MANDATORY CLOSING PHASE: Before your final commit, you MUST review all terminal command logs from the current session. If you encountered any errors or had to use any workarounds, you MUST document them in `.agents/skills/terminal-rules.md` (or the relevant rules file). This ensures your fixes to the rules are included in the commit.</action>
