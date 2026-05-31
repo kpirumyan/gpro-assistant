@@ -1,6 +1,7 @@
 import { useState, useRef, useTransition } from "react";
 import { prepareSyncAction, syncRaceBatchAction } from "@/app/fuel/actions";
-import { SYNC_CHUNK_SIZE } from "@/lib/constants";
+
+export const SYNC_CHUNK_SIZE = 5;
 
 export function useRaceSync(latestSyncedRace: { season: number; race: number } | null) {
   const [syncMode, setSyncMode] = useState<"single" | "range">("single");
@@ -34,7 +35,7 @@ export function useRaceSync(latestSyncedRace: { season: number; race: number } |
 
     startTransition(async () => {
       const res = await prepareSyncAction(fromSeason, fromRace, tSeason, tRace);
-      
+
       if (!res.success) {
         setError(res.error);
         setStep("idle");
