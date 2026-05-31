@@ -103,7 +103,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 ## Terminal rules
 
 <terminal_rules>
-  <rule id="powershell_primary_on_windows">Always use Windows PowerShell as the primary shell. All system tools (git, npm, Node.js) are natively available in the PATH. Avoid using standard `bash` command as it may resolve to WSL bash where Windows Node.js is missing. If Git Bash is specifically needed for a bash script, invoke it via `& "C:\Program Files\Git\bin\bash.exe" -c "..."`, but otherwise prefer standard PowerShell.</rule>
+  <rule id="git_bash_primary_on_windows">Always use Windows Git Bash as the primary shell. Invoke all commands by wrapping them through the Git Bash executable: `& "C:\Program Files\Git\bin\bash.exe" -c "..."`. Avoid using PowerShell commands directly, and never use a plain `bash` command to prevent resolving to WSL.</rule>
   <rule id="terminal_error_check" severity="MANDATORY">
     <description>Post-Execution Terminal Error Check</description>
     <action>Whenever you run any commands in the terminal during a turn, you MUST review the complete output of ALL executed commands before formulating your final response to the user. Look for any warnings, non-zero exit codes, permission denials, execution policy blocks, or failed checks.</action>

@@ -9,11 +9,8 @@ Read this skill before running commands in the terminal or scripting integration
 ## Stack & Shells
 
 <terminal_shells>
-  <shell name="PowerShell" role="PRIMARY">
-    PowerShell is the primary and preferred shell for all commands (Git, npm, Node.js, etc.) because they are natively available in the Windows PATH, execute faster, and avoid complex nested escaping.
-  </shell>
-  <shell name="Git Bash" role="FALLBACK">
-    Use **only** when specifically running a `.sh` shell script or unix-only command utilities. Do not use for standard `npm`, `git`, or `node` commands to prevent unnecessary nesting and quoting issues.
+  <shell name="Git Bash" role="PRIMARY">
+    Git Bash is the primary and preferred shell for all commands. Execute all commands using the Git Bash wrapper: `& "C:\Program Files\Git\bin\bash.exe" -c "..."`. Avoid WSL bash by never using a plain `bash` command.
   </shell>
 </terminal_shells>
 
@@ -34,36 +31,6 @@ Read this skill before running commands in the terminal or scripting integration
     </workaround>
   </rule>
 
-  <rule id="powershell_quoting_parentheses" severity="MANDATORY">
-    <description>**Parentheses and Quoting in PowerShell**</description>
-    <action>When passing commands containing parentheses (e.g. `refactor(db)`) inside double quotes to Git Bash from PowerShell, PowerShell tries to evaluate or parse it, throwing `CommandNotFoundException`.</action>
-    <workaround>
-      1. For Git operations (which don't require Node.js paths/variables), run the command directly in PowerShell without the Git Bash wrapper:
-         ```powershell
-         git commit -m "refactor(db): description"
-         ```
-      2. If Git Bash is strictly required, ensure proper escaping or variable assignment to prevent PowerShell parsing:
-         ```powershell
-         $msg = 'refactor(db): description'
-         & "C:\Program Files\Git\bin\bash.exe" -c "git commit -m '$msg'"
-         ```
-    </workaround>
-  </rule>
 
-  <rule id="powershell_npx_execution_policy" severity="MANDATORY">
-    <description>**PowerShell Execution Policy Blocking npx/npm Wrapper Scripts**</description>
-    <action>On Windows, calling `npx` or `npm` inside PowerShell may attempt to load `npx.ps1` or `npm.ps1`. If script execution is restricted on the system, this fails with a `SecurityError (UnauthorizedAccess / PSSecurityException)`.</action>
-    <workaround>Use `npx.cmd` or `npm.cmd` explicitly instead of `npx` or `npm` when running node tools from PowerShell to bypass the script execution policy restrictions.</workaround>
-  </rule>
-  <rule id="powershell_and_operator" severity="MANDATORY">
-    <description>**Chaining Commands in PowerShell**</description>
-    <action>Using the `&&` operator to chain commands (e.g. `npm run test && npm run lint`) fails in older versions of Windows PowerShell with `The token '&&' is not a valid statement separator in this version.`</action>
-    <workaround>Use `cmd.exe /c "command1 && command2"` to rely on cmd.exe's parsing, or run the commands sequentially using PowerShell's `;` separator, or run them in separate sequential commands.</workaround>
-  </rule>
-  <rule id="powershell_redirection_encoding" severity="MANDATORY">
-    <description>**PowerShell Output Redirection Encoding**</description>
-    <action>Using `>` or `>>` (or `echo`) to write or append to files in PowerShell can result in UTF-16LE encoding (which causes "Invalid character" TS/JS errors).</action>
-    <workaround>Use native file editing tools (like `write_to_file` or `replace_file_content`) instead of shell redirection to write code files. If terminal redirection is absolutely necessary, use `Out-File -Encoding utf8` or run it via `cmd /c`.</workaround>
-  </rule>
 </terminal_rules>
 
