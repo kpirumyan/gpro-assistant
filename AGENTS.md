@@ -2,7 +2,7 @@
 
 # This is NOT the Next.js you know
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Use the RAG librarian (`npm run ask-next-rag`) to fetch modern documentation. Heed deprecation notices.
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. You MUST ALWAYS query the RAG librarian (`npm run ask-next-rag` or `npm run ask-react-rag`) before editing or writing any React/Next.js code. Relying on your own experience is strictly prohibited. Heed deprecation notices.
 
 <!-- END:nextjs-agent-rules -->
 

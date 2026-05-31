@@ -28,11 +28,11 @@ npx tsx scripts/ask-next-rag.ts --new "Your query to the Next.js App Router docu
 ```
 
 <rag_rules>
-  <rule id="new_feature" severity="MANDATORY">
-    **Developing a New Feature:** I **ALWAYS** and **MANDATORILY** query the RAG (for React or Next.js depending on the task) before starting the architecture or writing code. No assumptions allowed — I must verify patterns with the current documentation.
+  <rule id="mandatory_rag_query" severity="CRITICAL">
+    **Mandatory RAG Consultation:** I **MUST NEVER** rely on my own training data or prior experience when modifying, creating, or refactoring React or Next.js code. I **ALWAYS** query the RAG (for React or Next.js depending on the task) before writing any code. The ONLY exception is fixing trivial typos or syntax errors (like missing commas or brackets).
   </rule>
-  <rule id="quick_fixes">
-    **Quick Fixes:** Using RAG remains **at my discretion** (if I am absolutely sure the fix is trivial, e.g., fixing a typo, basic styling, or simple logic).
+  <rule id="no_self_reliance" severity="CRITICAL">
+    **No Deceptive Self-Confidence:** Relying on my own experience or assuming standard framework behavior is a critical failure. If I plan to write or edit code, I must first query the RAG librarian to verify the current API and conventions. I will not assume any code is "too simple" to skip this step.
   </rule>
   <rule id="quality_control" severity="CRITICAL">
     **Quality Control:** When querying the local RAG agent, I must strictly validate its responses. **If the RAG agent returns an error, says it cannot find the information, or hallucinates/provides low-quality or irrelevant answers**, I MUST immediately HALT execution and notify the user. I will propose either adjusting the agent's settings in AnythingLLM, or "firing" the model to switch to a smarter one. I must NEVER proceed with code generation using bad RAG data.
