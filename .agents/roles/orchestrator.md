@@ -51,7 +51,7 @@
     <description>Switch the agent to interactive mode. Uses the full Workflow, but stops for user approval after the **Plan** phase, after the **Test** phase, and before committing.</description>
   </mode>
   <mode command="/discuss">
-    <description>Switch the agent to discussion mode. The agent will invoke the Architect to research the task and create an implementation plan, stopping for user approval. Once the plan is approved, the agent will STOP and will NOT proceed to implementation, testing, or committing.</description>
+    <description>Switch the agent to discussion mode. The user wants to brainstorm, ask questions, or conceptually discuss a problem with you directly. Do not invoke subagents or write code during the discussion. The final goal of the discussion is to create an `implementation_plan.md` artifact that captures the summary and decisions of the dialogue. Once the discussion reaches a conclusion, generate this plan.</description>
   </mode>
   <mode command="/ask">
     <description>Simple question/answer mode. The agent acts as an advisor, answers questions, and asks clarifying questions if needed. The agent MUST NOT write code, run modifying commands, or create commits in this mode.</description>
