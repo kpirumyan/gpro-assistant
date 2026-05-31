@@ -60,13 +60,15 @@ gpro-assistant/
 │   │       ├── page.tsx        # /settings
 │   │       └── page.test.tsx   # Settings tests
 │   ├── components/             # Shared React components
-│   │   ├── AppNav.tsx          # Navigation bar
+│   │   ├── Sidebar.tsx         # Collapsible sidebar navigation
+│   │   ├── SidebarTooltip.tsx  # CSS tooltip for collapsed sidebar icons
 │   │   ├── PageShell.tsx       # Page wrapper (title + description)
 │   │   ├── ClientDate.tsx      # Date formatter component
 │   │   └── StatBar.tsx         # Reusable gradient stat bar
 │   ├── lib/                    # Domain logic (keep pages thin)
 │   │   ├── gpro/               # GPRO API client, types, fixtures
 │   │   ├── db/                 # Database client + schema
+│   │   ├── nav-links.ts        # Navigation link definitions (icons + routes)
 │   │   ├── constants.ts        # Shared application-level constants
 │   │   └── calculators/        # Fuel, tire, setup calculations (future)
 │   └── test/                   # Test utilities
@@ -144,6 +146,11 @@ Next.js App (React UI)
   <pattern id="colocation_of_diagrams">
     <name>Co-location of architecture diagrams</name>
     <description>For complex domain logic, calculators, and services (especially inside `src/lib/`), we maintain a `README.md` containing public API documentation and Mermaid architecture diagrams directly within the service's directory. This keeps the design close to the implementation.</description>
+  </pattern>
+  
+  <pattern id="sidebar_state_persistence">
+    <name>Sidebar state persistence via localStorage</name>
+    <description>The collapsible sidebar stores its expanded/collapsed state in `localStorage` under the key `sidebar-collapsed`. On first visit (no stored value), the sidebar defaults to expanded. On mobile viewports, it is always collapsed regardless of stored state.</description>
   </pattern>
 </architecture_patterns>
 

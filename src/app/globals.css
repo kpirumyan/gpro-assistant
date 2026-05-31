@@ -3,6 +3,9 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --sidebar-width-expanded: 15rem;
+  --sidebar-width-collapsed: 4rem;
+  --sidebar-transition: 200ms ease-in-out;
 }
 
 @theme inline {

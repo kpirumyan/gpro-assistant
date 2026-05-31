@@ -34,6 +34,8 @@ Dark mode is driven by `prefers-color-scheme` media query. Use `dark:` variants 
 - Max content width: `max-w-5xl` with `px-4` horizontal padding
 - Page padding: `py-10`
 - Component spacing: use Tailwind `space-y-*` and `gap-*` utilities
+- Sidebar expanded width: `w-60` (`--sidebar-width-expanded: 15rem`)
+- Sidebar collapsed width: `w-16` (`--sidebar-width-collapsed: 4rem`)
 
 ## Layout components
 
@@ -49,11 +51,20 @@ Wraps every page with consistent title + description:
 
 All pages must use `PageShell`.
 
-### `AppNav`
+### `Sidebar`
 
-Top navigation bar. When adding a new page:
+Collapsible left sidebar navigation. Replaces the old `AppNav` horizontal header.
 
-1. Add route to the `links` array in `src/components/AppNav.tsx`
+- **Client Component** (`"use client"`) — uses `useState`, `usePathname`, `localStorage`
+- Toggle between expanded (icon + text) and collapsed (icon only) via hamburger button
+- State persisted in `localStorage` (key: `sidebar-collapsed`), defaults to expanded on first visit
+- Active page highlighted with left accent border + background
+- CSS tooltips on hover when collapsed (via `SidebarTooltip`)
+- Navigation links defined in `src/lib/nav-links.ts` (single source of truth)
+
+When adding a new page:
+
+1. Add route to the `navLinks` array in `src/lib/nav-links.ts` with `href`, `label`, and `icon`
 2. Active state is automatic (based on `usePathname`)
 
 ## Form patterns
@@ -111,3 +122,13 @@ dark:bg-zinc-50 dark:text-zinc-950 dark:hover:bg-zinc-200
 - Use Tailwind `transition` and `transition-colors` for hover/focus states
 - Keep animations subtle — no flashy effects
 - Prefer CSS transitions over JavaScript animations
+
+## Hooks and state
+
+<hooks_rules>
+  <rule id="no_set_state_in_effect" severity="CRITICAL">
+    <description>**ESLint `react-hooks/set-state-in-effect`**: calling `setState()` synchronously inside `useEffect` causes cascading renders and is flagged as a lint error.</description>
+    <workaround>For post-mount DOM effects (e.g. enabling CSS transitions after hydration), use a **ref callback** + `requestAnimationFrame` instead of `useState` + `useEffect`. Example: `const enableTransition = useCallback((node) => { if (node) rAF(() => node.style.transitionDuration = '200ms'); }, [])` and pass as `ref={enableTransition}`.</workaround>
+  </rule>
+</hooks_rules>
+
