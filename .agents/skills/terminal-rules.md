@@ -32,5 +32,15 @@ Read this skill before running commands in the terminal or scripting integration
   </rule>
 
 
+  <rule id="powershell_quoting_parentheses" severity="MANDATORY">
+    <description>**PowerShell Quoting and Parentheses in Commit Messages**</description>
+    <action>When running Git Bash commands inside PowerShell (e.g., `git commit -m "refactor(fuel): ..."`), PowerShell might parse parentheses like `(fuel)` as sub-expressions or split arguments incorrectly, causing command execution or syntax errors.</action>
+    <workaround>Use the PowerShell stop-parsing token `--%` before the command argument to pass it literally:
+      ```powershell
+      & "C:\Program Files\Git\bin\bash.exe" -c --% "git commit -m 'refactor(fuel): ...'"
+      ```
+    </workaround>
+  </rule>
+
 </terminal_rules>
 
