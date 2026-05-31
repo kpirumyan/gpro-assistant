@@ -1,10 +1,13 @@
-# `/debate` Command Execution Guide
+# Debate Execution Guide
 
-When the user triggers the `/debate` command, you MUST execute an automated debate between two subagents following this exact workflow:
+This guide defines how automated debates between subagents must be executed.
+There are two execution modes:
+1. **Live Mode**: Triggered by the user via the `/debate` command. The debate is streamed directly to the chat.
+2. **Silent Mode**: Triggered automatically by the Orchestrator during background tasks to resolve architectural or technical disagreements without interrupting the user.
 
 <debate_workflow>
   <phase name="Preparation">
-    1. Parse the user's prompt to identify the **Topic**, the **Number of Iterations** (N), and the **Roles** of the two participants. If N is not specified, use N = 5. If Roles are not specified, default to `Reviewer` and `Coder`.
+    1. Parse the prompt or current context to identify the **Topic**, the **Number of Iterations** (N), and the **Roles** of the two participants. If N is not specified, use N = 5. If Roles are not specified, default to `Reviewer` and `Coder`.
     2. Read the corresponding role definitions from `.agents/roles/<RoleName>.md` (e.g., `.agents/roles/reviewer.md` and `.agents/roles/coder.md`).
     3. Use the `define_subagent` tool to create the two subagents. Set `enable_write_tools: false`, `enable_subagent_tools: false`, and `enable_mcp_tools: false` to ensure they cannot execute commands or modify code. Give them names corresponding to their roles (e.g., `agent_1` and `agent_2`).
     4. **System Prompt for each agent**:
@@ -26,23 +29,43 @@ When the user triggers the `/debate` command, you MUST execute an automated deba
   <phase name="Facilitation">
     For exactly N iterations (1 iteration = Agent 1 message + Agent 2 message), do the following:
     1. Wait for Agent 1's message.
-    2. **Stream to Chat**: Output Agent 1's message to the user immediately in the chat.
+    2. **Handling Output**:
+       - **Live Mode (`/debate`)**: Stream Agent 1's message to the user immediately in the chat.
+       - **Silent Mode**: Do NOT output to chat. Save the message in memory for the final summary.
     3. **Active Observer (Fact-Check Intervention)**: Before forwarding the message to Agent 2, analyze it against the *Safe Intervention Boundaries*:
        - If the agent is stubbornly denying an indisputable fact (e.g., direct quote from documentation or codebase), you MUST intervene by sending a message to Agent 1: *"Neutral Reminder: according to [Source/Docs], [Fact] works like this. Please acknowledge this fact in your argumentation."*
        - **Safe Intervention Boundaries**: You can ONLY intervene if the fact is 100% provable. If there is even 1% ambiguity or it's a matter of architectural taste, you MUST stay silent. You MUST NOT take sides, suggest solutions, or influence the architectural choice during the debate loop.
     4. Use `send_message` to forward Agent 1's message (and any corrections) to Agent 2.
     5. Wait for Agent 2's message.
-    6. **Stream to Chat**: Output Agent 2's message to the user immediately in the chat.
+    6. **Handling Output**:
+       - **Live Mode (`/debate`)**: Stream Agent 2's message to the user immediately in the chat.
+       - **Silent Mode**: Do NOT output to chat. Save the message in memory.
     7. **Active Observer (Fact-Check Intervention)**: Apply the same Fact-Check Intervention logic to Agent 2's message.
     8. Use `send_message` to forward Agent 2's message back to Agent 1 (unless it is the final iteration).
 
-    *CRITICAL*: You must yield your turn and let the system wake you up when a subagent replies. Output each reply to the user as soon as it arrives to create a live streaming experience. Do not simulate the debate yourself.
+    *CRITICAL*: You must yield your turn and let the system wake you up when a subagent replies. Do not simulate the debate yourself.
   </phase>
 
   <phase name="Final Verdict">
     Once all N iterations are complete:
     1. Use the `manage_subagents` tool to kill the subagents (`Action: "kill_all"`).
     2. Assume the persona of the **Orchestrator** and **Judge**. You must not modify code during this verdict phase. You may consult RAG librarians before making your decision if necessary (see `.agents/skills/rag-for-react-next-docs.md`).
-    3. Output your final verdict in the chat in the same language as the topic prompt. Summarize the technical merits of both sides and make a final, authoritative architectural decision based on the application's context (e.g., Next.js App Router, SSG, performance, etc.).
+    3. **Output & Logging**:
+       - **Live Mode (`/debate`)**: Output your final verdict in the chat in the same language as the topic prompt. Summarize the technical merits of both sides and make a final, authoritative architectural decision based on the application's context.
+       - **Silent Mode**:
+         1. Create a log file in `.agents/logs/`.
+         2. Filename format: `[role1_short]_vs_[role2_short]_[topic_slug]_[timestamp].md` (e.g., `arch_vs_cod_ssr_1717200561.md`). Use abbreviated roles (arch, cod, test, rev) to keep names short.
+         3. File Content: Write a highly structured, punchy Markdown summary followed by the full raw transcript. DO NOT write a boring wall of text for the summary. Use bullet points and concise statements. Structure:
+            - **Context**: 1-2 sentences on what was debated.
+            - **Positions**: Bulleted list of core arguments for each side (max 2-3 short bullets per side).
+            - **Key Clashes**: Where exactly they disagreed (short bullets).
+            - **Interventions**: Notes on any instances where an agent tried to deny objective facts and the Orchestrator had to intervene (or "None" if there were no interventions).
+            - **Verdict**: The Orchestrator's final decision and the concrete reason why.
+            
+            ---
+            
+            **Raw Transcript**:
+            Append the full, chronological log of all messages exchanged during the debate, including any "Neutral Reminder" interventions made by the Orchestrator.
+         4. Tell the user in chat: "I conducted a background debate on [topic]. The winner is [Choice]. Log saved to [path]."
   </phase>
 </debate_workflow>
