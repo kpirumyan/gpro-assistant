@@ -28,114 +28,113 @@ export async function syncRacesBatch(
     lastRaceChecked = raceInfo;
     try {
       const data = await fetchRaceAnalysis(token, raceInfo.season, raceInfo.race);
-      
+
       // Resolve trackId
       let trackId: number | undefined = undefined;
 
-      let calendarEntry = await db.query.seasonCalendars.findFirst({
-        where: and(eq(seasonCalendars.season, raceInfo.season), eq(seasonCalendars.race, raceInfo.race))
-      });
-
-      if (overwrite && !fetchedCalendars.has(raceInfo.season)) {
-        calendarEntry = undefined;
+      let calendarEntry = undefined;
+      if (!overwrite || fetchedCalendars.has(raceInfo.season)) {
+        calendarEntry = await db.query.seasonCalendars.findFirst({
+          where: and(eq(seasonCalendars.season, raceInfo.season), eq(seasonCalendars.race, raceInfo.race))
+        });
       }
 
       if (!calendarEntry) {
-         fetchedCalendars.add(raceInfo.season);
-         if (currentSeason === undefined) {
-            try {
-               const office = await fetchOffice(token);
-               currentSeason = office?.seasonNb ?? -1;
-            } catch {
-               currentSeason = -1;
+        fetchedCalendars.add(raceInfo.season);
+        if (currentSeason === undefined) {
+          try {
+            const office = await fetchOffice(token);
+            currentSeason = office?.seasonNb !== undefined ? Number(office.seasonNb) : -1;
+          } catch {
+            currentSeason = -1;
+          }
+        }
+
+        if (raceInfo.season === currentSeason) {
+          const calData = await fetchCalendar(token);
+          if (calData && Array.isArray(calData.events)) {
+            const races = calData.events.filter((e) => e.eventType === "R");
+            for (const ev of races) {
+              if (ev.idx !== undefined) {
+                const raceNum = Number(ev.idx);
+                const tId = ev.trackId !== undefined ? Number(ev.trackId) : 0;
+
+                if (isNaN(raceNum) || isNaN(tId)) {
+                  continue;
+                }
+
+                await db.insert(seasonCalendars).values({
+                  season: raceInfo.season,
+                  race: raceNum,
+                  trackId: tId
+                }).onConflictDoUpdate({
+                  target: [seasonCalendars.season, seasonCalendars.race],
+                  set: { trackId: tId, updatedAt: new Date() }
+                });
+
+                if (raceNum === raceInfo.race && tId > 0) {
+                  trackId = tId;
+                }
+              }
             }
-         }
+          }
+        } else {
+          const calData = await fetchHistoryCalendar(token, raceInfo.season);
+          if (calData.managers && calData.managers.length > 0) {
+            for (const ev of calData.managers) {
+              if (ev.pos !== undefined && ev.pos !== null && ev.trackId !== undefined && ev.trackId !== null) {
+                const raceNum = Number(ev.pos);
+                const tId = Number(ev.trackId);
 
-         if (raceInfo.season === currentSeason) {
-            const calData = await fetchCalendar(token);
-            if (calData && Array.isArray(calData.events)) {
-               const races = calData.events.filter((e) => e.eventType === "R");
-               for (const ev of races) {
-                  if (ev.idx !== undefined) {
-                     const raceNum = Number(ev.idx);
-                     const tId = ev.trackId !== undefined ? Number(ev.trackId) : 0;
-                     
-                     if (isNaN(raceNum) || isNaN(tId)) {
-                        continue;
-                     }
+                if (isNaN(raceNum) || isNaN(tId)) {
+                  continue;
+                }
 
-                     await db.insert(seasonCalendars).values({
-                        season: raceInfo.season,
-                        race: raceNum,
-                        trackId: tId
-                     }).onConflictDoUpdate({
-                        target: [seasonCalendars.season, seasonCalendars.race],
-                        set: { trackId: tId, updatedAt: new Date() }
-                     });
+                await db.insert(seasonCalendars).values({
+                  season: raceInfo.season,
+                  race: raceNum,
+                  trackId: tId
+                }).onConflictDoUpdate({
+                  target: [seasonCalendars.season, seasonCalendars.race],
+                  set: { trackId: tId, updatedAt: new Date() }
+                });
 
-                     if (raceNum === raceInfo.race && tId > 0) {
-                        trackId = tId;
-                     }
-                  }
-               }
+                if (raceNum === raceInfo.race) {
+                  trackId = tId;
+                }
+              }
             }
-         } else {
-            const calData = await fetchHistoryCalendar(token, raceInfo.season);
-            if (calData.managers && calData.managers.length > 0) {
-               for (const ev of calData.managers) {
-                  if (ev.pos !== undefined && ev.pos !== null && ev.trackId !== undefined && ev.trackId !== null) {
-                     const raceNum = Number(ev.pos);
-                     const tId = Number(ev.trackId);
-                     
-                     if (isNaN(raceNum) || isNaN(tId)) {
-                        continue;
-                     }
-
-                     await db.insert(seasonCalendars).values({
-                        season: raceInfo.season,
-                        race: raceNum,
-                        trackId: tId
-                     }).onConflictDoUpdate({
-                        target: [seasonCalendars.season, seasonCalendars.race],
-                        set: { trackId: tId, updatedAt: new Date() }
-                     });
-
-                     if (raceNum === raceInfo.race) {
-                        trackId = tId;
-                     }
-                  }
-               }
-            }
-         }
+          }
+        }
       } else {
-         trackId = calendarEntry.trackId;
+        trackId = calendarEntry.trackId;
       }
 
       if (trackId) {
-         const trackEntry = await db.query.tracks.findFirst({ where: eq(tracks.id, trackId) });
-         if (!trackEntry) {
-            const trackData = await fetchTrackProfile(token, trackId);
-            await db.insert(tracks).values({
-              id: trackId,
-              name: trackData.trackName || "Unknown",
-              power: trackData.power || 0,
-              acceleration: trackData.accel || 0,
-              handling: trackData.handl || 0,
-              downforce: trackData.downforce || "Unknown",
-              overtaking: trackData.overtaking || "Unknown",
-              suspRigidity: trackData.suspRigidity || "Unknown",
-              fuelConsumption: trackData.fuelConsumption || "Unknown",
-              tyreWear: trackData.tyreWear || "Unknown",
-              gripLevel: trackData.gripLevel || "Unknown",
-              laps: trackData.laps || 0,
-              raceDistance: trackData.raceDistance || "0",
-              lapDistance: trackData.lapDistance || "0",
-              avgSpeed: trackData.avgSpeed || "0",
-              timeInOutPits: trackData.timeInOutPits || "0",
-              nbTurns: trackData.nbTurns || 0,
-              category: trackData.category || "Unknown",
-            }).onConflictDoNothing();
-         }
+        const trackEntry = await db.query.tracks.findFirst({ where: eq(tracks.id, trackId) });
+        if (!trackEntry) {
+          const trackData = await fetchTrackProfile(token, trackId);
+          await db.insert(tracks).values({
+            id: trackId,
+            name: trackData.trackName || "Unknown",
+            power: trackData.power || 0,
+            acceleration: trackData.accel || 0,
+            handling: trackData.handl || 0,
+            downforce: trackData.downforce || "Unknown",
+            overtaking: trackData.overtaking || "Unknown",
+            suspRigidity: trackData.suspRigidity || "Unknown",
+            fuelConsumption: trackData.fuelConsumption || "Unknown",
+            tyreWear: trackData.tyreWear || "Unknown",
+            gripLevel: trackData.gripLevel || "Unknown",
+            laps: trackData.laps || 0,
+            raceDistance: trackData.raceDistance || "0",
+            lapDistance: trackData.lapDistance || "0",
+            avgSpeed: trackData.avgSpeed || "0",
+            timeInOutPits: trackData.timeInOutPits || "0",
+            nbTurns: trackData.nbTurns || 0,
+            category: trackData.category || "Unknown",
+          }).onConflictDoNothing();
+        }
       }
 
       // Save data
@@ -153,10 +152,10 @@ export async function syncRacesBatch(
     }
   }
 
-  return { 
-    syncedCount, 
+  return {
+    syncedCount,
     stoppedReason: "completed",
-    lastRaceChecked 
+    lastRaceChecked
   };
 }
 
@@ -313,24 +312,24 @@ export function calculateFuelAnalytics(data: Partial<RaceAnalysisResponse>): Fue
 
   for (let i = 0; i <= pits.length; i++) {
     const isLastStint = i === pits.length;
-    
+
     // Start fuel for this stint
     const startFuel = i === 0 ? data.startFuel : pits[i - 1].refilledTo;
-    
+
     // Determine end lap for this stint
     const currentStintEndLap = isLastStint ? totalDrivenLaps : (pits[i].lap ?? totalDrivenLaps);
-    
+
     if (startFuel === undefined) {
-       currentStintStartLap = currentStintEndLap + 1;
-       continue;
+      currentStintStartLap = currentStintEndLap + 1;
+      continue;
     }
 
     // Finish fuel for this stint
     const finishFuelReported = isLastStint ? data.finishFuel : pits[i].fuelLeft;
 
     if (finishFuelReported === undefined) {
-       currentStintStartLap = currentStintEndLap + 1;
-       continue;
+      currentStintStartLap = currentStintEndLap + 1;
+      continue;
     }
 
     // Actual finish fuel could be up to +3 greater than reported due to error in game data.
@@ -359,7 +358,7 @@ export function calculateFuelAnalytics(data: Partial<RaceAnalysisResponse>): Fue
         avgFuelPerLapMin: consumedMin / lapsInStint,
         avgFuelPerLapMax: consumedMax / lapsInStint
       });
-      
+
       fullRaceConsumedMin += consumedMin;
       fullRaceConsumedMax += consumedMax;
       fullRaceLapsAnalyzed += lapsInStint;
@@ -474,7 +473,7 @@ export async function prepareSync(
   overwrite: boolean = false
 ): Promise<{ season: number; race: number }[]> {
   const fullRange = generateRaceRange(fromSeason, fromRace, toSeason, toRace);
-  
+
   if (overwrite) {
     return fullRange;
   }
