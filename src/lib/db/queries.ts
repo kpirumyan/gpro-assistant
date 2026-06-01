@@ -1,6 +1,6 @@
 import { eq, desc } from "drizzle-orm";
 import { db } from "./index";
-import { gproCredentials, driverProfiles, carParts, rawRaceData, raceFuelAnalytics, tracks } from "./schema";
+import { gproCredentials, driverProfiles, carParts, rawRaceData, raceFuelAnalytics, tracks, raceDriverSnapshots } from "./schema";
 import type { DriverProfileResponse, CarPartResponse } from "@/lib/gpro/types";
 
 // --- GPRO Credentials ---
@@ -171,7 +171,6 @@ export type FuelAnalyticsListEntry = {
   id: number;
   season: number;
   race: number;
-  group: string;
   type: string;
   stintIndex: number | null;
   lapsAnalyzed: number;
@@ -179,6 +178,8 @@ export type FuelAnalyticsListEntry = {
   avgFuelPerKmMin: string;
   avgFuelPerKmMax: string;
   trackFuelConsumption: string | null;
+  trackName: string | null;
+  pilotName: string | null;
   createdAt: Date;
 };
 
@@ -189,7 +190,6 @@ export async function getFuelAnalyticsList(): Promise<FuelAnalyticsListEntry[]> 
         id: raceFuelAnalytics.id,
         season: rawRaceData.season,
         race: rawRaceData.race,
-        group: rawRaceData.group,
         type: raceFuelAnalytics.type,
         stintIndex: raceFuelAnalytics.stintIndex,
         lapsAnalyzed: raceFuelAnalytics.lapsAnalyzed,
@@ -197,11 +197,14 @@ export async function getFuelAnalyticsList(): Promise<FuelAnalyticsListEntry[]> 
         avgFuelPerKmMin: raceFuelAnalytics.avgFuelPerKmMin,
         avgFuelPerKmMax: raceFuelAnalytics.avgFuelPerKmMax,
         trackFuelConsumption: tracks.fuelConsumption,
+        trackName: tracks.name,
+        pilotName: raceDriverSnapshots.name,
         createdAt: raceFuelAnalytics.createdAt,
       })
       .from(raceFuelAnalytics)
       .innerJoin(rawRaceData, eq(raceFuelAnalytics.rawRaceDataId, rawRaceData.id))
       .leftJoin(tracks, eq(rawRaceData.trackId, tracks.id))
+      .leftJoin(raceDriverSnapshots, eq(rawRaceData.id, raceDriverSnapshots.rawRaceDataId))
       .orderBy(
         desc(rawRaceData.season),
         desc(rawRaceData.race),
