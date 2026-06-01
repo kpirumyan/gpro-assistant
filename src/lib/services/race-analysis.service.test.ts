@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { calculateFuelAnalytics, generateRaceRange, getExistingRacesInRange, prepareSync, syncRacesBatch, saveRaceAnalysisData } from './race-analysis.service';
 import { buildRawRaceData } from '../../test/factories';
-import { fetchRaceAnalysis, fetchHistoryCalendar, fetchTrackProfile } from '../gpro/client';
+import { fetchRaceAnalysis, fetchHistoryCalendar, fetchTrackProfile, fetchOffice, fetchCalendar } from '../gpro/client';
 import { db } from '../db';
 
 vi.mock('../db', () => ({
@@ -33,8 +33,11 @@ vi.mock('../db', () => ({
 vi.mock('../gpro/client', () => ({
   fetchRaceAnalysis: vi.fn(),
   fetchHistoryCalendar: vi.fn(),
-  fetchTrackProfile: vi.fn()
+  fetchTrackProfile: vi.fn(),
+  fetchOffice: vi.fn(),
+  fetchCalendar: vi.fn()
 }));
+
 
 describe('getExistingRacesInRange', () => {
   beforeEach(() => {
@@ -155,6 +158,83 @@ describe('syncRacesBatch', () => {
     
     expect(result.syncedCount).toBe(0);
     expect(result.stoppedReason).toBe('error');
+  });
+
+  it('should call fetchOffice and fetchCalendar for current season and not call fetchHistoryCalendar', async () => {
+    vi.mocked(fetchOffice).mockResolvedValue({ seasonNb: 110 });
+    vi.mocked(fetchCalendar).mockResolvedValue([
+      { idx: "1", trackName: "Melbourne GP", isCurrentRace: 1, season: 110 }
+    ] as unknown as Awaited<ReturnType<typeof fetchCalendar>>);
+    vi.mocked(fetchRaceAnalysis).mockResolvedValue({
+      carPower: 100,
+      startFuel: 100,
+      finishFuel: 10
+    } as unknown as Awaited<ReturnType<typeof fetchRaceAnalysis>>);
+    vi.mocked(fetchTrackProfile).mockResolvedValue({
+      trackName: "Melbourne GP"
+    } as unknown as Awaited<ReturnType<typeof fetchTrackProfile>>);
+    vi.mocked(db.transaction).mockImplementation(async () => {});
+
+    vi.mocked(db.query.seasonCalendars.findFirst).mockResolvedValue(undefined);
+
+    const result = await syncRacesBatch('token', [{ season: 110, race: 1 }]);
+
+    expect(fetchOffice).toHaveBeenCalledTimes(1);
+    expect(fetchCalendar).toHaveBeenCalledTimes(1);
+    expect(fetchHistoryCalendar).not.toHaveBeenCalled();
+    expect(result.syncedCount).toBe(1);
+  });
+
+  it('should call fetchOffice and fetchHistoryCalendar for past seasons and not call fetchCalendar', async () => {
+    vi.mocked(fetchOffice).mockResolvedValue({ seasonNb: 110 });
+    vi.mocked(fetchHistoryCalendar).mockResolvedValue({
+      managers: [{ pos: 1, trackId: 5 }]
+    } as unknown as Awaited<ReturnType<typeof fetchHistoryCalendar>>);
+    vi.mocked(fetchRaceAnalysis).mockResolvedValue({
+      carPower: 100,
+      startFuel: 100,
+      finishFuel: 10
+    } as unknown as Awaited<ReturnType<typeof fetchRaceAnalysis>>);
+    vi.mocked(fetchTrackProfile).mockResolvedValue({
+      trackName: "Test Track"
+    } as unknown as Awaited<ReturnType<typeof fetchTrackProfile>>);
+    vi.mocked(db.transaction).mockImplementation(async () => {});
+
+    vi.mocked(db.query.seasonCalendars.findFirst).mockResolvedValue(undefined);
+
+    const result = await syncRacesBatch('token', [{ season: 109, race: 1 }]);
+
+    expect(fetchOffice).toHaveBeenCalledTimes(1);
+    expect(fetchHistoryCalendar).toHaveBeenCalledTimes(1);
+    expect(fetchCalendar).not.toHaveBeenCalled();
+    expect(result.syncedCount).toBe(1);
+  });
+
+  it('should call fetchOffice only once per batch even if multiple races are requested', async () => {
+    vi.mocked(fetchOffice).mockResolvedValue({ seasonNb: 110 });
+    vi.mocked(fetchCalendar).mockResolvedValue([
+      { idx: "1", trackName: "Melbourne GP", isCurrentRace: 1, season: 110 },
+      { idx: "2", trackName: "Baku GP", isCurrentRace: 0, season: 110 }
+    ] as unknown as Awaited<ReturnType<typeof fetchCalendar>>);
+    vi.mocked(fetchRaceAnalysis).mockResolvedValue({
+      carPower: 100,
+      startFuel: 100,
+      finishFuel: 10
+    } as unknown as Awaited<ReturnType<typeof fetchRaceAnalysis>>);
+    vi.mocked(fetchTrackProfile).mockResolvedValue({
+      trackName: "Melbourne GP"
+    } as unknown as Awaited<ReturnType<typeof fetchTrackProfile>>);
+    vi.mocked(db.transaction).mockImplementation(async () => {});
+
+    vi.mocked(db.query.seasonCalendars.findFirst).mockResolvedValue(undefined);
+
+    const result = await syncRacesBatch('token', [
+      { season: 110, race: 1 },
+      { season: 110, race: 2 }
+    ]);
+
+    expect(fetchOffice).toHaveBeenCalledTimes(1);
+    expect(result.syncedCount).toBe(2);
   });
 });
 

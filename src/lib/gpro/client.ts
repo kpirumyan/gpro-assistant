@@ -1,4 +1,4 @@
-import type { DriverProfileResponse, CarDataResponse, RaceAnalysisResponse, HistoryCalendarResponse, TrackProfileResponse } from "./types";
+import type { DriverProfileResponse, CarDataResponse, RaceAnalysisResponse, HistoryCalendarResponse, TrackProfileResponse, OfficeResponse, CalendarEvent } from "./types";
 
 export class AuthError extends Error {
   constructor(message = "Invalid or expired API token") {
@@ -146,7 +146,7 @@ export async function fetchRaceAnalysis(token: string, season: number, race: num
 /**
  * Fetches the race calendar from the GPRO API.
  */
-export async function fetchCalendar(token: string): Promise<unknown> {
+export async function fetchCalendar(token: string): Promise<CalendarEvent[]> {
   if (!token) throw new Error("API token is required");
 
   const response = await fetch(`${GPRO_API_BASE_URL}/Calendar`, {
@@ -165,7 +165,33 @@ export async function fetchCalendar(token: string): Promise<unknown> {
     throw new Error(`GPRO API error: ${response.status} ${response.statusText}`);
   }
 
-  return response.json();
+  return response.json() as Promise<CalendarEvent[]>;
+}
+
+/**
+ * Fetches the current office details from the GPRO API.
+ * Throws on authentication or server errors.
+ */
+export async function fetchOffice(token: string): Promise<OfficeResponse> {
+  if (!token) throw new Error("API token is required");
+
+  const response = await fetch(`${GPRO_API_BASE_URL}/Office`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      throw new AuthError();
+    }
+    throw new Error(`GPRO API error: ${response.status} ${response.statusText}`);
+  }
+
+  return response.json() as Promise<OfficeResponse>;
 }
 
 /**

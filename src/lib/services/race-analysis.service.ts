@@ -1,6 +1,6 @@
 import { db } from "../db";
 import { rawRaceData, raceCarSnapshots, raceDriverSnapshots, raceFuelAnalytics, seasonCalendars, tracks } from "../db/schema";
-import { fetchRaceAnalysis, fetchHistoryCalendar, fetchTrackProfile } from "../gpro/client";
+import { fetchRaceAnalysis, fetchHistoryCalendar, fetchTrackProfile, fetchOffice, fetchCalendar } from "../gpro/client";
 import type { RaceAnalysisResponse } from "../gpro/types";
 import { eq, and } from "drizzle-orm";
 
@@ -20,11 +20,11 @@ export async function syncRacesBatch(
 ): Promise<SyncResult> {
   let syncedCount = 0;
   let lastRaceChecked: { season: number; race: number } | undefined = undefined;
+  let currentSeason: number | undefined = undefined;
 
   for (const raceInfo of racesToFetch) {
     lastRaceChecked = raceInfo;
     try {
-      console.log(`Fetching race analysis for S${raceInfo.season} R${raceInfo.race}...`);
       const data = await fetchRaceAnalysis(token, raceInfo.season, raceInfo.race);
       
       // Resolve trackId
@@ -35,22 +35,60 @@ export async function syncRacesBatch(
       });
 
       if (!calendarEntry) {
-         console.log(`Fetching calendar for S${raceInfo.season}...`);
-         const calData = await fetchHistoryCalendar(token, raceInfo.season);
-         if (calData.managers && calData.managers.length > 0) {
-            for (const ev of calData.managers) {
-               if (ev.pos && ev.trackId) {
-                  const raceNum = Number(ev.pos);
-                  const tId = Number(ev.trackId);
-                  
-                  await db.insert(seasonCalendars).values({
-                     season: raceInfo.season,
-                     race: raceNum,
-                     trackId: tId
-                  }).onConflictDoNothing();
+         if (currentSeason === undefined) {
+            try {
+               const office = await fetchOffice(token);
+               currentSeason = office?.seasonNb ?? -1;
+            } catch {
+               currentSeason = -1;
+            }
+         }
 
-                  if (raceNum === raceInfo.race) {
-                     trackId = tId;
+         if (raceInfo.season === currentSeason) {
+            const calData = await fetchCalendar(token);
+            if (Array.isArray(calData)) {
+               for (const ev of calData) {
+                  if (ev.idx !== undefined) {
+                     const raceNum = Number(ev.idx);
+                     const tId = ev.trackId !== undefined ? Number(ev.trackId) : 0;
+                     
+                     if (isNaN(raceNum) || isNaN(tId)) {
+                        continue;
+                     }
+
+                     await db.insert(seasonCalendars).values({
+                        season: raceInfo.season,
+                        race: raceNum,
+                        trackId: tId
+                     }).onConflictDoNothing();
+
+                     if (raceNum === raceInfo.race && tId > 0) {
+                        trackId = tId;
+                     }
+                  }
+               }
+            }
+         } else {
+            const calData = await fetchHistoryCalendar(token, raceInfo.season);
+            if (calData.managers && calData.managers.length > 0) {
+               for (const ev of calData.managers) {
+                  if (ev.pos !== undefined && ev.pos !== null && ev.trackId !== undefined && ev.trackId !== null) {
+                     const raceNum = Number(ev.pos);
+                     const tId = Number(ev.trackId);
+                     
+                     if (isNaN(raceNum) || isNaN(tId)) {
+                        continue;
+                     }
+
+                     await db.insert(seasonCalendars).values({
+                        season: raceInfo.season,
+                        race: raceNum,
+                        trackId: tId
+                     }).onConflictDoNothing();
+
+                     if (raceNum === raceInfo.race) {
+                        trackId = tId;
+                     }
                   }
                }
             }
@@ -62,7 +100,6 @@ export async function syncRacesBatch(
       if (trackId) {
          const trackEntry = await db.query.tracks.findFirst({ where: eq(tracks.id, trackId) });
          if (!trackEntry) {
-            console.log(`Fetching track profile for Track ${trackId}...`);
             const trackData = await fetchTrackProfile(token, trackId);
             await db.insert(tracks).values({
               id: trackId,
@@ -93,7 +130,7 @@ export async function syncRacesBatch(
 
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : String(error);
-      console.log(`Failed to fetch S${raceInfo.season} R${raceInfo.race}: ${msg}`);
+      console.error(`Failed to fetch S${raceInfo.season} R${raceInfo.race}: ${msg}`);
       if (msg.toLowerCase().includes("not found")) {
         return { syncedCount, stoppedReason: "not_found", lastRaceChecked };
       } else {

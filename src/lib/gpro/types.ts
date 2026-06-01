@@ -96,6 +96,20 @@ export interface HistoryCalendarResponse {
   }>;
 }
 
+export interface CalendarEvent {
+  idx: string | number;
+  trackName: string;
+  isCurrentRace: number | boolean;
+  season: number;
+  trackId: number | string;
+  [key: string]: unknown;
+}
+
+export interface OfficeResponse {
+  seasonNb: number;
+  [key: string]: unknown;
+}
+
 // --- Track Profile ---
 export interface TrackProfileResponse {
   trackName?: string;
