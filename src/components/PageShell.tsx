@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { Suspense } from "react";
+import { Loader2 } from "lucide-react";
 
 type PageShellProps = {
   title: string;
@@ -15,7 +17,19 @@ export function PageShell({ title, description, children }: PageShellProps) {
       <p className="mt-3 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
         {description}
       </p>
-      {children}
+      {children ? (
+        <div className="mt-8">
+          <Suspense
+            fallback={
+              <div className="flex justify-center p-8">
+                <Loader2 className="h-6 w-6 animate-spin text-zinc-500" />
+              </div>
+            }
+          >
+            {children}
+          </Suspense>
+        </div>
+      ) : null}
     </div>
   );
 }

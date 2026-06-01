@@ -12,7 +12,7 @@ export function SettingsApiKeyForm({
   const [inputValue, setInputValue] = useState("");
 
   return (
-    <section className="mt-10 max-w-2xl rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/60">
+    <section className="max-w-2xl rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/60">
       <div>
         <h2 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
           GPRO API access
