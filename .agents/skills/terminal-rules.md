@@ -43,4 +43,3 @@ Read this skill before running commands in the terminal or scripting integration
   </rule>
 
 </terminal_rules>
-

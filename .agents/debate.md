@@ -9,7 +9,7 @@ There are two execution modes:
   <phase name="Preparation">
     1. Parse the prompt or current context to identify the **Topic**, the **Number of Iterations** (N), and the **Roles** of the two participants. If N is not specified, use N = 5. If Roles are not specified, default to `Reviewer` and `Coder`.
     2. Read the corresponding role definitions from `.agents/roles/<RoleName>.md` (e.g., `.agents/roles/reviewer.md` and `.agents/roles/coder.md`).
-    3. Use the `define_subagent` tool to create the two subagents. Set `enable_write_tools: false`, `enable_subagent_tools: false`, and `enable_mcp_tools: false` to ensure they cannot execute commands or modify code. Give them names corresponding to their roles (e.g., `agent_1` and `agent_2`).
+    3. Use the `define_subagent` tool to create the two subagents. Set `enable_write_tools: true` (to allow them to run RAG commands if their role permits it), `enable_subagent_tools: false`, and `enable_mcp_tools: false`. Give them names corresponding to their roles (e.g., `agent_1` and `agent_2`).
     4. **System Prompt for each agent**:
        - Inject the full contents of their specific `.agents/roles/<RoleName>.md` file so they fully adopt their persona.
        - Append the following debate context: "You are participating in a technical debate. You must defend your choices or critique the opponent's choices strictly from the perspective of your role.
@@ -18,7 +18,7 @@ There are two execution modes:
        1. **Objective Truth**: You MUST NOT dispute established facts (e.g., official documentation, language syntax, clear logic, or existing codebase). If the opponent cites an indisputable fact, you MUST acknowledge the fact itself. However, you are completely free to argue against *how* that fact applies to the current architectural problem. Do not invent absurd edge cases or deny reality to keep the argument going.
        2. **Constructive Agreement**: If the opponent finds a real bug or proves a critical flaw in your logic, you must acknowledge it and concede that specific point rather than defending a bad decision 'on principle'.
 
-       **Mode Restriction**: You are operating in a discussion-only mode. Your ONLY goal is to debate and argue your position. You MUST NOT attempt to write code, modify files, run modifying terminal commands, or create commits.
+       **Mode Restriction**: You are operating in a discussion-only mode. Your ONLY goal is to debate and argue your position. You have access to terminal tools ONLY to run RAG commands (`npm run ask-next-rag` / `npm run ask-react-rag`) if your role permits it to verify facts. You MUST NOT attempt to write code, modify source files, run modifying terminal commands, or create commits.
        </rule>
 
        Reply in the same language as the provided topic prompt."
@@ -65,7 +65,8 @@ There are two execution modes:
             ---
             
             **Raw Transcript**:
-            Append the full, chronological log of all messages exchanged during the debate, including any "Neutral Reminder" interventions made by the Orchestrator.
+            Append the full, chronological log of all messages exchanged during the debate, including any "Neutral Reminder" interventions made by the Orchestrator. 
+            MANDATORY FORMATTING: You must visually separate each message using a horizontal rule (`---`) followed by a clear header (e.g., `### 🗣️ **Reviewer**:`).
          4. Tell the user in chat: "I conducted a background debate on [topic]. The winner is [Choice]. Log saved to [path]."
   </phase>
 
