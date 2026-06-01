@@ -43,6 +43,10 @@ There are two execution modes:
     7. **Active Observer (Fact-Check Intervention)**: Apply the same Fact-Check Intervention logic to Agent 2's message.
     8. Use `send_message` to forward Agent 2's message back to Agent 1 (unless it is the final iteration).
 
+    <rule id="consensus_termination" severity="CRITICAL">
+      The Orchestrator may terminate the debate early ONLY IF both agents have explicitly reached full consensus (e.g., both explicitly agreed to the same compromise). If one agent proposes a compromise, the Orchestrator MUST forward it and wait for the other agent's explicit acceptance. The Orchestrator MUST NEVER render a verdict prematurely if there is no explicit mutual agreement, unless all N iterations are exhausted.
+    </rule>
+
     *CRITICAL*: You must yield your turn and let the system wake you up when a subagent replies. Do not simulate the debate yourself.
   </phase>
 
