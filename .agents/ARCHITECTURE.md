@@ -110,6 +110,11 @@ Next.js App (React UI)
           └──► localStorage (legacy, migrating to DB)
 ```
 
+## Domain Models
+
+- **Raw Race Data**: The raw JSON output from GPRO API for a specific race.
+- **Race Analytics**: Derived data for specific components (e.g. Fuel, Tyres). Stored in `race_fuel_analytics` and `race_tyre_analytics`. Aggregated either per stint or for the full race.
+
 ## Key patterns
 
 <architecture_patterns>

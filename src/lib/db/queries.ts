@@ -1,6 +1,6 @@
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, isNull, or } from "drizzle-orm";
 import { db } from "./index";
-import { gproCredentials, driverProfiles, carParts, rawRaceData, raceFuelAnalytics, tracks, raceDriverSnapshots } from "./schema";
+import { gproCredentials, driverProfiles, carParts, rawRaceData, raceFuelAnalytics, tracks, raceDriverSnapshots, raceTyreAnalytics } from "./schema";
 import type { DriverProfileResponse, CarPartResponse } from "@/lib/gpro/types";
 
 // --- GPRO Credentials ---
@@ -180,6 +180,7 @@ export type FuelAnalyticsListEntry = {
   trackFuelConsumption: string | null;
   trackName: string | null;
   pilotName: string | null;
+  tyre: string | null;
   createdAt: Date;
 };
 
@@ -199,12 +200,24 @@ export async function getFuelAnalyticsList(): Promise<FuelAnalyticsListEntry[]> 
         trackFuelConsumption: tracks.fuelConsumption,
         trackName: tracks.name,
         pilotName: raceDriverSnapshots.name,
+        tyre: raceTyreAnalytics.tyre,
         createdAt: raceFuelAnalytics.createdAt,
       })
       .from(raceFuelAnalytics)
       .innerJoin(rawRaceData, eq(raceFuelAnalytics.rawRaceDataId, rawRaceData.id))
       .leftJoin(tracks, eq(rawRaceData.trackId, tracks.id))
       .leftJoin(raceDriverSnapshots, eq(rawRaceData.id, raceDriverSnapshots.rawRaceDataId))
+      .leftJoin(
+        raceTyreAnalytics,
+        and(
+          eq(raceFuelAnalytics.rawRaceDataId, raceTyreAnalytics.rawRaceDataId),
+          eq(raceFuelAnalytics.type, raceTyreAnalytics.type),
+          or(
+            eq(raceFuelAnalytics.stintIndex, raceTyreAnalytics.stintIndex),
+            and(isNull(raceFuelAnalytics.stintIndex), isNull(raceTyreAnalytics.stintIndex))
+          )
+        )
+      )
       .orderBy(
         desc(rawRaceData.season),
         desc(rawRaceData.race),

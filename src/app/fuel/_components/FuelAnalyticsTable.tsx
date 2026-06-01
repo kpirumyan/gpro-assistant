@@ -90,6 +90,7 @@ export function FuelAnalyticsTable({ data }: Props) {
                 <th className="px-6 py-4">Track</th>
                 <th className="px-6 py-4">Pilot</th>
                 <th className="px-6 py-4">Type</th>
+                <th className="px-6 py-4">Tyres</th>
                 <th className="px-6 py-4">Laps</th>
                 <th className="px-6 py-4">Fast Laps</th>
                 <th className="px-6 py-4">Track Cons.</th>
@@ -148,6 +149,22 @@ export function FuelAnalyticsTable({ data }: Props) {
                           }`}>
                           {label}
                         </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        {entry.tyre && entry.tyre !== "-" ? (
+                          <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${
+                              entry.tyre.toLowerCase().includes("extra soft") ? "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/10 dark:bg-red-400/10 dark:text-red-400" :
+                              entry.tyre.toLowerCase().includes("soft") ? "bg-white text-zinc-900 ring-1 ring-inset ring-zinc-300 dark:bg-zinc-100/10 dark:text-zinc-100 dark:ring-zinc-600" :
+                              entry.tyre.toLowerCase().includes("medium") ? "bg-yellow-50 text-yellow-800 ring-1 ring-inset ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-500" :
+                              entry.tyre.toLowerCase().includes("hard") ? "bg-orange-50 text-orange-700 ring-1 ring-inset ring-orange-600/10 dark:bg-orange-400/10 dark:text-orange-400" :
+                              entry.tyre.toLowerCase().includes("rain") ? "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/10 dark:bg-blue-400/10 dark:text-blue-400" :
+                              "bg-zinc-50 text-zinc-600 ring-1 ring-inset ring-zinc-500/10 dark:bg-zinc-400/10 dark:text-zinc-400"
+                            }`}>
+                            {entry.tyre}
+                          </span>
+                        ) : (
+                          <span className="text-zinc-400 dark:text-zinc-600">-</span>
+                        )}
                       </td>
                       <td className="px-6 py-4 text-zinc-600 dark:text-zinc-300">{entry.lapsAnalyzed}</td>
                       <td className="px-6 py-4 text-zinc-600 dark:text-zinc-300">{entry.fastLapsCount}</td>

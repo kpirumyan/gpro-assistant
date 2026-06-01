@@ -96,6 +96,17 @@ export const raceFuelAnalytics = pgTable("race_fuel_analytics", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const raceTyreAnalytics = pgTable("race_tyre_analytics", {
+  id: serial("id").primaryKey(),
+  rawRaceDataId: integer("raw_race_data_id").references(() => rawRaceData.id).notNull(),
+  type: text("type").notNull(),
+  stintIndex: integer("stint_index"),
+  lapsAnalyzed: integer("laps_analyzed").notNull(),
+  tyre: text("tyre").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const raceCarSnapshots = pgTable("race_car_snapshots", {
   id: serial("id").primaryKey(),
   rawRaceDataId: integer("raw_race_data_id").references(() => rawRaceData.id).notNull(),

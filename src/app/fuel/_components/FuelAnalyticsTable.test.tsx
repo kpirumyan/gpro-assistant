@@ -18,7 +18,8 @@ const mockData: FuelAnalyticsListEntry[] = [
     avgFuelPerKmMin: "0.250",
     avgFuelPerKmMax: "0.300",
     createdAt: new Date(),
-  },
+    tyre: null,
+  } as FuelAnalyticsListEntry,
   {
     id: 2,
     season: 100,
@@ -33,7 +34,24 @@ const mockData: FuelAnalyticsListEntry[] = [
     avgFuelPerKmMin: "0.200",
     avgFuelPerKmMax: "0.200",
     createdAt: new Date(),
-  }
+    tyre: "Soft",
+  } as FuelAnalyticsListEntry,
+  {
+    id: 3,
+    season: 100,
+    race: 1,
+    type: "stint",
+    stintIndex: 2,
+    lapsAnalyzed: 15,
+    fastLapsCount: 0,
+    trackFuelConsumption: "High",
+    trackName: null,
+    pilotName: null,
+    avgFuelPerKmMin: "0.210",
+    avgFuelPerKmMax: "0.210",
+    createdAt: new Date(),
+    tyre: "Extra Soft",
+  } as FuelAnalyticsListEntry
 ];
 
 describe("FuelAnalyticsTable", () => {
@@ -82,5 +100,22 @@ describe("FuelAnalyticsTable", () => {
     // For 0.200: 1 / 0.200 = 5.00
     expect(screen.getByText("3.33 - 4.00")).toBeInTheDocument();
     expect(screen.getByText("5.00")).toBeInTheDocument();
+  });
+
+  it("renders Tyres column with correct values and badges", () => {
+    render(<FuelAnalyticsTable data={mockData} />);
+    
+    // Header should contain Tyres
+    expect(screen.getByText("Tyres")).toBeInTheDocument();
+
+    // Full race should have "-"
+    
+    // We expect "Soft" and "Extra Soft" to be visible
+    expect(screen.getByText("Soft")).toBeInTheDocument();
+    expect(screen.getByText("Extra Soft")).toBeInTheDocument();
+
+    // Check for the "-" text (might be multiple, so we can just check if it's there)
+    const dash = screen.getAllByText("-");
+    expect(dash.length).toBeGreaterThan(0);
   });
 });

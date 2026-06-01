@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { rawRaceData, raceCarSnapshots, raceDriverSnapshots, raceFuelAnalytics, seasonCalendars, tracks } from "../db/schema";
+import { rawRaceData, raceCarSnapshots, raceDriverSnapshots, raceFuelAnalytics, seasonCalendars, tracks, raceTyreAnalytics } from "../db/schema";
 import { fetchRaceAnalysis, fetchHistoryCalendar, fetchTrackProfile, fetchOffice, fetchCalendar } from "../gpro/client";
 import type { RaceAnalysisResponse } from "../gpro/types";
 import { eq, and } from "drizzle-orm";
@@ -185,6 +185,7 @@ export async function saveRaceAnalysisData(season: number, race: number, data: R
 
     // 1.5 Delete old children for this rawRaceDataId (in case it was an update)
     await tx.delete(raceFuelAnalytics).where(eq(raceFuelAnalytics.rawRaceDataId, rawRaceDataId));
+    await tx.delete(raceTyreAnalytics).where(eq(raceTyreAnalytics.rawRaceDataId, rawRaceDataId));
     await tx.delete(raceDriverSnapshots).where(eq(raceDriverSnapshots.rawRaceDataId, rawRaceDataId));
     await tx.delete(raceCarSnapshots).where(eq(raceCarSnapshots.rawRaceDataId, rawRaceDataId));
 
@@ -264,6 +265,17 @@ export async function saveRaceAnalysisData(season: number, race: number, data: R
           rawRaceDataId,
           avgFuelPerKmMin: a.avgFuelPerKmMin.toString(),
           avgFuelPerKmMax: a.avgFuelPerKmMax.toString(),
+        }))
+      );
+    }
+
+    // 5. Calculate and insert race_tyre_analytics
+    const tyreAnalytics = calculateTyreAnalytics(data as Partial<RaceAnalysisResponse>);
+    if (tyreAnalytics.length > 0) {
+      await tx.insert(raceTyreAnalytics).values(
+        tyreAnalytics.map(a => ({
+          ...a,
+          rawRaceDataId,
         }))
       );
     }
@@ -387,6 +399,73 @@ export function calculateFuelAnalytics(data: Partial<RaceAnalysisResponse>, lapD
       fastLapsCount: fullRaceFastLaps,
       avgFuelPerKmMin: (fullRaceConsumedMin / fullRaceLapsAnalyzed) / lapDistance,
       avgFuelPerKmMax: (fullRaceConsumedMax / fullRaceLapsAnalyzed) / lapDistance
+    });
+  }
+
+  return results;
+}
+
+export interface TyreAnalyticsResult {
+  type: 'stint' | 'full_race';
+  stintIndex: number | null;
+  lapsAnalyzed: number;
+  tyre: string;
+}
+
+/**
+ * Calculates tyre analytics from the race analysis response.
+ */
+export function calculateTyreAnalytics(data: Partial<RaceAnalysisResponse>): TyreAnalyticsResult[] {
+  const results: TyreAnalyticsResult[] = [];
+  const pits = data.pits || [];
+  const laps = data.laps || [];
+
+  if (laps.length === 0) {
+    return results;
+  }
+
+  const startTyre = (data.startTyres as string) || (data as { car?: { tyres?: string } }).car?.tyres || "Unknown";
+  
+  const totalDrivenLaps = laps.length - 1;
+  let currentStintStartLap = 1;
+  let validStintsCount = 0;
+  let fullRaceLapsAnalyzed = 0;
+
+  for (let i = 0; i <= pits.length; i++) {
+    const isLastStint = i === pits.length;
+    
+    let tyreName = "Unknown";
+    if (i === 0) {
+      tyreName = startTyre;
+    } else {
+      const pitData = pits[i - 1];
+      tyreName = (pitData as { tyres?: string, tyre?: string }).tyres || (pitData as { tyres?: string, tyre?: string }).tyre || "Unknown";
+    }
+
+    const currentStintEndLap = isLastStint ? totalDrivenLaps : (pits[i].lap ?? totalDrivenLaps);
+    const lapsInStint = currentStintEndLap - currentStintStartLap + 1;
+
+    if (lapsInStint >= 10) {
+      results.push({
+        type: 'stint',
+        stintIndex: i + 1,
+        lapsAnalyzed: lapsInStint,
+        tyre: tyreName,
+      });
+
+      fullRaceLapsAnalyzed += lapsInStint;
+      validStintsCount++;
+    }
+
+    currentStintStartLap = currentStintEndLap + 1;
+  }
+
+  if (validStintsCount > 0 && fullRaceLapsAnalyzed === totalDrivenLaps) {
+    results.push({
+      type: 'full_race',
+      stintIndex: null,
+      lapsAnalyzed: fullRaceLapsAnalyzed,
+      tyre: "-",
     });
   }
 

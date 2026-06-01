@@ -1,0 +1,1047 @@
+{
+  "id": "cc4bac07-6580-4687-a442-931576cf95dd",
+  "prevId": "56ffe812-0767-4f2c-8bc1-bb355d654769",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.car_parts": {
+      "name": "car_parts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "level": {
+          "name": "level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "wear": {
+          "name": "wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "car_parts_name_unique": {
+          "name": "car_parts_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.driver_profiles": {
+      "name": "driver_profiles",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "overall": {
+          "name": "overall",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "concentration": {
+          "name": "concentration",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "talent": {
+          "name": "talent",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "aggression": {
+          "name": "aggression",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "experience": {
+          "name": "experience",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "technical_insight": {
+          "name": "technical_insight",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stamina": {
+          "name": "stamina",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "charisma": {
+          "name": "charisma",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "motivation": {
+          "name": "motivation",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reputation": {
+          "name": "reputation",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "weight": {
+          "name": "weight",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "age": {
+          "name": "age",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "energy": {
+          "name": "energy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.gpro_credentials": {
+      "name": "gpro_credentials",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.race_car_snapshots": {
+      "name": "race_car_snapshots",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "raw_race_data_id": {
+          "name": "raw_race_data_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "power": {
+          "name": "power",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "handling": {
+          "name": "handling",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "acceleration": {
+          "name": "acceleration",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chassis_lvl": {
+          "name": "chassis_lvl",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chassis_start_wear": {
+          "name": "chassis_start_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chassis_finish_wear": {
+          "name": "chassis_finish_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "engine_lvl": {
+          "name": "engine_lvl",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "engine_start_wear": {
+          "name": "engine_start_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "engine_finish_wear": {
+          "name": "engine_finish_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "f_wing_lvl": {
+          "name": "f_wing_lvl",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "f_wing_start_wear": {
+          "name": "f_wing_start_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "f_wing_finish_wear": {
+          "name": "f_wing_finish_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "r_wing_lvl": {
+          "name": "r_wing_lvl",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "r_wing_start_wear": {
+          "name": "r_wing_start_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "r_wing_finish_wear": {
+          "name": "r_wing_finish_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "underbody_lvl": {
+          "name": "underbody_lvl",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "underbody_start_wear": {
+          "name": "underbody_start_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "underbody_finish_wear": {
+          "name": "underbody_finish_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sidepods_lvl": {
+          "name": "sidepods_lvl",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sidepods_start_wear": {
+          "name": "sidepods_start_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sidepods_finish_wear": {
+          "name": "sidepods_finish_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cooling_lvl": {
+          "name": "cooling_lvl",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cooling_start_wear": {
+          "name": "cooling_start_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cooling_finish_wear": {
+          "name": "cooling_finish_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gearbox_lvl": {
+          "name": "gearbox_lvl",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gearbox_start_wear": {
+          "name": "gearbox_start_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gearbox_finish_wear": {
+          "name": "gearbox_finish_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "brakes_lvl": {
+          "name": "brakes_lvl",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "brakes_start_wear": {
+          "name": "brakes_start_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "brakes_finish_wear": {
+          "name": "brakes_finish_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "suspension_lvl": {
+          "name": "suspension_lvl",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "suspension_start_wear": {
+          "name": "suspension_start_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "suspension_finish_wear": {
+          "name": "suspension_finish_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "electronics_lvl": {
+          "name": "electronics_lvl",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "electronics_start_wear": {
+          "name": "electronics_start_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "electronics_finish_wear": {
+          "name": "electronics_finish_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "race_car_snapshots_raw_race_data_id_raw_race_data_id_fk": {
+          "name": "race_car_snapshots_raw_race_data_id_raw_race_data_id_fk",
+          "tableFrom": "race_car_snapshots",
+          "tableTo": "raw_race_data",
+          "columnsFrom": [
+            "raw_race_data_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.race_driver_snapshots": {
+      "name": "race_driver_snapshots",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "raw_race_data_id": {
+          "name": "raw_race_data_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "overall": {
+          "name": "overall",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "concentration": {
+          "name": "concentration",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "talent": {
+          "name": "talent",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "aggression": {
+          "name": "aggression",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "experience": {
+          "name": "experience",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "technical_insight": {
+          "name": "technical_insight",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stamina": {
+          "name": "stamina",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "charisma": {
+          "name": "charisma",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "motivation": {
+          "name": "motivation",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reputation": {
+          "name": "reputation",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "weight": {
+          "name": "weight",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "race_driver_snapshots_raw_race_data_id_raw_race_data_id_fk": {
+          "name": "race_driver_snapshots_raw_race_data_id_raw_race_data_id_fk",
+          "tableFrom": "race_driver_snapshots",
+          "tableTo": "raw_race_data",
+          "columnsFrom": [
+            "raw_race_data_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.race_fuel_analytics": {
+      "name": "race_fuel_analytics",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "raw_race_data_id": {
+          "name": "raw_race_data_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stint_index": {
+          "name": "stint_index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "laps_analyzed": {
+          "name": "laps_analyzed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fast_laps_count": {
+          "name": "fast_laps_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "avg_fuel_per_km_min": {
+          "name": "avg_fuel_per_km_min",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "avg_fuel_per_km_max": {
+          "name": "avg_fuel_per_km_max",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "race_fuel_analytics_raw_race_data_id_raw_race_data_id_fk": {
+          "name": "race_fuel_analytics_raw_race_data_id_raw_race_data_id_fk",
+          "tableFrom": "race_fuel_analytics",
+          "tableTo": "raw_race_data",
+          "columnsFrom": [
+            "raw_race_data_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.race_tyre_analytics": {
+      "name": "race_tyre_analytics",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "raw_race_data_id": {
+          "name": "raw_race_data_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stint_index": {
+          "name": "stint_index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "laps_analyzed": {
+          "name": "laps_analyzed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tyre": {
+          "name": "tyre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "race_tyre_analytics_raw_race_data_id_raw_race_data_id_fk": {
+          "name": "race_tyre_analytics_raw_race_data_id_raw_race_data_id_fk",
+          "tableFrom": "race_tyre_analytics",
+          "tableTo": "raw_race_data",
+          "columnsFrom": [
+            "raw_race_data_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.raw_race_data": {
+      "name": "raw_race_data",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "season": {
+          "name": "season",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "race": {
+          "name": "race",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "track_id": {
+          "name": "track_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "group": {
+          "name": "group",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "raw_data": {
+          "name": "raw_data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "raw_race_data_track_id_tracks_id_fk": {
+          "name": "raw_race_data_track_id_tracks_id_fk",
+          "tableFrom": "raw_race_data",
+          "tableTo": "tracks",
+          "columnsFrom": [
+            "track_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "raw_race_data_season_race_unique": {
+          "name": "raw_race_data_season_race_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "season",
+            "race"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.season_calendars": {
+      "name": "season_calendars",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "season": {
+          "name": "season",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "race": {
+          "name": "race",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "track_id": {
+          "name": "track_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "season_calendars_season_race_unique": {
+          "name": "season_calendars_season_race_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "season",
+            "race"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.tracks": {
+      "name": "tracks",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "power": {
+          "name": "power",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "acceleration": {
+          "name": "acceleration",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "handling": {
+          "name": "handling",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "downforce": {
+          "name": "downforce",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "overtaking": {
+          "name": "overtaking",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "susp_rigidity": {
+          "name": "susp_rigidity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fuel_consumption": {
+          "name": "fuel_consumption",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tyre_wear": {
+          "name": "tyre_wear",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "grip_level": {
+          "name": "grip_level",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "laps": {
+          "name": "laps",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "race_distance": {
+          "name": "race_distance",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lap_distance": {
+          "name": "lap_distance",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "avg_speed": {
+          "name": "avg_speed",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "time_in_out_pits": {
+          "name": "time_in_out_pits",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nb_turns": {
+          "name": "nb_turns",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

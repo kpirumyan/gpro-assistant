@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { calculateFuelAnalytics, generateRaceRange, getExistingRacesInRange, prepareSync, syncRacesBatch, saveRaceAnalysisData } from './race-analysis.service';
+import { calculateFuelAnalytics, calculateTyreAnalytics, generateRaceRange, getExistingRacesInRange, prepareSync, syncRacesBatch, saveRaceAnalysisData } from './race-analysis.service';
 import { buildRawRaceData } from '../../test/factories';
 import { fetchRaceAnalysis, fetchHistoryCalendar, fetchTrackProfile, fetchOffice, fetchCalendar } from '../gpro/client';
 import { db } from '../db';
@@ -266,9 +266,9 @@ describe('saveRaceAnalysisData', () => {
     const mockData = { carPower: 100, group: 'A' } as unknown as import('../gpro/types').RaceAnalysisResponse;
     await saveRaceAnalysisData(100, 15, mockData, 1);
 
-    // Should call insert for rawRaceData (with onConflictDoUpdate), then 3 deletes for children, then inserts for children
+    // Should call insert for rawRaceData (with onConflictDoUpdate), then 4 deletes for children, then inserts for children
     expect(mockTx.insert).toHaveBeenCalled();
-    expect(mockTx.delete).toHaveBeenCalledTimes(3); // raceFuelAnalytics, raceDriverSnapshots, raceCarSnapshots
+    expect(mockTx.delete).toHaveBeenCalledTimes(4); // raceFuelAnalytics, raceDriverSnapshots, raceCarSnapshots, raceTyreAnalytics
   });
 });
 
@@ -478,5 +478,45 @@ describe('calculateFuelAnalytics', () => {
     expect(stint1?.fastLapsCount).toBe(2);
     expect(stint2?.fastLapsCount).toBe(1);
     expect(fullRace?.fastLapsCount).toBe(3); // 2 from stint 1 + 1 from stint 2
+  });
+});
+
+describe('calculateTyreAnalytics', () => {
+  it('should return empty array if no laps or startTyres', () => {
+    expect(calculateTyreAnalytics({})).toEqual([]);
+    expect(calculateTyreAnalytics({ startTyres: "Soft" })).toEqual([]);
+    expect(calculateTyreAnalytics({ laps: [{}] })).toEqual([]);
+  });
+
+  it('should extract tyre correctly for stints and create full_race record', () => {
+    const data = {
+      startTyres: "Soft", // first stint tyre
+      laps: Array(21).fill({ boostLap: 0 }),
+      pits: [{ lap: 10, tyres: "Medium" }] // second stint tyre
+    };
+
+    const results = calculateTyreAnalytics(data);
+    const stint1 = results.find((r) => r.type === 'stint' && r.stintIndex === 1);
+    const stint2 = results.find((r) => r.type === 'stint' && r.stintIndex === 2);
+    const fullRace = results.find((r) => r.type === 'full_race');
+    
+    expect(stint1?.tyre).toBe("Soft");
+    expect(stint2?.tyre).toBe("Medium");
+    expect(fullRace?.tyre).toBe("-");
+  });
+
+  it('should fallback to other tyre fields when extracting tyres', () => {
+    const data = {
+      car: { tyres: "Extra Soft" }, // fallback for first stint
+      laps: Array(21).fill({ boostLap: 0 }),
+      pits: [{ lap: 10, tyre: "Hard" }] // fallback for second stint
+    };
+
+    const results = calculateTyreAnalytics(data);
+    const stint1 = results.find((r) => r.type === 'stint' && r.stintIndex === 1);
+    const stint2 = results.find((r) => r.type === 'stint' && r.stintIndex === 2);
+    
+    expect(stint1?.tyre).toBe("Extra Soft");
+    expect(stint2?.tyre).toBe("Hard");
   });
 });
