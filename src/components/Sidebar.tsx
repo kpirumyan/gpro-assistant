@@ -6,51 +6,26 @@ import { useCallback, useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { navLinks } from "@/lib/nav-links";
 import { SidebarTooltip } from "@/components/SidebarTooltip";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 export const STORAGE_KEY = "sidebar-collapsed";
 
-function readCollapsed(): boolean | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? stored === "true" : null;
-  } catch {
-    return null;
-  }
-}
-
-function writeCollapsed(value: boolean): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, String(value));
-  } catch {
-    // localStorage may be unavailable in some environments
-  }
-}
-
 export function Sidebar() {
   // Always start expanded (false) to match server render and prevent hydration mismatch.
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useLocalStorage(STORAGE_KEY, false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
 
-  // Restore state from localStorage after hydration.
+  // Set mounted state after hydration to enable transitions.
   useEffect(() => {
     requestAnimationFrame(() => {
-      const stored = readCollapsed();
-      if (stored !== null) {
-        setCollapsed(stored);
-      }
       setMounted(true);
     });
   }, []);
 
   const toggle = useCallback(() => {
-    setCollapsed((prev) => {
-      const next = !prev;
-      writeCollapsed(next);
-      return next;
-    });
-  }, []);
+    setCollapsed((prev) => !prev);
+  }, [setCollapsed]);
 
   const transitionClass = mounted
     ? "transition-all duration-200"

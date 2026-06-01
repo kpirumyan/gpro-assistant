@@ -1,15 +1,42 @@
+"use client";
+
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 import type { FuelAnalyticsListEntry } from "@/lib/db/queries";
+
+type FuelUnit = 'l_km' | 'l_100km' | 'km_l';
 
 type Props = {
   data: FuelAnalyticsListEntry[];
 };
 
 export function FuelAnalyticsTable({ data }: Props) {
+  const [unit, setUnit] = useLocalStorage<FuelUnit>('fuel-display-unit', 'l_km');
+
+  const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setUnit(e.target.value as FuelUnit);
+  };
+
+  let headerText = "Est. Consumption (L/km)";
+  if (unit === 'l_100km') headerText = "Est. Consumption (L/100km)";
+  if (unit === 'km_l') headerText = "Est. Consumption (km/L)";
   return (
     <section className="rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900/60 overflow-hidden">
-      <div className="p-6 border-b border-zinc-200 dark:border-zinc-800">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Fuel Consumption Analytics</h2>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Calculated fuel usage ranges from your synced race history.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-6 border-b border-zinc-200 dark:border-zinc-800">
+        <div>
+          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Fuel Consumption Analytics</h2>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Calculated fuel usage ranges from your synced race history.</p>
+        </div>
+        <div className="mt-4 sm:mt-0">
+          <select 
+            value={unit} 
+            onChange={handleUnitChange}
+            className="block w-full sm:w-auto rounded-md border-0 py-1.5 pl-3 pr-10 text-zinc-900 ring-1 ring-inset ring-zinc-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-zinc-700 dark:focus:ring-indigo-500"
+          >
+            <option value="l_km">L/km</option>
+            <option value="l_100km">L/100km</option>
+            <option value="km_l">km/L</option>
+          </select>
+        </div>
       </div>
 
       {data.length > 0 ? (
@@ -23,7 +50,7 @@ export function FuelAnalyticsTable({ data }: Props) {
                 <th className="px-6 py-4">Laps</th>
                 <th className="px-6 py-4">Fast Laps</th>
                 <th className="px-6 py-4">Track Cons.</th>
-                <th className="px-6 py-4">Est. Consumption (L/km)</th>
+                <th className="px-6 py-4">{headerText}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800 text-sm">
@@ -39,8 +66,22 @@ export function FuelAnalyticsTable({ data }: Props) {
                   }
 
                   const label = entry.type === "stint" ? `Stint ${entry.stintIndex}` : "Full Race";
-                  const minStr = parseFloat(entry.avgFuelPerKmMin).toFixed(3);
-                  const maxStr = parseFloat(entry.avgFuelPerKmMax).toFixed(3);
+                  const minVal = parseFloat(entry.avgFuelPerKmMin);
+                  const maxVal = parseFloat(entry.avgFuelPerKmMax);
+                  
+                  let minFormatted = minVal;
+                  let maxFormatted = maxVal;
+                  
+                  if (unit === 'l_100km') {
+                    minFormatted = minVal * 100;
+                    maxFormatted = maxVal * 100;
+                  } else if (unit === 'km_l') {
+                    minFormatted = 1 / maxVal;
+                    maxFormatted = 1 / minVal;
+                  }
+                  
+                  const minStr = minFormatted.toFixed(3);
+                  const maxStr = maxFormatted.toFixed(3);
                   
                   const bgClass = isAlternate 
                     ? "bg-zinc-100 dark:bg-zinc-800/40 hover:bg-zinc-200/70 dark:hover:bg-zinc-700/40" 

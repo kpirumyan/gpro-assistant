@@ -148,9 +148,9 @@ Next.js App (React UI)
     <description>For complex domain logic, calculators, and services (especially inside `src/lib/`), we maintain a `README.md` containing public API documentation and Mermaid architecture diagrams directly within the service's directory. This keeps the design close to the implementation.</description>
   </pattern>
   
-  <pattern id="sidebar_state_persistence">
-    <name>Sidebar state persistence via localStorage</name>
-    <description>The collapsible sidebar stores its expanded/collapsed state in `localStorage` under the key `sidebar-collapsed`. On first visit (no stored value), the sidebar defaults to expanded. On mobile viewports, it is always collapsed regardless of stored state.</description>
+  <pattern id="client_state_persistence">
+    <name>Client state persistence via useLocalStorage hook</name>
+    <description>For persisting client-side UI state (like sidebar expansion or fuel unit selection), we use the custom `useLocalStorage` hook located in `src/hooks/useLocalStorage.ts`. This hook safely handles hydration, prevents cascading renders, and wraps access in `try/catch` to prevent crashes in strict browser environments (e.g. Safari private mode).</description>
   </pattern>
 </architecture_patterns>
 
