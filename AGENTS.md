@@ -93,7 +93,7 @@ Read `.agents/ARCHITECTURE.md` before making structural changes. **Update it** w
 
 <documentation_maintenance>
   <rule id="readme">At commit time, check if `README.md` needs updating (routes, scripts, prerequisites).</rule>
-  <rule id="architecture" severity="TABOO">At commit time, check if `.agents/ARCHITECTURE.md` needs updating (structure, patterns, decisions). Never skip this. If you introduce a new design pattern (even in tests), you MUST update this file.</rule>
+  <rule id="architecture" severity="TABOO">At commit time, check if `.agents/ARCHITECTURE.md` needs updating (structure, patterns, decisions). Never skip this. If you introduce a new design pattern (even in tests), you MUST update this file. Any new Architecture Decision Records (ADRs) MUST be created as standalone markdown files under `.agents/adr/` following the `adr-###-[description].md` naming convention, and then linked in `.agents/ARCHITECTURE.md`.</rule>
   <rule id="env_example">At commit time, check if `.env.example` needs updating if new environment variables were introduced.</rule>
   <rule id="self_correction" severity="CRITICAL">Whenever you make a critical error, discover a bug in your own workflow, or learn a required workaround, you MUST immediately document it in the relevant `.agents/` rules file or `AGENTS.md`. Do not simply apologize and promise to remember it — write it down so future agent sessions will not repeat the mistake.</rule>
   <rule id="xml_for_rules" severity="MANDATORY">Always use XML-style tags (e.g. &lt;rule&gt;, &lt;workflow&gt;, &lt;mindset&gt;) to wrap important instructions, workflows, and checklists whenever you create or update files under `.agents/skills/` or `AGENTS.md`.</rule>
