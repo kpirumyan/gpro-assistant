@@ -78,6 +78,13 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
   <rule id="no_env_workarounds" severity="CRITICAL">You MUST NEVER use workarounds to access `.env.local` or `.env` in terminal commands (e.g. `source .env.local`, `export $(cat .env.local)`). If a script cannot access environment variables, STOP immediately and report the issue to the user. Do not try to bypass script bugs by loading secrets via shell commands.</rule>
 </environment_rules>
 
+## Sandbox / Temporary Files
+
+<rule id="no_temp_files_in_workspace" severity="CRITICAL">
+  <description>Do NOT create temporary or one-off scripts, files, or outputs in the user's workspace (e.g. scripts/check-*.ts).</description>
+  <action>Always create temporary files, one-off scripts, and debug helpers in the agent's dedicated scratch directory: `C:\Users\37493\.gemini\antigravity\brain\<conversation-id>\scratch\` (using full absolute paths). Never leave temporary files in the user's workspace directories. If you must run a script, run it from the scratch directory or remove it immediately if it was created in the workspace by necessity.</action>
+</rule>
+
 ## Architecture
 
 Read `.agents/ARCHITECTURE.md` before making structural changes. **Update it** when the project structure, data flow, or key patterns change. This file is the agent's "memory" between sessions.
