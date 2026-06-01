@@ -27,6 +27,8 @@ export function FuelSyncPanel({ latestSyncedRace }: FuelSyncPanelProps) {
     missingRaces,
     progress,
     isBackward,
+    overwrite,
+    setOverwrite,
     handlePrepare,
     handleStartSync,
     handleCancel,
@@ -131,6 +133,20 @@ export function FuelSyncPanel({ latestSyncedRace }: FuelSyncPanelProps) {
                   </div>
                 </>
               )}
+            </div>
+
+            <div className="flex items-center gap-2 mt-2">
+              <input
+                type="checkbox"
+                id="overwriteExisting"
+                checked={overwrite}
+                onChange={(e) => setOverwrite(e.target.checked)}
+                disabled={step !== "idle" && step !== "confirm"}
+                className="size-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:focus:ring-zinc-50"
+              />
+              <label htmlFor="overwriteExisting" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                Overwrite existing data
+              </label>
             </div>
 
             {isBackward && (

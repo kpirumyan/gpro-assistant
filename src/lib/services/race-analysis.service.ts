@@ -121,9 +121,22 @@ export async function saveRaceAnalysisData(season: number, race: number, data: R
       trackId,
       group: data.group ? String(data.group) : "Unknown",
       rawData: data as Record<string, unknown>,
+    }).onConflictDoUpdate({
+      target: [rawRaceData.season, rawRaceData.race],
+      set: {
+        trackId,
+        group: data.group ? String(data.group) : "Unknown",
+        rawData: data as Record<string, unknown>,
+        updatedAt: new Date(),
+      }
     }).returning({ id: rawRaceData.id });
 
     const rawRaceDataId = insertedAnalysis.id;
+
+    // 1.5 Delete old children for this rawRaceDataId (in case it was an update)
+    await tx.delete(raceFuelAnalytics).where(eq(raceFuelAnalytics.rawRaceDataId, rawRaceDataId));
+    await tx.delete(raceDriverSnapshots).where(eq(raceDriverSnapshots.rawRaceDataId, rawRaceDataId));
+    await tx.delete(raceCarSnapshots).where(eq(raceCarSnapshots.rawRaceDataId, rawRaceDataId));
 
     // 2. Insert race_car_snapshots
     await tx.insert(raceCarSnapshots).values({
@@ -406,9 +419,15 @@ export async function prepareSync(
   fromSeason: number,
   fromRace: number,
   toSeason: number,
-  toRace: number
+  toRace: number,
+  overwrite: boolean = false
 ): Promise<{ season: number; race: number }[]> {
   const fullRange = generateRaceRange(fromSeason, fromRace, toSeason, toRace);
+  
+  if (overwrite) {
+    return fullRange;
+  }
+
   const existingRaces = await getExistingRacesInRange(fromSeason, fromRace, toSeason, toRace);
 
   const missingRaces: { season: number; race: number }[] = [];

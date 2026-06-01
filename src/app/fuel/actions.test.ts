@@ -35,7 +35,19 @@ describe('Race Analysis Server Actions', () => {
 
       // Assert
       expect(result).toEqual({ success: true, missingRaces });
-      expect(prepareSync).toHaveBeenCalledWith(103, 15, 103, 17);
+      expect(prepareSync).toHaveBeenCalledWith(103, 15, 103, 17, undefined);
+    });
+
+    it('passes overwrite flag to prepareSync', async () => {
+      // Arrange
+      vi.mocked(prepareSync).mockResolvedValue([]);
+
+      // Act
+      const result = await prepareSyncAction(103, 15, 103, 17, true);
+
+      // Assert
+      expect(result).toEqual({ success: true, missingRaces: [] });
+      expect(prepareSync).toHaveBeenCalledWith(103, 15, 103, 17, true);
     });
 
     it('returns error on failure', async () => {

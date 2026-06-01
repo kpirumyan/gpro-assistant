@@ -71,4 +71,49 @@ describe("FuelSyncPanel", () => {
     // Should show syncing and then success
     expect(await screen.findByText(/successfully synced 2 races/i)).toBeInTheDocument();
   });
+
+  it("toggles overwrite checkbox and passes it to prepareAction", async () => {
+    const user = userEvent.setup();
+    mockPrepare.mockResolvedValue({ success: true, missingRaces: [{ season: 100, race: 1 }] });
+    render(<FuelSyncPanel latestSyncedRace={{ season: 100, race: 1 }} />);
+
+    const overwriteCheckbox = screen.getByRole("checkbox", { name: /overwrite existing data/i });
+    expect(overwriteCheckbox).not.toBeChecked();
+
+    await user.click(overwriteCheckbox);
+    expect(overwriteCheckbox).toBeChecked();
+
+    await user.click(screen.getByRole("button", { name: /sync fuel data/i }));
+
+    expect(mockPrepare).toHaveBeenCalledWith(100, 1, 100, 1, true);
+  });
+
+  it("disables overwrite checkbox during sync process", async () => {
+    const user = userEvent.setup();
+    // Use an unresolved promise to keep the component in "syncing" state
+    let resolveSync: (value: { success: true; syncedCount: number } | { success: false; error: string }) => void;
+    mockPrepare.mockResolvedValue({ success: true, missingRaces: [{ season: 100, race: 1 }] });
+    mockSyncBatch.mockReturnValue(new Promise(res => { resolveSync = res; }));
+
+    render(<FuelSyncPanel latestSyncedRace={{ season: 100, race: 1 }} />);
+    const overwriteCheckbox = screen.getByRole("checkbox", { name: /overwrite existing data/i });
+    
+    expect(overwriteCheckbox).toBeEnabled();
+
+    // Go to confirm
+    await user.click(screen.getByRole("button", { name: /sync fuel data/i }));
+    expect(await screen.findByRole("button", { name: /confirm sync/i })).toBeInTheDocument();
+    
+    // Should still be enabled in confirm step
+    expect(overwriteCheckbox).toBeEnabled();
+
+    // Start sync
+    await user.click(screen.getByRole("button", { name: /confirm sync/i }));
+
+    // Should be disabled during syncing
+    expect(overwriteCheckbox).toBeDisabled();
+    
+    // Cleanup to prevent open handles
+    resolveSync!({ success: true, syncedCount: 1 });
+  });
 });

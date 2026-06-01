@@ -9,6 +9,7 @@ export function useRaceSync(latestSyncedRace: { season: number; race: number } |
   const [fromRace, setFromRace] = useState(latestSyncedRace ? latestSyncedRace.race : 1);
   const [toSeason, setToSeason] = useState(latestSyncedRace ? latestSyncedRace.season : 100);
   const [toRace, setToRace] = useState(latestSyncedRace ? latestSyncedRace.race : 1);
+  const [overwrite, setOverwrite] = useState(false);
 
   const [step, setStep] = useState<"idle" | "preparing" | "confirm" | "syncing">("idle");
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +35,7 @@ export function useRaceSync(latestSyncedRace: { season: number; race: number } |
     const tRace = syncMode === "single" ? fromRace : toRace;
 
     startTransition(async () => {
-      const res = await prepareSyncAction(fromSeason, fromRace, tSeason, tRace);
+      const res = await prepareSyncAction(fromSeason, fromRace, tSeason, tRace, overwrite);
 
       if (!res.success) {
         setError(res.error);
@@ -110,6 +111,8 @@ export function useRaceSync(latestSyncedRace: { season: number; race: number } |
     missingRaces,
     progress,
     isBackward,
+    overwrite,
+    setOverwrite,
     handlePrepare,
     handleStartSync,
     handleCancel,

@@ -4,8 +4,6 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 import SettingsPage from "./page";
 import { SettingsApiKeyForm } from "./_components/SettingsApiKeyForm";
 import * as actions from "@/app/settings/actions";
-import * as queries from "@/lib/db/queries";
-import { buildGproCredentials } from "@/test/factories";
 
 vi.mock("@/app/settings/actions", () => ({
   saveApiKey: vi.fn(),

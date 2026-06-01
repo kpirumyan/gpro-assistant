@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { PageShell } from "./PageShell";
-import { Suspense } from "react";
 
 describe("PageShell", () => {
   it("renders the title and description correctly", () => {

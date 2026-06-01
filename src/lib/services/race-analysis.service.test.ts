@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { calculateFuelAnalytics, generateRaceRange, getExistingRacesInRange, prepareSync, syncRacesBatch } from './race-analysis.service';
+import { calculateFuelAnalytics, generateRaceRange, getExistingRacesInRange, prepareSync, syncRacesBatch, saveRaceAnalysisData } from './race-analysis.service';
 import { buildRawRaceData } from '../../test/factories';
 import { fetchRaceAnalysis, fetchHistoryCalendar, fetchTrackProfile } from '../gpro/client';
 import { db } from '../db';
@@ -23,6 +23,9 @@ vi.mock('../db', () => ({
       values: vi.fn(() => ({
         onConflictDoNothing: vi.fn()
       }))
+    })),
+    delete: vi.fn(() => ({
+      where: vi.fn()
     }))
   }
 }));
@@ -86,6 +89,17 @@ describe('prepareSync', () => {
     expect(result).toEqual([]);
   });
 
+  it('should return full array if overwrite is true even if all races exist', async () => {
+    vi.mocked(db.query.rawRaceData.findMany).mockResolvedValue([
+      buildRawRaceData({ season: 100, race: 15 })
+    ]);
+
+    const result = await prepareSync(100, 15, 100, 15, true);
+    expect(result).toEqual([
+      { season: 100, race: 15 }
+    ]);
+  });
+
   it('should throw an error for invalid backward ranges', async () => {
     await expect(prepareSync(101, 2, 100, 16)).rejects.toThrow('Invalid range: from > to');
   });
@@ -141,6 +155,39 @@ describe('syncRacesBatch', () => {
     
     expect(result.syncedCount).toBe(0);
     expect(result.stoppedReason).toBe('error');
+  });
+});
+
+describe('saveRaceAnalysisData', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should upsert rawRaceData and delete old children before inserting new ones', async () => {
+    const mockTx = {
+      delete: vi.fn(() => ({
+        where: vi.fn()
+      })),
+      insert: vi.fn(() => ({
+        values: vi.fn(() => ({
+          onConflictDoUpdate: vi.fn(() => ({
+            returning: vi.fn().mockResolvedValue([{ id: 123 }])
+          })),
+          returning: vi.fn().mockResolvedValue([{ id: 123 }]) // default returning for non-upserts
+        }))
+      }))
+    };
+
+    vi.mocked(db.transaction).mockImplementation(async (cb: Parameters<typeof db.transaction>[0]) => {
+      return cb(mockTx as unknown as Parameters<typeof cb>[0]);
+    });
+
+    const mockData = { carPower: 100, group: 'A' } as unknown as import('../gpro/types').RaceAnalysisResponse;
+    await saveRaceAnalysisData(100, 15, mockData, 1);
+
+    // Should call insert for rawRaceData (with onConflictDoUpdate), then 3 deletes for children, then inserts for children
+    expect(mockTx.insert).toHaveBeenCalled();
+    expect(mockTx.delete).toHaveBeenCalledTimes(3); // raceFuelAnalytics, raceDriverSnapshots, raceCarSnapshots
   });
 });
 

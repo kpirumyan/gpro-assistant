@@ -14,10 +14,11 @@ export async function prepareSyncAction(
   fromSeason: number,
   fromRace: number,
   toSeason: number,
-  toRace: number
+  toRace: number,
+  overwrite?: boolean
 ): Promise<{ success: true; missingRaces: { season: number; race: number }[] } | { success: false; error: string }> {
   try {
-    const missingRaces = await prepareSync(fromSeason, fromRace, toSeason, toRace);
+    const missingRaces = await prepareSync(fromSeason, fromRace, toSeason, toRace, overwrite);
     return { success: true, missingRaces };
   } catch (error) {
     console.error("Failed to prepare sync:", error);
