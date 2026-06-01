@@ -1,5 +1,5 @@
 {
-  "id": "19bb01d0-6039-4b6a-81a5-fb228c727d35",
+  "id": "61144337-ed4c-4018-bef7-2e85332a8404",
   "prevId": "27cda309-d397-436c-8788-9b80704bf5fc",
   "version": "7",
   "dialect": "postgresql",
@@ -613,12 +613,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "tyre": {
-          "name": "tyre",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "laps_analyzed": {
           "name": "laps_analyzed",
           "type": "integer",
@@ -663,6 +657,83 @@
         "race_fuel_analytics_raw_race_data_id_raw_race_data_id_fk": {
           "name": "race_fuel_analytics_raw_race_data_id_raw_race_data_id_fk",
           "tableFrom": "race_fuel_analytics",
+          "tableTo": "raw_race_data",
+          "columnsFrom": [
+            "raw_race_data_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.race_tyre_analytics": {
+      "name": "race_tyre_analytics",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "raw_race_data_id": {
+          "name": "raw_race_data_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stint_index": {
+          "name": "stint_index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "laps_analyzed": {
+          "name": "laps_analyzed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tyre": {
+          "name": "tyre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "race_tyre_analytics_raw_race_data_id_raw_race_data_id_fk": {
+          "name": "race_tyre_analytics_raw_race_data_id_raw_race_data_id_fk",
+          "tableFrom": "race_tyre_analytics",
           "tableTo": "raw_race_data",
           "columnsFrom": [
             "raw_race_data_id"

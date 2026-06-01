@@ -68,22 +68,8 @@
     {
       "idx": 9,
       "version": "7",
-      "when": 1780348866331,
-      "tag": "0009_right_beyonder",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1780349020365,
-      "tag": "0010_dashing_master_chief",
-      "breakpoints": true
-    },
-    {
-      "idx": 11,
-      "version": "7",
-      "when": 1780349283644,
-      "tag": "0011_hesitant_dakota_north",
+      "when": 1780350164400,
+      "tag": "0009_light_white_tiger",
       "breakpoints": true
     }
   ]
