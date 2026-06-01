@@ -27,7 +27,8 @@ export async function prepareSyncAction(
 }
 
 export async function syncRaceBatchAction(
-  races: { season: number; race: number }[]
+  races: { season: number; race: number }[],
+  overwrite: boolean = false
 ): Promise<{ success: true; syncedCount: number } | { success: false; error: string }> {
   try {
     const credentials = await getGproCredentials();
@@ -35,7 +36,7 @@ export async function syncRaceBatchAction(
       return { success: false, error: "No API key configured. Please add one in Settings." };
     }
 
-    const result = await syncRacesBatch(credentials.token, races);
+    const result = await syncRacesBatch(credentials.token, races, overwrite);
     
     // We can clear cache so UI components that rely on DB get refreshed.
     revalidatePath("/fuel");

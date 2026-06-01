@@ -73,7 +73,7 @@ export function useRaceSync(latestSyncedRace: { season: number; race: number } |
         }
 
         const chunk = missingRaces.slice(i, i + CHUNK_SIZE);
-        const res = await syncRaceBatchAction(chunk);
+        const res = await syncRaceBatchAction(chunk, overwrite);
 
         if (!res.success) {
           setError(res.error);

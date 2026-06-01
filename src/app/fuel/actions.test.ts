@@ -93,7 +93,7 @@ describe('Race Analysis Server Actions', () => {
       expect(syncRacesBatch).toHaveBeenCalledWith('test-token', [
         { season: 103, race: 15 },
         { season: 103, race: 16 },
-      ]);
+      ], false);
     });
 
     it('returns error with stoppedReason if sync fails', async () => {

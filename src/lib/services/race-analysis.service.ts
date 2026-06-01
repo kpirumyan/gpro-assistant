@@ -16,11 +16,13 @@ export interface SyncResult {
  */
 export async function syncRacesBatch(
   token: string,
-  racesToFetch: { season: number; race: number }[]
+  racesToFetch: { season: number; race: number }[],
+  overwrite: boolean = false
 ): Promise<SyncResult> {
   let syncedCount = 0;
   let lastRaceChecked: { season: number; race: number } | undefined = undefined;
   let currentSeason: number | undefined = undefined;
+  const fetchedCalendars = new Set<number>();
 
   for (const raceInfo of racesToFetch) {
     lastRaceChecked = raceInfo;
@@ -30,11 +32,16 @@ export async function syncRacesBatch(
       // Resolve trackId
       let trackId: number | undefined = undefined;
 
-      const calendarEntry = await db.query.seasonCalendars.findFirst({
+      let calendarEntry = await db.query.seasonCalendars.findFirst({
         where: and(eq(seasonCalendars.season, raceInfo.season), eq(seasonCalendars.race, raceInfo.race))
       });
 
+      if (overwrite && !fetchedCalendars.has(raceInfo.season)) {
+        calendarEntry = undefined;
+      }
+
       if (!calendarEntry) {
+         fetchedCalendars.add(raceInfo.season);
          if (currentSeason === undefined) {
             try {
                const office = await fetchOffice(token);
@@ -61,7 +68,10 @@ export async function syncRacesBatch(
                         season: raceInfo.season,
                         race: raceNum,
                         trackId: tId
-                     }).onConflictDoNothing();
+                     }).onConflictDoUpdate({
+                        target: [seasonCalendars.season, seasonCalendars.race],
+                        set: { trackId: tId, updatedAt: new Date() }
+                     });
 
                      if (raceNum === raceInfo.race && tId > 0) {
                         trackId = tId;
@@ -85,7 +95,10 @@ export async function syncRacesBatch(
                         season: raceInfo.season,
                         race: raceNum,
                         trackId: tId
-                     }).onConflictDoNothing();
+                     }).onConflictDoUpdate({
+                        target: [seasonCalendars.season, seasonCalendars.race],
+                        set: { trackId: tId, updatedAt: new Date() }
+                     });
 
                      if (raceNum === raceInfo.race) {
                         trackId = tId;

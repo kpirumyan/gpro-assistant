@@ -26,7 +26,8 @@ vi.mock('../db', () => ({
     transaction: vi.fn(),
     insert: vi.fn(() => ({
       values: vi.fn(() => ({
-        onConflictDoNothing: vi.fn()
+        onConflictDoNothing: vi.fn(),
+        onConflictDoUpdate: vi.fn()
       }))
     })),
     delete: vi.fn(() => ({
