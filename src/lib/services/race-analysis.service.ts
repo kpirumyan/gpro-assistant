@@ -249,14 +249,21 @@ export async function saveRaceAnalysisData(season: number, race: number, data: R
     }
 
     // 4. Calculate and insert race_fuel_analytics
-    const analytics = calculateFuelAnalytics(data);
+    let lapDistance = 1;
+    if (trackId) {
+      const track = await tx.query.tracks.findFirst({ where: eq(tracks.id, trackId) });
+      if (track && track.lapDistance) {
+        lapDistance = parseFloat(track.lapDistance);
+      }
+    }
+    const analytics = calculateFuelAnalytics(data, lapDistance);
     if (analytics.length > 0) {
       await tx.insert(raceFuelAnalytics).values(
         analytics.map(a => ({
           ...a,
           rawRaceDataId,
-          avgFuelPerLapMin: a.avgFuelPerLapMin.toString(),
-          avgFuelPerLapMax: a.avgFuelPerLapMax.toString(),
+          avgFuelPerKmMin: a.avgFuelPerKmMin.toString(),
+          avgFuelPerKmMax: a.avgFuelPerKmMax.toString(),
         }))
       );
     }
@@ -268,14 +275,14 @@ export interface FuelAnalyticsResult {
   stintIndex: number | null;
   lapsAnalyzed: number;
   fastLapsCount: number;
-  avgFuelPerLapMin: number;
-  avgFuelPerLapMax: number;
+  avgFuelPerKmMin: number;
+  avgFuelPerKmMax: number;
 }
 
 /**
  * Calculates fuel analytics from the race analysis response.
  */
-export function calculateFuelAnalytics(data: Partial<RaceAnalysisResponse>): FuelAnalyticsResult[] {
+export function calculateFuelAnalytics(data: Partial<RaceAnalysisResponse>, lapDistance: number): FuelAnalyticsResult[] {
   const results: FuelAnalyticsResult[] = [];
   const pits = data.pits || [];
   const laps = data.laps || [];
@@ -355,8 +362,8 @@ export function calculateFuelAnalytics(data: Partial<RaceAnalysisResponse>): Fue
         stintIndex: i + 1,
         lapsAnalyzed: lapsInStint,
         fastLapsCount: fastLapsInStint,
-        avgFuelPerLapMin: consumedMin / lapsInStint,
-        avgFuelPerLapMax: consumedMax / lapsInStint
+        avgFuelPerKmMin: (consumedMin / lapsInStint) / lapDistance,
+        avgFuelPerKmMax: (consumedMax / lapsInStint) / lapDistance
       });
 
       fullRaceConsumedMin += consumedMin;
@@ -378,8 +385,8 @@ export function calculateFuelAnalytics(data: Partial<RaceAnalysisResponse>): Fue
       stintIndex: null,
       lapsAnalyzed: fullRaceLapsAnalyzed,
       fastLapsCount: fullRaceFastLaps,
-      avgFuelPerLapMin: fullRaceConsumedMin / fullRaceLapsAnalyzed,
-      avgFuelPerLapMax: fullRaceConsumedMax / fullRaceLapsAnalyzed
+      avgFuelPerKmMin: (fullRaceConsumedMin / fullRaceLapsAnalyzed) / lapDistance,
+      avgFuelPerKmMax: (fullRaceConsumedMax / fullRaceLapsAnalyzed) / lapDistance
     });
   }
 

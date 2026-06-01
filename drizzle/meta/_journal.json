@@ -57,6 +57,13 @@
       "when": 1780084134242,
       "tag": "0007_bizarre_the_order",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1780342651797,
+      "tag": "0008_superb_rattler",
+      "breakpoints": true
     }
   ]
 }

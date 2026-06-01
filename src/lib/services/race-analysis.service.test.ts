@@ -251,7 +251,12 @@ describe('saveRaceAnalysisData', () => {
           })),
           returning: vi.fn().mockResolvedValue([{ id: 123 }]) // default returning for non-upserts
         }))
-      }))
+      })),
+      query: {
+        tracks: {
+          findFirst: vi.fn().mockResolvedValue({ lapDistance: "5.0" })
+        }
+      }
     };
 
     vi.mocked(db.transaction).mockImplementation(async (cb: Parameters<typeof db.transaction>[0]) => {
@@ -301,9 +306,9 @@ describe('generateRaceRange', () => {
 
 describe('calculateFuelAnalytics', () => {
   it('should return empty array if no laps or startFuel', () => {
-    expect(calculateFuelAnalytics({})).toEqual([]);
-    expect(calculateFuelAnalytics({ startFuel: 100 })).toEqual([]);
-    expect(calculateFuelAnalytics({ laps: [{}] })).toEqual([]);
+    expect(calculateFuelAnalytics({}, 5.0)).toEqual([]);
+    expect(calculateFuelAnalytics({ startFuel: 100 }, 5.0)).toEqual([]);
+    expect(calculateFuelAnalytics({ laps: [{}] }, 5.0)).toEqual([]);
   });
 
   it('should correctly calculate fuel for a single stint race without pits', () => {
@@ -316,7 +321,7 @@ describe('calculateFuelAnalytics', () => {
       pits: []
     };
 
-    const results = calculateFuelAnalytics(data);
+    const results = calculateFuelAnalytics(data, 5.0);
     expect(results).toHaveLength(2); // stint and full_race
     
     const stint = results.find(r => r.type === 'stint');
@@ -325,12 +330,12 @@ describe('calculateFuelAnalytics', () => {
     expect(stint?.lapsAnalyzed).toBe(10);
     // start = 100, finish = 50. exact finish fuel = 50.
     // min consumed = 100 - 50 = 50. max consumed = 100 - 50 = 50.
-    expect(stint?.avgFuelPerLapMin).toBe(50 / 10);
-    expect(stint?.avgFuelPerLapMax).toBe(50 / 10);
+    expect(stint?.avgFuelPerKmMin).toBe((50 / 10) / 5.0);
+    expect(stint?.avgFuelPerKmMax).toBe((50 / 10) / 5.0);
     
     const fullRace = results.find(r => r.type === 'full_race');
-    expect(fullRace?.avgFuelPerLapMin).toBe(5);
-    expect(fullRace?.avgFuelPerLapMax).toBe(5);
+    expect(fullRace?.avgFuelPerKmMin).toBe(5 / 5.0);
+    expect(fullRace?.avgFuelPerKmMax).toBe(5 / 5.0);
   });
 
   it('should correctly calculate fuel for a 2-stint race with pit stop errors', () => {
@@ -347,7 +352,7 @@ describe('calculateFuelAnalytics', () => {
       ]
     };
 
-    const results = calculateFuelAnalytics(data);
+    const results = calculateFuelAnalytics(data, 5.0);
     
     // Stints:
     // Stint 1: Laps 1-10. start = 100. finishFuelReported = 10. minFinish = 10, maxFinish = 13.
@@ -361,14 +366,14 @@ describe('calculateFuelAnalytics', () => {
     expect(results).toHaveLength(3); // 2 stints + 1 full race
     
     const stint1 = results.find(r => r.type === 'stint' && r.stintIndex === 1);
-    expect(stint1?.avgFuelPerLapMin).toBeCloseTo(8.7);
-    expect(stint1?.avgFuelPerLapMax).toBeCloseTo(9.0);
+    expect(stint1?.avgFuelPerKmMin).toBeCloseTo(8.7 / 5.0);
+    expect(stint1?.avgFuelPerKmMax).toBeCloseTo(9.0 / 5.0);
     expect(stint1?.lapsAnalyzed).toBe(10);
     expect(stint1?.fastLapsCount).toBe(3); // laps 1, 2, 3 are fast
 
     const stint2 = results.find(r => r.type === 'stint' && r.stintIndex === 2);
-    expect(stint2?.avgFuelPerLapMin).toBeCloseTo(7.0);
-    expect(stint2?.avgFuelPerLapMax).toBeCloseTo(7.0);
+    expect(stint2?.avgFuelPerKmMin).toBeCloseTo(7.0 / 5.0);
+    expect(stint2?.avgFuelPerKmMax).toBeCloseTo(7.0 / 5.0);
     expect(stint2?.lapsAnalyzed).toBe(10);
     expect(stint2?.fastLapsCount).toBe(0);
 
@@ -376,8 +381,8 @@ describe('calculateFuelAnalytics', () => {
     // total consumed min = 87 + 70 = 157
     // total consumed max = 90 + 70 = 160
     // laps = 20
-    expect(fullRace?.avgFuelPerLapMin).toBeCloseTo(157 / 20);
-    expect(fullRace?.avgFuelPerLapMax).toBeCloseTo(160 / 20);
+    expect(fullRace?.avgFuelPerKmMin).toBeCloseTo((157 / 20) / 5.0);
+    expect(fullRace?.avgFuelPerKmMax).toBeCloseTo((160 / 20) / 5.0);
   });
 
   it('should ignore stints shorter than 10 laps', () => {
@@ -396,7 +401,7 @@ describe('calculateFuelAnalytics', () => {
       ]
     };
 
-    const results = calculateFuelAnalytics(data);
+    const results = calculateFuelAnalytics(data, 5.0);
     
     // Stint 1: 5 laps (ignored)
     // Stint 2: 10 laps (included)
@@ -416,7 +421,7 @@ describe('calculateFuelAnalytics', () => {
       pits: []
     };
 
-    const results = calculateFuelAnalytics(data);
+    const results = calculateFuelAnalytics(data, 5.0);
     const fullRace = results.find(r => r.type === 'full_race');
     expect(fullRace?.fastLapsCount).toBe(3);
 
@@ -435,7 +440,7 @@ describe('calculateFuelAnalytics', () => {
       pits: []
     };
 
-    const results = calculateFuelAnalytics(data);
+    const results = calculateFuelAnalytics(data, 5.0);
     const fullRace = results.find(r => r.type === 'full_race');
     expect(fullRace?.fastLapsCount).toBe(5);
   });
@@ -449,7 +454,7 @@ describe('calculateFuelAnalytics', () => {
       pits: []
     };
 
-    const results = calculateFuelAnalytics(data);
+    const results = calculateFuelAnalytics(data, 5.0);
     const fullRace = results.find(r => r.type === 'full_race');
     expect(fullRace?.fastLapsCount).toBe(2); // only laps 14 and 15
   });
@@ -465,7 +470,7 @@ describe('calculateFuelAnalytics', () => {
       pits: [{ lap: 10, fuelLeft: 50, refilledTo: 80 }]
     };
 
-    const results = calculateFuelAnalytics(data);
+    const results = calculateFuelAnalytics(data, 5.0);
     const stint1 = results.find(r => r.type === 'stint' && r.stintIndex === 1);
     const stint2 = results.find(r => r.type === 'stint' && r.stintIndex === 2);
     const fullRace = results.find(r => r.type === 'full_race');

@@ -204,3 +204,9 @@ Next.js App (React UI)
 **Context**: AI agents (like Antigravity) sometimes miss critical constraints or rules when they are buried in plain markdown text.
 **Decision**: Use XML tags (e.g., `<rule severity="CRITICAL">`, `<workflow>`, `<constraints>`) to wrap important instructions, checklists, and workflows in `.agents/skills/` and `AGENTS.md`.
 **Consequence**: The agent parses these explicit structures more reliably, significantly reducing the chance of ignoring critical rules or hallucinating behaviors.
+### ADR-009: Universal Fuel Consumption Unit (L/km)
+
+**Context**: Fuel consumption was previously calculated and displayed as Liters per lap (L/lap). This made it impossible to compare fuel efficiency between different tracks, as track lengths vary.
+**Decision**: Store and analyze fuel consumption universally as Liters per kilometer (L/km). During the race data sync, the track's lap distance is used to convert lap-based consumption into distance-based consumption.
+**Consequence**: Users can now directly compare their car's fuel efficiency across all synced tracks. Historical data is migrated without data loss.
+

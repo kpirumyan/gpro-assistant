@@ -23,7 +23,7 @@ export function FuelAnalyticsTable({ data }: Props) {
                 <th className="px-6 py-4">Laps</th>
                 <th className="px-6 py-4">Fast Laps</th>
                 <th className="px-6 py-4">Track Cons.</th>
-                <th className="px-6 py-4">Est. Consumption (L/lap)</th>
+                <th className="px-6 py-4">Est. Consumption (L/km)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800 text-sm">
@@ -39,8 +39,8 @@ export function FuelAnalyticsTable({ data }: Props) {
                   }
 
                   const label = entry.type === "stint" ? `Stint ${entry.stintIndex}` : "Full Race";
-                  const minStr = parseFloat(entry.avgFuelPerLapMin).toFixed(3);
-                  const maxStr = parseFloat(entry.avgFuelPerLapMax).toFixed(3);
+                  const minStr = parseFloat(entry.avgFuelPerKmMin).toFixed(3);
+                  const maxStr = parseFloat(entry.avgFuelPerKmMax).toFixed(3);
                   
                   const bgClass = isAlternate 
                     ? "bg-zinc-100 dark:bg-zinc-800/40 hover:bg-zinc-200/70 dark:hover:bg-zinc-700/40" 

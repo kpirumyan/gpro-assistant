@@ -90,8 +90,8 @@ export const raceFuelAnalytics = pgTable("race_fuel_analytics", {
   stintIndex: integer("stint_index"),
   lapsAnalyzed: integer("laps_analyzed").notNull(),
   fastLapsCount: integer("fast_laps_count").notNull(),
-  avgFuelPerLapMin: numeric("avg_fuel_per_lap_min").notNull(),
-  avgFuelPerLapMax: numeric("avg_fuel_per_lap_max").notNull(),
+  avgFuelPerKmMin: numeric("avg_fuel_per_km_min").notNull(),
+  avgFuelPerKmMax: numeric("avg_fuel_per_km_max").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

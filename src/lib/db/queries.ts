@@ -176,8 +176,8 @@ export type FuelAnalyticsListEntry = {
   stintIndex: number | null;
   lapsAnalyzed: number;
   fastLapsCount: number;
-  avgFuelPerLapMin: string;
-  avgFuelPerLapMax: string;
+  avgFuelPerKmMin: string;
+  avgFuelPerKmMax: string;
   trackFuelConsumption: string | null;
   createdAt: Date;
 };
@@ -194,8 +194,8 @@ export async function getFuelAnalyticsList(): Promise<FuelAnalyticsListEntry[]> 
         stintIndex: raceFuelAnalytics.stintIndex,
         lapsAnalyzed: raceFuelAnalytics.lapsAnalyzed,
         fastLapsCount: raceFuelAnalytics.fastLapsCount,
-        avgFuelPerLapMin: raceFuelAnalytics.avgFuelPerLapMin,
-        avgFuelPerLapMax: raceFuelAnalytics.avgFuelPerLapMax,
+        avgFuelPerKmMin: raceFuelAnalytics.avgFuelPerKmMin,
+        avgFuelPerKmMax: raceFuelAnalytics.avgFuelPerKmMax,
         trackFuelConsumption: tracks.fuelConsumption,
         createdAt: raceFuelAnalytics.createdAt,
       })

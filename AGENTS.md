@@ -82,7 +82,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 
 <rule id="no_temp_files_in_workspace" severity="CRITICAL">
   <description>Do NOT create temporary or one-off scripts, files, or outputs in the user's workspace (e.g. scripts/check-*.ts).</description>
-  <action>Always create temporary files, one-off scripts, and debug helpers in the agent's dedicated scratch directory: `C:\Users\37493\.gemini\antigravity\brain\<conversation-id>\scratch\` (using full absolute paths). Never leave temporary files in the user's workspace directories. If you must run a script, run it from the scratch directory or remove it immediately if it was created in the workspace by necessity.</action>
+  <action>Always create temporary files, one-off scripts, and debug helpers in the agent's dedicated scratch directory: `C:\Users\37493\.gemini\antigravity\brain\<conversation-id>\scratch\` (using full absolute paths). Never leave temporary files in the user's workspace directories. If you must run a script, run it from the scratch directory.</action>
 </rule>
 
 ## Architecture
