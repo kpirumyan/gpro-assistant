@@ -24,6 +24,7 @@ Living document describing the project structure, data flow, and key decisions. 
 ```
 gpro-assistant/
 ├── .agents/                    # Agent configuration
+│   ├── adr/                    # Architecture Decision Records
 │   ├── ARCHITECTURE.md         # This file
 │   ├── plugins/                # Agent plugins (chrome-devtools, modern-web-guidance)
 │   └── skills/                 # Skill files loaded by agent on demand
@@ -82,7 +83,6 @@ gpro-assistant/
 ├── .env.example                # Environment variable template
 ├── vitest.config.ts            # Vitest configuration
 └── vitest.setup.ts             # Test setup (jest-dom, MSW lifecycle)
-
 ```
 
 ## Data flow
@@ -156,57 +156,14 @@ Next.js App (React UI)
 
 ## Architecture Decision Records (ADR)
 
-### ADR-001: Antigravity as sole development agent
+The project's architectural decisions are documented as standalone ADR markdown files in the [.agents/adr/](.agents/adr/) directory:
 
-**Context**: Multiple AI tools (Cursor, Aider, Claude Code) were trialed, creating configuration conflicts.
-**Decision**: Use only Antigravity. All agent config lives in AGENTS.md + `.agents/skills/`.
-**Consequence**: Single source of truth for agent behavior. CLAUDE.md and other tool configs removed.
-
-### ADR-002: Vercel Postgres (Neon) + Drizzle ORM
-
-**Context**: App needs to persist race data, credentials, and derived analytics.
-**Decision**: Vercel Postgres (Neon) for the database, Drizzle ORM for type-safe queries and migrations.
-**Consequence**: Zero infrastructure management. Free tier sufficient for single-user.
-
-### ADR-003: TDD-first workflow
-
-**Context**: Need reliable code changes without manual regression testing.
-**Decision**: Write tests before/alongside code. Never weaken tests to fix a bug.
-**Consequence**: Slower initial development but higher confidence in changes.
-
-### ADR-004: Conventional Commits
-
-**Context**: Need readable git history and potential for automated changelogs.
-**Decision**: All commits follow Conventional Commits format (`type(scope): description`).
-**Consequence**: Consistent, searchable git log.
-
-### ADR-005: Co-location of architecture diagrams
-
-**Context**: Complex business logic (like calculators or API synchronizations) is hard to maintain without visual architecture diagrams, but global documentation folders easily get out of sync.
-**Decision**: Keep Mermaid diagrams and documentation inside the specific service directories in `src/lib/` (e.g. in a local `README.md`).
-**Consequence**: Diagrams are highly visible to developers touching the code, raising the likelihood of keeping them updated.
-
-### ADR-006: Custom Test Data Builders for Database Mocks
-
-**Context**: Need a standardized, type-safe way to mock database entities (Drizzle schemas) in tests without massive inline object boilerplate.
-**Decision**: Implement custom Factory functions (Test Data Builders) in `src/test/factories.ts` using plain TypeScript.
-**Alternatives considered**: Using `fishery` + `faker`. Rejected for now to avoid unnecessary dependencies, as the project's data structures are mostly numerical and straightforward.
-**Consequence**: Test files are much cleaner. If schemas become deeply relational in the future, the `.build()` interface can easily be swapped to use `fishery` under the hood.
-
-### ADR-007: Local RAG Integration via CLI Scripts
-
-**Context**: The agent (Antigravity) needs access to specific framework documentation (e.g., React 19) without consuming massive token context or hallucinating features.
-**Decision**: Use AnythingLLM as a local RAG server. Create domain-specific CLI scripts (e.g., `npm run ask-react-rag`) that the agent can invoke to query the workspace.
-**Consequence**: The agent can autonomously retrieve precise, version-matched documentation. It enforces a JSON-only response format for programmatic parsing and maintains conversation threads in `.agents/rag-sessions/` to allow follow-up clarifications.
-
-### ADR-008: XML tags for agent instructions
-
-**Context**: AI agents (like Antigravity) sometimes miss critical constraints or rules when they are buried in plain markdown text.
-**Decision**: Use XML tags (e.g., `<rule severity="CRITICAL">`, `<workflow>`, `<constraints>`) to wrap important instructions, checklists, and workflows in `.agents/skills/` and `AGENTS.md`.
-**Consequence**: The agent parses these explicit structures more reliably, significantly reducing the chance of ignoring critical rules or hallucinating behaviors.
-### ADR-009: Universal Fuel Consumption Unit (L/km)
-
-**Context**: Fuel consumption was previously calculated and displayed as Liters per lap (L/lap). This made it impossible to compare fuel efficiency between different tracks, as track lengths vary.
-**Decision**: Store and analyze fuel consumption universally as Liters per kilometer (L/km). During the race data sync, the track's lap distance is used to convert lap-based consumption into distance-based consumption.
-**Consequence**: Users can now directly compare their car's fuel efficiency across all synced tracks. Historical data is migrated without data loss.
-
+- [ADR-001: Antigravity as sole development agent](.agents/adr/adr-001-antigravity-development-agent.md)
+- [ADR-002: Vercel Postgres (Neon) + Drizzle ORM](.agents/adr/adr-002-vercel-postgres-drizzle.md)
+- [ADR-003: TDD-first workflow](.agents/adr/adr-003-tdd-workflow.md)
+- [ADR-004: Conventional Commits](.agents/adr/adr-004-conventional-commits.md)
+- [ADR-005: Co-location of architecture diagrams](.agents/adr/adr-005-co-location-diagrams.md)
+- [ADR-006: Custom Test Data Builders for Database Mocks](.agents/adr/adr-006-custom-test-data-builders.md)
+- [ADR-007: Local RAG Integration via CLI Scripts](.agents/adr/adr-007-local-rag-integration.md)
+- [ADR-008: XML tags for agent instructions](.agents/adr/adr-008-xml-tags-instructions.md)
+- [ADR-009: Universal Fuel Consumption Unit (L/km)](.agents/adr/adr-009-universal-fuel-consumption-unit.md)
