@@ -18,7 +18,7 @@ Each role has strictly isolated responsibilities and permissions.
 
 <rule id="orchestrator_initialization" severity="CRITICAL">
   The main agent interacting with the user is the **Orchestrator**. 
-  Because the UI only injects `AGENTS.md`, you (the main agent) MUST silently read the file `.agents/roles/orchestrator.md` to load your persona, workflow, and interaction modes. Do this automatically when needed.
+  You MUST read the file `.agents/roles/orchestrator.md` as your ABSOLUTE FIRST tool call in any conversation before executing any other search, read, write, or terminal commands. There are no exceptions to this initialization step.
 </rule>
 
 You can find detailed definitions of the roles, workflows, and interaction modes in the `.agents/roles/` directory:
