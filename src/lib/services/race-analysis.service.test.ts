@@ -3,6 +3,11 @@ import { calculateFuelAnalytics, generateRaceRange, getExistingRacesInRange, pre
 import { buildRawRaceData } from '../../test/factories';
 import { fetchRaceAnalysis, fetchHistoryCalendar, fetchTrackProfile, fetchOffice, fetchCalendar } from '../gpro/client';
 import { db } from '../db';
+import raceAnalysisFixture from '../gpro/__fixtures__/race-analysis.json';
+import historyCalendarFixture from '../gpro/__fixtures__/history-calendar.json';
+import trackProfileFixture from '../gpro/__fixtures__/track-profile.json';
+import officeFixture from '../gpro/__fixtures__/office.json';
+import calendarFixture from '../gpro/__fixtures__/calendar.json';
 
 vi.mock('../db', () => ({
   db: {
@@ -114,23 +119,21 @@ describe('syncRacesBatch', () => {
   });
 
   it('should fetch and save races successfully', async () => {
-    vi.mocked(fetchRaceAnalysis).mockResolvedValue({
-      carPower: 100,
-      startFuel: 100,
-      finishFuel: 10
-    } as unknown as Awaited<ReturnType<typeof fetchRaceAnalysis>>);
+    vi.mocked(fetchRaceAnalysis).mockResolvedValue(
+      raceAnalysisFixture as unknown as Awaited<ReturnType<typeof fetchRaceAnalysis>>
+    );
 
-    vi.mocked(fetchHistoryCalendar).mockResolvedValue({
-      managers: [{ pos: 15, trackId: 1 }, { pos: 16, trackId: 2 }]
-    } as unknown as Awaited<ReturnType<typeof fetchHistoryCalendar>>);
+    vi.mocked(fetchHistoryCalendar).mockResolvedValue(
+      historyCalendarFixture as unknown as Awaited<ReturnType<typeof fetchHistoryCalendar>>
+    );
 
-    vi.mocked(fetchTrackProfile).mockResolvedValue({
-      trackName: "Test Track"
-    } as unknown as Awaited<ReturnType<typeof fetchTrackProfile>>);
+    vi.mocked(fetchTrackProfile).mockResolvedValue(
+      trackProfileFixture as unknown as Awaited<ReturnType<typeof fetchTrackProfile>>
+    );
 
     vi.mocked(db.transaction).mockImplementation(async () => {});
 
-    const result = await syncRacesBatch('token', [{ season: 100, race: 15 }, { season: 100, race: 16 }]);
+    const result = await syncRacesBatch('token', [{ season: 100, race: 1 }, { season: 100, race: 2 }]);
     
     expect(fetchRaceAnalysis).toHaveBeenCalledTimes(2);
     expect(db.transaction).toHaveBeenCalledTimes(2);
@@ -161,43 +164,40 @@ describe('syncRacesBatch', () => {
   });
 
   it('should call fetchOffice and fetchCalendar for current season and not call fetchHistoryCalendar', async () => {
-    vi.mocked(fetchOffice).mockResolvedValue({ seasonNb: 110 });
-    vi.mocked(fetchCalendar).mockResolvedValue([
-      { idx: "1", trackName: "Melbourne GP", isCurrentRace: 1, season: 110 }
-    ] as unknown as Awaited<ReturnType<typeof fetchCalendar>>);
-    vi.mocked(fetchRaceAnalysis).mockResolvedValue({
-      carPower: 100,
-      startFuel: 100,
-      finishFuel: 10
-    } as unknown as Awaited<ReturnType<typeof fetchRaceAnalysis>>);
-    vi.mocked(fetchTrackProfile).mockResolvedValue({
-      trackName: "Melbourne GP"
-    } as unknown as Awaited<ReturnType<typeof fetchTrackProfile>>);
+    vi.mocked(fetchOffice).mockResolvedValue(officeFixture as unknown as Awaited<ReturnType<typeof fetchOffice>>);
+    vi.mocked(fetchCalendar).mockResolvedValue(calendarFixture as unknown as Awaited<ReturnType<typeof fetchCalendar>>);
+    vi.mocked(fetchRaceAnalysis).mockResolvedValue(
+      raceAnalysisFixture as unknown as Awaited<ReturnType<typeof fetchRaceAnalysis>>
+    );
+    vi.mocked(fetchTrackProfile).mockResolvedValue(
+      trackProfileFixture as unknown as Awaited<ReturnType<typeof fetchTrackProfile>>
+    );
     vi.mocked(db.transaction).mockImplementation(async () => {});
 
     vi.mocked(db.query.seasonCalendars.findFirst).mockResolvedValue(undefined);
+    vi.mocked(db.query.tracks.findFirst).mockResolvedValue(undefined);
 
     const result = await syncRacesBatch('token', [{ season: 110, race: 1 }]);
 
     expect(fetchOffice).toHaveBeenCalledTimes(1);
     expect(fetchCalendar).toHaveBeenCalledTimes(1);
     expect(fetchHistoryCalendar).not.toHaveBeenCalled();
+    expect(db.insert).toHaveBeenCalled(); // Calendar insert
+    expect(fetchTrackProfile).toHaveBeenCalledTimes(1);
     expect(result.syncedCount).toBe(1);
   });
 
   it('should call fetchOffice and fetchHistoryCalendar for past seasons and not call fetchCalendar', async () => {
-    vi.mocked(fetchOffice).mockResolvedValue({ seasonNb: 110 });
-    vi.mocked(fetchHistoryCalendar).mockResolvedValue({
-      managers: [{ pos: 1, trackId: 5 }]
-    } as unknown as Awaited<ReturnType<typeof fetchHistoryCalendar>>);
-    vi.mocked(fetchRaceAnalysis).mockResolvedValue({
-      carPower: 100,
-      startFuel: 100,
-      finishFuel: 10
-    } as unknown as Awaited<ReturnType<typeof fetchRaceAnalysis>>);
-    vi.mocked(fetchTrackProfile).mockResolvedValue({
-      trackName: "Test Track"
-    } as unknown as Awaited<ReturnType<typeof fetchTrackProfile>>);
+    vi.mocked(fetchOffice).mockResolvedValue(officeFixture as unknown as Awaited<ReturnType<typeof fetchOffice>>);
+    vi.mocked(fetchHistoryCalendar).mockResolvedValue(
+      historyCalendarFixture as unknown as Awaited<ReturnType<typeof fetchHistoryCalendar>>
+    );
+    vi.mocked(fetchRaceAnalysis).mockResolvedValue(
+      raceAnalysisFixture as unknown as Awaited<ReturnType<typeof fetchRaceAnalysis>>
+    );
+    vi.mocked(fetchTrackProfile).mockResolvedValue(
+      trackProfileFixture as unknown as Awaited<ReturnType<typeof fetchTrackProfile>>
+    );
     vi.mocked(db.transaction).mockImplementation(async () => {});
 
     vi.mocked(db.query.seasonCalendars.findFirst).mockResolvedValue(undefined);
@@ -211,19 +211,14 @@ describe('syncRacesBatch', () => {
   });
 
   it('should call fetchOffice only once per batch even if multiple races are requested', async () => {
-    vi.mocked(fetchOffice).mockResolvedValue({ seasonNb: 110 });
-    vi.mocked(fetchCalendar).mockResolvedValue([
-      { idx: "1", trackName: "Melbourne GP", isCurrentRace: 1, season: 110 },
-      { idx: "2", trackName: "Baku GP", isCurrentRace: 0, season: 110 }
-    ] as unknown as Awaited<ReturnType<typeof fetchCalendar>>);
-    vi.mocked(fetchRaceAnalysis).mockResolvedValue({
-      carPower: 100,
-      startFuel: 100,
-      finishFuel: 10
-    } as unknown as Awaited<ReturnType<typeof fetchRaceAnalysis>>);
-    vi.mocked(fetchTrackProfile).mockResolvedValue({
-      trackName: "Melbourne GP"
-    } as unknown as Awaited<ReturnType<typeof fetchTrackProfile>>);
+    vi.mocked(fetchOffice).mockResolvedValue(officeFixture as unknown as Awaited<ReturnType<typeof fetchOffice>>);
+    vi.mocked(fetchCalendar).mockResolvedValue(calendarFixture as unknown as Awaited<ReturnType<typeof fetchCalendar>>);
+    vi.mocked(fetchRaceAnalysis).mockResolvedValue(
+      raceAnalysisFixture as unknown as Awaited<ReturnType<typeof fetchRaceAnalysis>>
+    );
+    vi.mocked(fetchTrackProfile).mockResolvedValue(
+      trackProfileFixture as unknown as Awaited<ReturnType<typeof fetchTrackProfile>>
+    );
     vi.mocked(db.transaction).mockImplementation(async () => {});
 
     vi.mocked(db.query.seasonCalendars.findFirst).mockResolvedValue(undefined);

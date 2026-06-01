@@ -46,8 +46,9 @@ export async function syncRacesBatch(
 
          if (raceInfo.season === currentSeason) {
             const calData = await fetchCalendar(token);
-            if (Array.isArray(calData)) {
-               for (const ev of calData) {
+            if (calData && Array.isArray(calData.events)) {
+               const races = calData.events.filter((e) => e.eventType === "R");
+               for (const ev of races) {
                   if (ev.idx !== undefined) {
                      const raceNum = Number(ev.idx);
                      const tId = ev.trackId !== undefined ? Number(ev.trackId) : 0;

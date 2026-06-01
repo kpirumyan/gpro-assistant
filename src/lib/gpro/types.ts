@@ -96,8 +96,14 @@ export interface HistoryCalendarResponse {
   }>;
 }
 
+export interface CurrentCalendarResponse {
+  events: CalendarEvent[];
+}
+
 export interface CalendarEvent {
   idx: string | number;
+  idxReal?: string | number;
+  eventType?: string;
   trackName: string;
   isCurrentRace: number | boolean;
   season: number;

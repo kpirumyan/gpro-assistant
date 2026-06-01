@@ -1,4 +1,4 @@
-import type { DriverProfileResponse, CarDataResponse, RaceAnalysisResponse, HistoryCalendarResponse, TrackProfileResponse, OfficeResponse, CalendarEvent } from "./types";
+import type { DriverProfileResponse, CarDataResponse, RaceAnalysisResponse, HistoryCalendarResponse, TrackProfileResponse, OfficeResponse, CurrentCalendarResponse } from "./types";
 
 export class AuthError extends Error {
   constructor(message = "Invalid or expired API token") {
@@ -146,7 +146,7 @@ export async function fetchRaceAnalysis(token: string, season: number, race: num
 /**
  * Fetches the race calendar from the GPRO API.
  */
-export async function fetchCalendar(token: string): Promise<CalendarEvent[]> {
+export async function fetchCalendar(token: string): Promise<CurrentCalendarResponse> {
   if (!token) throw new Error("API token is required");
 
   const response = await fetch(`${GPRO_API_BASE_URL}/Calendar`, {
@@ -165,7 +165,7 @@ export async function fetchCalendar(token: string): Promise<CalendarEvent[]> {
     throw new Error(`GPRO API error: ${response.status} ${response.statusText}`);
   }
 
-  return response.json() as Promise<CalendarEvent[]>;
+  return response.json() as Promise<CurrentCalendarResponse>;
 }
 
 /**

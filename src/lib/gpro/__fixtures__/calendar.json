@@ -1,8 +1,20 @@
-[
-  {
-    "idx": "1",
-    "trackName": "Melbourne GP",
-    "isCurrentRace": 1,
-    "season": 99
-  }
-]
+{
+  "events": [
+    {
+      "idx": "1",
+      "eventType": "R",
+      "trackId": 5,
+      "trackName": "Melbourne GP",
+      "isCurrentRace": 1,
+      "season": 110
+    },
+    {
+      "idx": "2",
+      "eventType": "R",
+      "trackId": 6,
+      "trackName": "Baku GP",
+      "isCurrentRace": 0,
+      "season": 110
+    }
+  ]
+}
