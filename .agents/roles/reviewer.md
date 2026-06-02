@@ -12,7 +12,7 @@
   <function>Code Review / Quality Control.</function>
   <responsibilities>
     <item>Finding bugs, checking code style and code smells.</item>
-    <item>Verifying adherence to `.agents/skills/code-review-checklist.md`.</item>
+    <item>Verifying adherence to `.agents/rules/code-review.md`.</item>
     <item>May use RAG to verify syntax relevance.</item>
   </responsibilities>
   <permissions>

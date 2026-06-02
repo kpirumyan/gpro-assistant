@@ -87,10 +87,10 @@ You can find detailed definitions of the specialized subagents in the `.agents/r
     <action>Run `npm run precommit`. Show results. Stop and wait for user approval.</action>
   </phase>
   <phase name="Review" requires_approval="false">
-    <action>Invoke the **Reviewer** subagent to run the code review checklist (see `.agents/skills/code-review-checklist.md`). Then invoke the **Coder** to fix any issues found. STRICT LIMIT: Max 3 iterations of feedback. If the Reviewer is still not satisfied, trigger the Escalation Protocol (Silent Mode Debate) as defined in `.agents/debate.md`. Upon rendering a verdict, you MUST Resume Workflow: if Coder wins, move to next phase; if Reviewer wins, issue unappealable directive to Coder and resume coding.</action>
+    <action>Invoke the **Reviewer** subagent to run the code review checklist (see `.agents/rules/code-review.md`). Then invoke the **Coder** to fix any issues found. STRICT LIMIT: Max 3 iterations of feedback. If the Reviewer is still not satisfied, trigger the Escalation Protocol (Silent Mode Debate) as defined in `.agents/debate.md`. Upon rendering a verdict, you MUST Resume Workflow: if Coder wins, move to next phase; if Reviewer wins, issue unappealable directive to Coder and resume coding.</action>
   </phase>
   <phase name="Terminal Audit" requires_approval="false">
-    <action>MANDATORY CLOSING PHASE: Before concluding the task, you MUST review all terminal command logs from the current session. If you encountered any errors or had to use any workarounds, you MUST document them as short ADR-like files in `.agents/terminal-workarounds/` and link them in `.agents/skills/terminal-rules.md`.</action>
+    <action>MANDATORY CLOSING PHASE: Before concluding the task, you MUST review all terminal command logs from the current session. If you encountered any errors or had to use any workarounds, you MUST document them as short ADR-like files in `.agents/terminal-workarounds/` and link them in `.agents/rules/terminal.md`.</action>
   </phase>
   <critical_rule>You MUST NEVER create a git commit automatically. Commits are strictly manual and only performed when the user explicitly instructs you to commit.</critical_rule>
 </agent_workflow>
@@ -121,7 +121,7 @@ You can find detailed definitions of the specialized subagents in the `.agents/r
     <rule id="git_bash_primary_on_windows">Always use Windows Git Bash as the primary shell. Invoke all commands by wrapping them through the Git Bash executable: `& "C:\Program Files\Git\bin\bash.exe" -c "..."`. Avoid using PowerShell commands directly, and never use a plain `bash` command to prevent resolving to WSL.</rule>
     <rule id="terminal_error_check" severity="MANDATORY">
       <description>Post-Execution Terminal Error Check</description>
-      <action>Whenever you run any commands in the terminal during a turn, you MUST review the complete output of ALL executed commands. If any command requires a workaround, document it as a short ADR-like file in `.agents/terminal-workarounds/` (e.g., `tw-001-issue.md`) and add a link to it in `.agents/skills/terminal-rules.md`.</action>
+      <action>Whenever you run any commands in the terminal during a turn, you MUST review the complete output of ALL executed commands. If any command requires a workaround, document it as a short ADR-like file in `.agents/terminal-workarounds/` (e.g., `tw-001-issue.md`) and add a link to it in `.agents/rules/terminal.md`.</action>
     </rule>
   </terminal_rules>
 
@@ -136,8 +136,8 @@ You can find detailed definitions of the specialized subagents in the `.agents/r
 
   <documentation_maintenance>
     <rule id="self_correction" severity="CRITICAL">Whenever you make a critical error, discover a bug in your own workflow, or learn a required workaround, you MUST immediately document it in the relevant `.agents/` rules file or `AGENTS.md`. Do not simply apologize and promise to remember it — write it down so future agent sessions will not repeat the mistake.</rule>
-    <rule id="xml_for_rules" severity="MANDATORY">Always use XML-style tags (e.g. &lt;rule&gt;, &lt;workflow&gt;, &lt;mindset&gt;) to wrap important instructions, workflows, and checklists whenever you create or update files under `.agents/skills/` or `AGENTS.md`.</rule>
-    <rule id="no_rule_duplication" severity="CRITICAL">Do NOT duplicate rule or workflow definitions across different files. Define each rule in a single source of truth. For general rules that must always be active in the system prompt, define them in `AGENTS.md`. For specific technical details, define them in `.agents/skills/` and reference them if needed instead of duplicating the exact definition.</rule>
+    <rule id="xml_for_rules" severity="MANDATORY">Always use XML-style tags (e.g. &lt;rule&gt;, &lt;workflow&gt;, &lt;mindset&gt;) to wrap important instructions, workflows, and checklists whenever you create or update files under `.agents/rules/` or `AGENTS.md`.</rule>
+    <rule id="no_rule_duplication" severity="CRITICAL">Do NOT duplicate rule or workflow definitions across different files. Define each rule in a single source of truth. For general rules that must always be active in the system prompt, define them in `AGENTS.md`. For specific technical details, define them in `.agents/rules/` and reference them if needed instead of duplicating the exact definition.</rule>
   </documentation_maintenance>
 </system_rules>
 
@@ -148,10 +148,10 @@ These are absolute links to all context files available to you. Use them to open
 | Area | File Link | Description |
 |------|-----------|-------------|
 | Architecture | [ARCHITECTURE.md](./.agents/ARCHITECTURE.md) | Project structure, data flow, architecture decisions |
-| Testing | [testing-rules.md](./.agents/skills/testing-rules.md) | Writing or reviewing tests |
-| API Integration | [api-integration-rules.md](./.agents/skills/api-integration-rules.md) | Working with GPRO API |
-| Code Review | [code-review-checklist.md](./.agents/skills/code-review-checklist.md) | Before every commit |
-| UI Patterns | [ui-styling-rules.md](./.agents/skills/ui-styling-rules.md) | Building or modifying UI |
-| Database | [db-conventions.md](./.agents/skills/db-conventions.md) | Schema changes, queries, migrations |
-| RAG Usage | [rag-for-react-next-docs.md](./.agents/skills/rag-for-react-next-docs.md) | Strict rules for using the AnythingLLM RAG CLI |
-| Terminal | [terminal-rules.md](./.agents/skills/terminal-rules.md) | Handling non-TTY shells, quoting in Windows PowerShell |
+| Testing | [testing.md](./.agents/rules/testing.md) | Writing or reviewing tests |
+| API Integration | [api-integration.md](./.agents/rules/api-integration.md) | Working with GPRO API |
+| Code Review | [code-review.md](./.agents/rules/code-review.md) | Before every commit |
+| UI Patterns | [ui-styling.md](./.agents/rules/ui-styling.md) | Building or modifying UI |
+| Database | [database.md](./.agents/rules/database.md) | Schema changes, queries, migrations |
+| RAG Usage | [rag-usage.md](./.agents/rules/rag-usage.md) | Strict rules for using the AnythingLLM RAG CLI |
+| Terminal | [terminal.md](./.agents/rules/terminal.md) | Handling non-TTY shells, quoting in Windows PowerShell |

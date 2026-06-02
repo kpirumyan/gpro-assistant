@@ -53,7 +53,7 @@ There are two execution modes:
   <phase name="Final Verdict">
     Once all N iterations are complete:
     1. Use the `manage_subagents` tool to kill the subagents (`Action: "kill_all"`).
-    2. Assume the persona of the **Orchestrator** and **Judge**. You must not modify code during this verdict phase. You may consult RAG librarians before making your decision if necessary (see `.agents/skills/rag-for-react-next-docs.md`).
+    2. Assume the persona of the **Orchestrator** and **Judge**. You must not modify code during this verdict phase. You may consult RAG librarians before making your decision if necessary (see `.agents/rules/rag-usage.md`).
     3. **Output & Logging**:
        - **Live Mode (`/debate`)**: Output your final verdict in the chat in the same language as the topic prompt. Summarize the technical merits of both sides and make a final, authoritative architectural decision based on the application's context.
        - **Silent Mode**:
