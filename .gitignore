@@ -41,6 +41,7 @@ yarn-error.log*
 # agents
 .agents/plans/
 .agents/rag-sessions/
+.agents/logs/
 
 # typescript
 *.tsbuildinfo
@@ -53,3 +54,6 @@ next-env.d.ts
 
 # PHPStorm
 .idea
+
+# logs
+.analytics-reports/

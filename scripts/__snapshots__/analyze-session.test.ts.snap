@@ -1,0 +1,5 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Agent Session Analytics Script > analyzeSession > should correctly parse the transcript and return aggregated session data 1`] = `39654`;
+
+exports[`Agent Session Analytics Script > analyzeSession > should correctly parse the transcript and return aggregated session data 2`] = `1762`;

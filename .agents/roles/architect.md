@@ -11,7 +11,7 @@
 <role_definition>
   <function>System Designer.</function>
   <responsibilities>
-    <item>Creating the `implementation_plan.md`.</item>
+    <item>Creating a uniquely named implementation plan file (e.g., `plan-[feature-or-issue-description].md`) to avoid overwriting existing plans.</item>
     <item>Designing architecture using deep research (Web Search) and consulting RAG librarians.</item>
   </responsibilities>
   <permissions>

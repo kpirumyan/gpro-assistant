@@ -52,13 +52,13 @@ You can find detailed definitions of the specialized subagents in the `.agents/r
     <description>Switch the agent to interactive mode. Uses the full Workflow, but stops for user approval after the **Plan** phase and after the **Test** phase.</description>
   </mode>
   <mode command="/discuss">
-    <description>Switch the agent to discussion mode. The user wants to brainstorm, ask questions, or conceptually discuss a problem with you directly. Do not invoke subagents or write code during the discussion. The final goal of the discussion is to create an `implementation_plan.md` artifact that captures the summary and decisions of the dialogue. Once the discussion reaches a conclusion, generate this plan.</description>
+    <description>Switch the agent to discussion mode. The user wants to brainstorm, ask questions, or conceptually discuss a problem with you directly. Do not invoke subagents or write code during the discussion. The final goal of the discussion is to create a uniquely named implementation plan artifact (e.g., `plan-[description].md`) that captures the summary and decisions of the dialogue. Once the discussion reaches a conclusion, generate this plan.</description>
   </mode>
   <mode command="/ask">
     <description>Simple question/answer mode. The agent acts as an advisor, answers questions, and asks clarifying questions if needed. The agent MUST NOT write code, run commands, or create commits in this mode.</description>
   </mode>
   <mode command="/quick-fix">
-    <description>Quick bugfix mode. The agent skips the Plan and Post-Approval Setup phases, jumps straight to delegating fixing the issue to Coder, tests it, and delegates review to Reviewer. Use this only when explicitly requested for trivial tasks.</description>
+    <description>Quick bugfix mode. The agent skips the Plan and Post-Approval Setup phases, jumps straight to delegating fixing the issue. The Orchestrator MUST dynamically choose the correct subagent based on the task: delegate to **Tester** if the fix involves tests, or delegate to **Coder** if it involves application code. After the fix is implemented, test it, and delegate review to **Reviewer**. Use this only when explicitly requested for trivial tasks.</description>
   </mode>
   <mode command="/dual-arch">
     <description>Command modifier. Instructs the agent to invoke two **Chief Architect** subagents in parallel to create Draft A and Draft B. The agent will save them as separate files and stop to let the user review and choose.</description>
@@ -74,11 +74,11 @@ You can find detailed definitions of the specialized subagents in the `.agents/r
 <agent_workflow>
   <description>Tasks follow these phases (used by `/grill-me` and `/goal` modes):</description>
   <phase name="Plan" requires_approval="true">
-    <action>Execute Architecture Planning: Invoke **Chief Architect** subagent to create an `implementation_plan.md`. (If `/dual-arch` is used, invoke two architects, generate Draft A and Draft B as separate files, and wait for the user to review and analyze them).</action>
-    <mandatory>The `implementation_plan.md` MUST include a "Documentation Updates" section. It MUST explicitly state whether the task introduces new patterns, files, directories, or libraries, and what updates will be made to any `.agents/` files (e.g. `ARCHITECTURE.md`, `skills`, `roles`). If no updates are needed, it must prove why.</mandatory>
+    <action>Execute Architecture Planning: Invoke **Chief Architect** subagent to create an implementation plan under a unique descriptive filename (e.g., `plan-[feature-or-issue-description].md` to avoid overwriting existing plans). (If `/dual-arch` is used, invoke two architects, generate Draft A and Draft B as separate files with unique names, and wait for the user to review and analyze them).</action>
+    <mandatory>The implementation plan MUST include a "Documentation Updates" section. It MUST explicitly state whether the task introduces new patterns, files, directories, or libraries, and what updates will be made to any `.agents/` files (e.g. `ARCHITECTURE.md`, `skills`, `roles`). If no updates are needed, it must prove why.</mandatory>
   </phase>
   <phase name="Post-Approval Setup" requires_approval="false">
-    <action>Create directory `.agents/plans/<worktree-name>/` and save the approved `implementation_plan.md` there.</action>
+    <action>Create directory `.agents/plans/<worktree-name>/` and save the approved plan there under its unique descriptive filename (e.g., `plan-[feature-or-issue-description].md`). Never use a generic `implementation_plan.md` inside this directory to prevent overwriting previous plans.</action>
   </phase>
   <phase name="Implement" requires_approval="false">
     <action>Following True TDD: First, invoke the **Tester** subagent to write failing (red) tests based strictly on the approved plan. Once tests are written and fail as expected, invoke the **Coder** subagent to implement the feature/fix to pass the tests. If database schema changes are made, run migrations (`npm run db:generate` and `npm run db:migrate`). STRICT LIMIT: Max 3 iterations of feedback between Tester and Coder. If unresolved, trigger Escalation Protocol.</action>
@@ -114,7 +114,7 @@ You can find detailed definitions of the specialized subagents in the `.agents/r
 
   <language_rules severity="CRITICAL">
     <rule id="code_english">English only: all source code, comments, Git commit messages, AND all markdown rules/configuration files inside the `.agents/` directory (except plans and task artifacts). All system instructions and agent skills must remain strictly in English.</rule>
-    <rule id="chat_native" severity="CRITICAL_TABOO">Chat conversation AND ALL ARTIFACTS (implementation_plan.md, walkthrough.md, task.md) MUST BE IN THE LANGUAGE THE USER IS CURRENTLY SPEAKING TO YOU. NEVER WRITE ARTIFACTS IN ENGLISH IF THE USER IS SPEAKING ANOTHER LANGUAGE.</rule>
+    <rule id="chat_native" severity="CRITICAL_TABOO">Chat conversation AND ALL ARTIFACTS (implementation plans, walkthrough.md, task.md) MUST BE IN THE LANGUAGE THE USER IS CURRENTLY SPEAKING TO YOU. NEVER WRITE ARTIFACTS IN ENGLISH IF THE USER IS SPEAKING ANOTHER LANGUAGE.</rule>
   </language_rules>
 
   <terminal_rules>

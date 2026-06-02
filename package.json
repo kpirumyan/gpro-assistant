@@ -21,7 +21,8 @@
     "prepare": "husky",
     "ask-react-rag": "tsx scripts/ask-react-rag.ts",
     "ask-next-rag": "tsx scripts/ask-next-rag.ts",
-    "ask-web-guidance-rag": "tsx scripts/ask-web-guidance-rag.ts"
+    "ask-web-guidance-rag": "tsx scripts/ask-web-guidance-rag.ts",
+    "agent:stats": "tsx scripts/analyze-session.ts"
   },
   "dependencies": {
     "@vercel/postgres": "^0.10.0",
@@ -47,6 +48,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "eslint-config-prettier": "^10.1.8",
+    "gpt-tokenizer": "^3.4.0",
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",
     "msw": "^2.14.6",
