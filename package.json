@@ -20,7 +20,8 @@
     "precommit": "npm run typecheck && npm run test && npm run lint",
     "prepare": "husky",
     "ask-react-rag": "tsx scripts/ask-react-rag.ts",
-    "ask-next-rag": "tsx scripts/ask-next-rag.ts"
+    "ask-next-rag": "tsx scripts/ask-next-rag.ts",
+    "ask-web-guidance-rag": "tsx scripts/ask-web-guidance-rag.ts"
   },
   "dependencies": {
     "@vercel/postgres": "^0.10.0",

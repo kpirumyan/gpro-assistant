@@ -56,7 +56,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 ## Language rules
 
 <language_rules severity="CRITICAL">
-  <rule id="code_english">English only: all source code comments and Git commit messages.</rule>
+  <rule id="code_english">English only: all source code, comments, Git commit messages, AND all markdown rules/configuration files inside the `.agents/` directory (except plans and task artifacts). All system instructions and agent skills must remain strictly in English.</rule>
   <rule id="chat_native" severity="CRITICAL_TABOO">Chat conversation AND ALL ARTIFACTS (implementation_plan.md, walkthrough.md, task.md) MUST BE IN THE USER'S NATIVE LANGUAGE (e.g. Russian). NEVER WRITE ARTIFACTS IN ENGLISH IF THE USER SPEAKS RUSSIAN. IT IS STRICTLY FORBIDDEN TO REVERT TO ENGLISH IN PLANS.</rule>
 </language_rules>
 
@@ -82,7 +82,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 
 <rule id="no_temp_files_in_workspace" severity="CRITICAL">
   <description>Do NOT create temporary or one-off scripts, files, or outputs in the user's workspace (e.g. scripts/check-*.ts).</description>
-  <action>Always create temporary files, one-off scripts, and debug helpers in the agent's dedicated scratch directory: `C:\Users\37493\.gemini\antigravity\brain\<conversation-id>\scratch\` (using full absolute paths). Never leave temporary files in the user's workspace directories. If you must run a script, run it from the scratch directory.</action>
+  <action>Always create temporary files, one-off scripts, and debug helpers in the agent's dedicated scratch directory: `<appDataDir>\brain\<conversation-id>\scratch\` (using full absolute paths). Never leave temporary files in the user's workspace directories. If you must run a script, run it from the scratch directory.</action>
 </rule>
 
 ## Architecture

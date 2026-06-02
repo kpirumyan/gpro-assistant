@@ -27,6 +27,14 @@ npm run ask-next-rag -- --new "Your query to the Next.js App Router documentatio
 npx tsx scripts/ask-next-rag.ts --new "Your query to the Next.js App Router documentation"
 ```
 
+### Modern Web Guidance (UI & CSS Best Practices)
+```bash
+npm run ask-web-guidance-rag -- --new "Your UI/CSS query (e.g. how to style custom scrollbars, or animate dialogs)"
+# OR
+npx tsx scripts/ask-web-guidance-rag.ts --new "Your UI/CSS query"
+```
+**RULE:** If the task is related to UI, layout, CSS, accessibility, or web animations → ALWAYS ask `ask-web-guidance-rag` FIRST.
+
 <rag_rules>
   <rule id="mandatory_rag_query" severity="CRITICAL">
     **Mandatory RAG Consultation:** I **MUST NEVER** rely on my own training data or prior experience when modifying, creating, or refactoring React or Next.js code. I **ALWAYS** query the RAG (for React or Next.js depending on the task) before writing any code. The ONLY exception is fixing trivial typos or syntax errors (like missing commas or brackets).
@@ -39,6 +47,9 @@ npx tsx scripts/ask-next-rag.ts --new "Your query to the Next.js App Router docu
   </rule>
   <rule id="language" severity="MANDATORY">
     **Language:** I must ALWAYS communicate with the RAG (the "librarian") in English. All queries passed to the `--new` flag must be formulated in English to ensure the highest quality of search and response from the documentation.
+  </rule>
+  <rule id="follow_rag_links" severity="CRITICAL">
+    **Follow RAG Links:** If the RAG response provides external URLs, documentation links, or references to specific guides containing the implementation details, I **MUST** use the `read_url_content` tool to fetch and read the full contents of those URLs before generating or modifying any code. I must never assume the contents of the linked documentation based only on the short summary.
   </rule>
 </rag_rules>
 

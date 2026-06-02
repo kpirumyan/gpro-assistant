@@ -26,7 +26,7 @@ gpro-assistant/
 ├── .agents/                    # Agent configuration
 │   ├── adr/                    # Architecture Decision Records
 │   ├── ARCHITECTURE.md         # This file
-│   ├── plugins/                # Agent plugins (chrome-devtools, modern-web-guidance)
+│   ├── plugins/                # Agent plugins (chrome-devtools)
 │   └── skills/                 # Skill files loaded by agent on demand
 │       ├── testing-rules.md
 │       ├── api-integration-rules.md
@@ -172,3 +172,4 @@ The project's architectural decisions are documented as standalone ADR markdown 
 - [ADR-007: Local RAG Integration via CLI Scripts](.agents/adr/adr-007-local-rag-integration.md)
 - [ADR-008: XML tags for agent instructions](.agents/adr/adr-008-xml-tags-instructions.md)
 - [ADR-009: Universal Fuel Consumption Unit (L/km)](.agents/adr/adr-009-universal-fuel-consumption-unit.md)
+- [ADR-010: Transition from Context Plugins to On-Demand RAG](.agents/adr/adr-010-rag-over-plugins.md)
