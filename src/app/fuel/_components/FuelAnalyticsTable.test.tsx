@@ -69,8 +69,8 @@ describe("FuelAnalyticsTable", () => {
   it("updates values when switched to L/100km", () => {
     render(<FuelAnalyticsTable data={mockData} />);
     
-    // Find the unit selector. It's the third combobox (after pilot and consumption filters).
-    const selector = screen.getAllByRole("combobox")[2];
+    // Find the unit selector.
+    const selector = screen.getByLabelText("Unit");
     
     // Change to L/100km
     fireEvent.change(selector, { target: { value: 'l_100km' } });
@@ -87,7 +87,7 @@ describe("FuelAnalyticsTable", () => {
   it("updates and swaps min/max when switched to km/L", () => {
     render(<FuelAnalyticsTable data={mockData} />);
     
-    const selector = screen.getAllByRole("combobox")[2];
+    const selector = screen.getByLabelText("Unit");
     
     // Change to km/L
     fireEvent.change(selector, { target: { value: 'km_l' } });
@@ -117,5 +117,80 @@ describe("FuelAnalyticsTable", () => {
     // Check for the "-" text (might be multiple, so we can just check if it's there)
     const dash = screen.getAllByText("-");
     expect(dash.length).toBeGreaterThan(0);
+  });
+
+  describe("Filters and Labels", () => {
+    it("renders labels for all filters", () => {
+      render(<FuelAnalyticsTable data={mockData} />);
+      
+      expect(screen.getByLabelText("Pilot")).toBeInTheDocument();
+      expect(screen.getByLabelText("Track Cons.")).toBeInTheDocument();
+      expect(screen.getByLabelText("Weather")).toBeInTheDocument();
+      expect(screen.getByLabelText("Unit")).toBeInTheDocument();
+    });
+
+    it("filters out rain tyres when Dry weather is selected", () => {
+      const dataWithRain = [
+        ...mockData,
+        {
+          id: 4,
+          season: 100,
+          race: 2,
+          type: "stint",
+          stintIndex: 1,
+          lapsAnalyzed: 20,
+          fastLapsCount: 0,
+          trackFuelConsumption: "High",
+          trackName: null,
+          pilotName: null,
+          avgFuelPerKmMin: "0.200",
+          avgFuelPerKmMax: "0.200",
+          createdAt: new Date(),
+          tyre: "Rain",
+        } as FuelAnalyticsListEntry
+      ];
+
+      render(<FuelAnalyticsTable data={dataWithRain} />);
+      
+      const weatherFilter = screen.getByLabelText("Weather");
+      fireEvent.change(weatherFilter, { target: { value: 'dry' } });
+      
+      // Should show non-rain tyres but not Rain tyres
+      expect(screen.queryByText("Rain")).not.toBeInTheDocument();
+      expect(screen.getByText("Soft")).toBeInTheDocument();
+      expect(screen.getByText("Extra Soft")).toBeInTheDocument();
+    });
+
+    it("shows only rain tyres when Wet weather is selected", () => {
+      const dataWithRain = [
+        ...mockData,
+        {
+          id: 4,
+          season: 100,
+          race: 2,
+          type: "stint",
+          stintIndex: 1,
+          lapsAnalyzed: 20,
+          fastLapsCount: 0,
+          trackFuelConsumption: "High",
+          trackName: null,
+          pilotName: null,
+          avgFuelPerKmMin: "0.200",
+          avgFuelPerKmMax: "0.200",
+          createdAt: new Date(),
+          tyre: "Rain",
+        } as FuelAnalyticsListEntry
+      ];
+
+      render(<FuelAnalyticsTable data={dataWithRain} />);
+      
+      const weatherFilter = screen.getByLabelText("Weather");
+      fireEvent.change(weatherFilter, { target: { value: 'wet' } });
+      
+      // Should show only Rain tyres
+      expect(screen.getByText("Rain")).toBeInTheDocument();
+      expect(screen.queryByText("Soft")).not.toBeInTheDocument();
+      expect(screen.queryByText("Extra Soft")).not.toBeInTheDocument();
+    });
   });
 });

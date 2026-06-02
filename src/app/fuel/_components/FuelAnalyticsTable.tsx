@@ -14,6 +14,7 @@ export function FuelAnalyticsTable({ data }: Props) {
   const [unit, setUnit] = useLocalStorage<FuelUnit>('fuel-display-unit', 'l_km');
   const [pilotFilter, setPilotFilter] = useState<string>('all');
   const [trackConsFilter, setTrackConsFilter] = useState<string>('all');
+  const [weatherFilter, setWeatherFilter] = useState<string>('all');
 
   const pilots = useMemo(() => {
     const set = new Set<string>();
@@ -30,9 +31,18 @@ export function FuelAnalyticsTable({ data }: Props) {
         const entryCons = entry.trackFuelConsumption?.toLowerCase() || "";
         if (entryCons !== trackConsFilter) return false;
       }
+      if (weatherFilter !== 'all') {
+        if (!entry.tyre || entry.tyre === "-") {
+          // Skip weather filtering for full races or when tyre data is missing
+        } else {
+          const isRain = entry.tyre.toLowerCase().includes('rain');
+          if (weatherFilter === 'dry' && isRain) return false;
+          if (weatherFilter === 'wet' && !isRain) return false;
+        }
+      }
       return true;
     });
-  }, [data, pilotFilter, trackConsFilter]);
+  }, [data, pilotFilter, trackConsFilter, weatherFilter]);
 
   const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setUnit(e.target.value as FuelUnit);
@@ -48,36 +58,61 @@ export function FuelAnalyticsTable({ data }: Props) {
           <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Fuel Consumption Analytics</h2>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Calculated fuel usage ranges from your synced race history.</p>
         </div>
-        <div className="mt-4 sm:mt-0 flex flex-col sm:flex-row gap-3">
-          <select
-            value={pilotFilter}
-            onChange={(e) => setPilotFilter(e.target.value)}
-            className="block w-full sm:w-auto rounded-md border-0 py-1.5 pl-3 pr-10 text-zinc-900 ring-1 ring-inset ring-zinc-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-zinc-700 dark:focus:ring-indigo-500"
-          >
-            <option value="all">All Pilots</option>
-            {pilots.map(p => <option key={p} value={p}>{p}</option>)}
-          </select>
-          <select
-            value={trackConsFilter}
-            onChange={(e) => setTrackConsFilter(e.target.value)}
-            className="block w-full sm:w-auto rounded-md border-0 py-1.5 pl-3 pr-10 text-zinc-900 ring-1 ring-inset ring-zinc-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-zinc-700 dark:focus:ring-indigo-500"
-          >
-            <option value="all">All Consumptions</option>
-            <option value="very low">Very low</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-            <option value="very high">Very high</option>
-          </select>
-          <select
-            value={unit}
-            onChange={handleUnitChange}
-            className="block w-full sm:w-auto rounded-md border-0 py-1.5 pl-3 pr-10 text-zinc-900 ring-1 ring-inset ring-zinc-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-zinc-700 dark:focus:ring-indigo-500"
-          >
-            <option value="l_km">L/km</option>
-            <option value="l_100km">L/100km</option>
-            <option value="km_l">km/L</option>
-          </select>
+        <div className="mt-4 flex flex-col gap-3 sm:mt-0 sm:flex-row">
+          <label htmlFor="pilot-filter" className="flex items-center gap-2">
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Pilot</span>
+            <select
+              id="pilot-filter"
+              value={pilotFilter}
+              onChange={(e) => setPilotFilter(e.target.value)}
+              className="block w-full sm:w-auto rounded-md border-0 py-1.5 pl-3 pr-10 text-zinc-900 ring-1 ring-inset ring-zinc-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-zinc-700 dark:focus:ring-indigo-500"
+            >
+              <option value="all">All Pilots</option>
+              {pilots.map(p => <option key={p} value={p}>{p}</option>)}
+            </select>
+          </label>
+          <label htmlFor="track-cons-filter" className="flex items-center gap-2">
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Track Cons.</span>
+            <select
+              id="track-cons-filter"
+              value={trackConsFilter}
+              onChange={(e) => setTrackConsFilter(e.target.value)}
+              className="block w-full sm:w-auto rounded-md border-0 py-1.5 pl-3 pr-10 text-zinc-900 ring-1 ring-inset ring-zinc-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-zinc-700 dark:focus:ring-indigo-500"
+            >
+              <option value="all">All Consumptions</option>
+              <option value="very low">Very low</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="very high">Very high</option>
+            </select>
+          </label>
+          <label htmlFor="unit-filter" className="flex items-center gap-2">
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Unit</span>
+            <select
+              id="unit-filter"
+              value={unit}
+              onChange={handleUnitChange}
+              className="block w-full sm:w-auto rounded-md border-0 py-1.5 pl-3 pr-10 text-zinc-900 ring-1 ring-inset ring-zinc-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-zinc-700 dark:focus:ring-indigo-500"
+            >
+              <option value="l_km">L/km</option>
+              <option value="l_100km">L/100km</option>
+              <option value="km_l">km/L</option>
+            </select>
+          </label>
+          <label htmlFor="weather-filter" className="flex items-center gap-2">
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Weather</span>
+            <select
+              id="weather-filter"
+              value={weatherFilter}
+              onChange={(e) => setWeatherFilter(e.target.value)}
+              className="block w-full sm:w-auto rounded-md border-0 py-1.5 pl-3 pr-10 text-zinc-900 ring-1 ring-inset ring-zinc-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-zinc-700 dark:focus:ring-indigo-500"
+            >
+              <option value="all">All Weather</option>
+              <option value="dry">Dry</option>
+              <option value="wet">Wet</option>
+            </select>
+          </label>
         </div>
       </div>
 
