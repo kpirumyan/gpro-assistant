@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { X } from "lucide-react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import type { FuelAnalyticsListEntry } from "@/lib/db/queries";
 
@@ -15,6 +16,14 @@ export function FuelAnalyticsTable({ data }: Props) {
   const [pilotFilter, setPilotFilter] = useState<string>('all');
   const [trackConsFilter, setTrackConsFilter] = useState<string>('all');
   const [weatherFilter, setWeatherFilter] = useState<string>('all');
+
+  const isFilterActive = pilotFilter !== 'all' || trackConsFilter !== 'all' || weatherFilter !== 'all';
+
+  const resetFilters = () => {
+    setPilotFilter('all');
+    setTrackConsFilter('all');
+    setWeatherFilter('all');
+  };
 
   const pilots = useMemo(() => {
     const set = new Set<string>();
@@ -113,6 +122,15 @@ export function FuelAnalyticsTable({ data }: Props) {
               <option value="wet">Wet</option>
             </select>
           </label>
+          {isFilterActive && (
+            <button
+              onClick={resetFilters}
+              className="inline-flex w-full sm:w-auto items-center justify-center gap-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+            >
+              <X className="size-4" />
+              Reset Filters
+            </button>
+          )}
         </div>
       </div>
 

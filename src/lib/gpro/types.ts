@@ -136,3 +136,5 @@ export interface TrackProfileResponse {
   nbTurns?: number;
   category?: string;
 }
+
+export type TyreType = 'Extra Soft' | 'Soft' | 'Medium' | 'Hard' | 'Rain' | '-';

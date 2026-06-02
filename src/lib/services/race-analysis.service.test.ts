@@ -482,17 +482,18 @@ describe('calculateFuelAnalytics', () => {
 });
 
 describe('calculateTyreAnalytics', () => {
-  it('should return empty array if no laps or startTyres', () => {
+  it('should return empty array if no laps', () => {
     expect(calculateTyreAnalytics({})).toEqual([]);
-    expect(calculateTyreAnalytics({ startTyres: "Soft" })).toEqual([]);
-    expect(calculateTyreAnalytics({ laps: [{}] })).toEqual([]);
+    expect(calculateTyreAnalytics({ laps: [] })).toEqual([]);
   });
 
   it('should extract tyre correctly for stints and create full_race record', () => {
+    const laps = Array(21).fill({ boostLap: 0 });
+    laps[1] = { tyres: "Soft" };
+    laps[11] = { tyres: "Medium" };
     const data = {
-      startTyres: "Soft", // first stint tyre
-      laps: Array(21).fill({ boostLap: 0 }),
-      pits: [{ lap: 10, tyres: "Medium" }] // second stint tyre
+      laps,
+      pits: [{ lap: 10 }]
     };
 
     const results = calculateTyreAnalytics(data);
@@ -505,25 +506,10 @@ describe('calculateTyreAnalytics', () => {
     expect(fullRace?.tyre).toBe("-");
   });
 
-  it('should fallback to other tyre fields when extracting tyres', () => {
-    const data = {
-      car: { tyres: "Extra Soft" }, // fallback for first stint
-      laps: Array(21).fill({ boostLap: 0 }),
-      pits: [{ lap: 10, tyre: "Hard" }] // fallback for second stint
-    };
-
-    const results = calculateTyreAnalytics(data);
-    const stint1 = results.find((r) => r.type === 'stint' && r.stintIndex === 1);
-    const stint2 = results.find((r) => r.type === 'stint' && r.stintIndex === 2);
-    
-    expect(stint1?.tyre).toBe("Extra Soft");
-    expect(stint2?.tyre).toBe("Hard");
-  });
-
-  it('should extract tyre correctly from laps array if startTyres/pits.tyres are missing', () => {
+  it('should extract tyre correctly from laps array', () => {
     const laps = Array(41).fill({ boostLap: 0 });
-    laps[0] = { ...laps[0], tyres: 'Soft' };
-    laps[40] = { ...laps[40], tyres: 'Medium' };
+    laps[1] = { tyres: 'Soft' };
+    laps[40] = { tyres: 'Medium' };
 
     const data = {
       laps,
@@ -536,5 +522,46 @@ describe('calculateTyreAnalytics', () => {
     
     expect(stint1?.tyre).toBe('Soft');
     expect(stint2?.tyre).toBe('Medium');
+  });
+
+  it('should set full_race tyre to "Soft" if all stints were run on "Soft"', () => {
+    const laps = Array(21).fill({ boostLap: 0 });
+    laps[1] = { tyres: "Soft" };
+    laps[11] = { tyres: "Soft" };
+    const data = {
+      laps,
+      pits: [{ lap: 10 }]
+    };
+
+    const results = calculateTyreAnalytics(data);
+    const fullRace = results.find((r) => r.type === 'full_race');
+    expect(fullRace?.tyre).toBe("Soft");
+  });
+
+  it('should keep full_race tyre as "-" if stints were run on different tyre types', () => {
+    const laps = Array(21).fill({ boostLap: 0 });
+    laps[1] = { tyres: "Soft" };
+    laps[11] = { tyres: "Medium" };
+    const data = {
+      laps,
+      pits: [{ lap: 10 }]
+    };
+
+    const results = calculateTyreAnalytics(data);
+    const fullRace = results.find((r) => r.type === 'full_race');
+    expect(fullRace?.tyre).toBe("-");
+  });
+
+  it('should set full_race tyre to "Hard" if the race consisted of a single stint on "Hard"', () => {
+    const laps = Array(11).fill({ boostLap: 0 });
+    laps[1] = { tyres: "Hard" };
+    const data = {
+      laps,
+      pits: []
+    };
+
+    const results = calculateTyreAnalytics(data);
+    const fullRace = results.find((r) => r.type === 'full_race');
+    expect(fullRace?.tyre).toBe("Hard");
   });
 });

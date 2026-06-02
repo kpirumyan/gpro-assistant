@@ -1,7 +1,7 @@
 import { db } from "../db";
 import { rawRaceData, raceCarSnapshots, raceDriverSnapshots, raceFuelAnalytics, seasonCalendars, tracks, raceTyreAnalytics } from "../db/schema";
 import { fetchRaceAnalysis, fetchHistoryCalendar, fetchTrackProfile, fetchOffice, fetchCalendar } from "../gpro/client";
-import type { RaceAnalysisResponse } from "../gpro/types";
+import type { RaceAnalysisResponse, TyreType } from "../gpro/types";
 import { eq, and } from "drizzle-orm";
 
 export interface SyncResult {
@@ -409,7 +409,7 @@ export interface TyreAnalyticsResult {
   type: 'stint' | 'full_race';
   stintIndex: number | null;
   lapsAnalyzed: number;
-  tyre: string;
+  tyre: TyreType;
 }
 
 /**
@@ -425,7 +425,7 @@ export function calculateTyreAnalytics(data: Partial<RaceAnalysisResponse>): Tyr
   }
 
   const startTyre = (data.startTyres as string) || (data as { car?: { tyres?: string } }).car?.tyres || "Unknown";
-  
+
   const totalDrivenLaps = laps.length - 1;
   let currentStintStartLap = 1;
   let validStintsCount = 0;
@@ -442,7 +442,7 @@ export function calculateTyreAnalytics(data: Partial<RaceAnalysisResponse>): Tyr
                    lapData2?.tyres || lapData2?.tyre || 
                    lapData0?.tyres || lapData0?.tyre;
 
-    if (!tyreName) {
+    if (!tyreName || tyreName === '-') {
       if (i === 0) {
         tyreName = startTyre;
       } else {
@@ -459,7 +459,7 @@ export function calculateTyreAnalytics(data: Partial<RaceAnalysisResponse>): Tyr
         type: 'stint',
         stintIndex: i + 1,
         lapsAnalyzed: lapsInStint,
-        tyre: tyreName,
+        tyre: tyreName as TyreType,
       });
 
       fullRaceLapsAnalyzed += lapsInStint;
@@ -470,11 +470,17 @@ export function calculateTyreAnalytics(data: Partial<RaceAnalysisResponse>): Tyr
   }
 
   if (validStintsCount > 0 && fullRaceLapsAnalyzed === totalDrivenLaps) {
+    const stintTyres = results
+      .filter(r => r.type === 'stint')
+      .map(r => r.tyre);
+    const uniqueTyres = Array.from(new Set(stintTyres));
+    const finalTyre = (uniqueTyres.length === 1 ? uniqueTyres[0] : '-') as TyreType;
+
     results.push({
       type: 'full_race',
       stintIndex: null,
       lapsAnalyzed: fullRaceLapsAnalyzed,
-      tyre: "-",
+      tyre: finalTyre,
     });
   }
 

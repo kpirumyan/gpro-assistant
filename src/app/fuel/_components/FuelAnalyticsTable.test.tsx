@@ -199,4 +199,68 @@ describe("FuelAnalyticsTable", () => {
       expect(screen.queryByText("Full Race")).not.toBeInTheDocument();
     });
   });
+
+  describe("Reset Filters Button", () => {
+    const testData: FuelAnalyticsListEntry[] = [
+      {
+        id: 1,
+        season: 100,
+        race: 1,
+        type: "full_race",
+        stintIndex: null,
+        lapsAnalyzed: 50,
+        fastLapsCount: 2,
+        trackFuelConsumption: "High",
+        trackName: "Monza",
+        pilotName: "John Doe",
+        avgFuelPerKmMin: "0.250",
+        avgFuelPerKmMax: "0.300",
+        createdAt: new Date(),
+        tyre: "Soft",
+      } as FuelAnalyticsListEntry
+    ];
+
+    it("is initially hidden", () => {
+      render(<FuelAnalyticsTable data={testData} />);
+      expect(screen.queryByRole("button", { name: /reset filters/i })).not.toBeInTheDocument();
+    });
+
+    it("appears when a filter is changed", () => {
+      render(<FuelAnalyticsTable data={testData} />);
+      
+      const pilotFilter = screen.getByLabelText("Pilot");
+      fireEvent.change(pilotFilter, { target: { value: "John Doe" } });
+      
+      expect(screen.getByRole("button", { name: /reset filters/i })).toBeInTheDocument();
+    });
+
+    it("resets all changed filters to 'all' and hides itself on click", () => {
+      render(<FuelAnalyticsTable data={testData} />);
+      
+      const pilotFilter = screen.getByLabelText("Pilot") as HTMLSelectElement;
+      const weatherFilter = screen.getByLabelText("Weather") as HTMLSelectElement;
+      const trackConsFilter = screen.getByLabelText("Track Cons.") as HTMLSelectElement;
+
+      // Change filters
+      fireEvent.change(pilotFilter, { target: { value: "John Doe" } });
+      fireEvent.change(weatherFilter, { target: { value: "dry" } });
+      fireEvent.change(trackConsFilter, { target: { value: "high" } });
+
+      expect(pilotFilter.value).toBe("John Doe");
+      expect(weatherFilter.value).toBe("dry");
+      expect(trackConsFilter.value).toBe("high");
+
+      const resetBtn = screen.getByRole("button", { name: /reset filters/i });
+      fireEvent.click(resetBtn);
+
+      // Verify filters are reset
+      expect(pilotFilter.value).toBe("all");
+      expect(weatherFilter.value).toBe("all");
+      expect(trackConsFilter.value).toBe("all");
+
+      // Verify button is hidden
+      expect(screen.queryByRole("button", { name: /reset filters/i })).not.toBeInTheDocument();
+    });
+  });
 });
+
