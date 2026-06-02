@@ -424,8 +424,6 @@ export function calculateTyreAnalytics(data: Partial<RaceAnalysisResponse>): Tyr
     return results;
   }
 
-  const startTyre = (data.startTyres as string) || (data as { car?: { tyres?: string } }).car?.tyres || "Unknown";
-
   const totalDrivenLaps = laps.length - 1;
   let currentStintStartLap = 1;
   let validStintsCount = 0;
@@ -435,21 +433,7 @@ export function calculateTyreAnalytics(data: Partial<RaceAnalysisResponse>): Tyr
     const isLastStint = i === pits.length;
     
     const lapData1 = laps[currentStintStartLap] as { tyres?: string; tyre?: string } | undefined;
-    const lapData2 = laps[currentStintStartLap - 1] as { tyres?: string; tyre?: string } | undefined;
-    const lapData0 = laps[0] as { tyres?: string; tyre?: string } | undefined;
-    
-    let tyreName = lapData1?.tyres || lapData1?.tyre || 
-                   lapData2?.tyres || lapData2?.tyre || 
-                   lapData0?.tyres || lapData0?.tyre;
-
-    if (!tyreName || tyreName === '-') {
-      if (i === 0) {
-        tyreName = startTyre;
-      } else {
-        const pitData = pits[i - 1];
-        tyreName = (pitData as { tyres?: string, tyre?: string }).tyres || (pitData as { tyres?: string, tyre?: string }).tyre || "Unknown";
-      }
-    }
+    const tyreName = (lapData1?.tyres || lapData1?.tyre || '-') as TyreType;
 
     const currentStintEndLap = isLastStint ? totalDrivenLaps : (pits[i].lap ?? totalDrivenLaps);
     const lapsInStint = currentStintEndLap - currentStintStartLap + 1;
