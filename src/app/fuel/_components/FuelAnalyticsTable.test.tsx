@@ -159,6 +159,9 @@ describe("FuelAnalyticsTable", () => {
       expect(screen.queryByText("Rain")).not.toBeInTheDocument();
       expect(screen.getByText("Soft")).toBeInTheDocument();
       expect(screen.getByText("Extra Soft")).toBeInTheDocument();
+      
+      // Should hide full race since it has no tyre specified
+      expect(screen.queryByText("Full Race")).not.toBeInTheDocument();
     });
 
     it("shows only rain tyres when Wet weather is selected", () => {
@@ -191,6 +194,9 @@ describe("FuelAnalyticsTable", () => {
       expect(screen.getByText("Rain")).toBeInTheDocument();
       expect(screen.queryByText("Soft")).not.toBeInTheDocument();
       expect(screen.queryByText("Extra Soft")).not.toBeInTheDocument();
+      
+      // Should hide full race since it has no tyre specified
+      expect(screen.queryByText("Full Race")).not.toBeInTheDocument();
     });
   });
 });

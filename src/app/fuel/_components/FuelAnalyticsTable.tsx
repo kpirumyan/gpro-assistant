@@ -33,7 +33,7 @@ export function FuelAnalyticsTable({ data }: Props) {
       }
       if (weatherFilter !== 'all') {
         if (!entry.tyre || entry.tyre === "-") {
-          // Skip weather filtering for full races or when tyre data is missing
+          return false;
         } else {
           const isRain = entry.tyre.toLowerCase().includes('rain');
           if (weatherFilter === 'dry' && isRain) return false;
