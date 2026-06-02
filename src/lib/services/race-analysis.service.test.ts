@@ -519,4 +519,22 @@ describe('calculateTyreAnalytics', () => {
     expect(stint1?.tyre).toBe("Extra Soft");
     expect(stint2?.tyre).toBe("Hard");
   });
+
+  it('should extract tyre correctly from laps array if startTyres/pits.tyres are missing', () => {
+    const laps = Array(41).fill({ boostLap: 0 });
+    laps[0] = { ...laps[0], tyres: 'Soft' };
+    laps[40] = { ...laps[40], tyres: 'Medium' };
+
+    const data = {
+      laps,
+      pits: [{ lap: 39 }]
+    };
+
+    const results = calculateTyreAnalytics(data as unknown as Partial<import('../gpro/types').RaceAnalysisResponse>);
+    const stint1 = results.find((r) => r.type === 'stint' && r.stintIndex === 1);
+    const stint2 = results.find((r) => r.type === 'stint' && r.stintIndex === 2);
+    
+    expect(stint1?.tyre).toBe('Soft');
+    expect(stint2?.tyre).toBe('Medium');
+  });
 });

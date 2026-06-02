@@ -434,18 +434,27 @@ export function calculateTyreAnalytics(data: Partial<RaceAnalysisResponse>): Tyr
   for (let i = 0; i <= pits.length; i++) {
     const isLastStint = i === pits.length;
     
-    let tyreName = "Unknown";
-    if (i === 0) {
-      tyreName = startTyre;
-    } else {
-      const pitData = pits[i - 1];
-      tyreName = (pitData as { tyres?: string, tyre?: string }).tyres || (pitData as { tyres?: string, tyre?: string }).tyre || "Unknown";
+    const lapData1 = laps[currentStintStartLap] as { tyres?: string; tyre?: string } | undefined;
+    const lapData2 = laps[currentStintStartLap - 1] as { tyres?: string; tyre?: string } | undefined;
+    const lapData0 = laps[0] as { tyres?: string; tyre?: string } | undefined;
+    
+    let tyreName = lapData1?.tyres || lapData1?.tyre || 
+                   lapData2?.tyres || lapData2?.tyre || 
+                   lapData0?.tyres || lapData0?.tyre;
+
+    if (!tyreName) {
+      if (i === 0) {
+        tyreName = startTyre;
+      } else {
+        const pitData = pits[i - 1];
+        tyreName = (pitData as { tyres?: string, tyre?: string }).tyres || (pitData as { tyres?: string, tyre?: string }).tyre || "Unknown";
+      }
     }
 
     const currentStintEndLap = isLastStint ? totalDrivenLaps : (pits[i].lap ?? totalDrivenLaps);
     const lapsInStint = currentStintEndLap - currentStintStartLap + 1;
 
-    if (lapsInStint >= 10) {
+    if (lapsInStint > 0) {
       results.push({
         type: 'stint',
         stintIndex: i + 1,
