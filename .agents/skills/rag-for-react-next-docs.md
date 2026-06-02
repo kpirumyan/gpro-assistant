@@ -1,5 +1,7 @@
 # Mandatory Usage of RAG (React & Next.js)
 
+> **WARNING:** This version of Next.js has breaking changes. You MUST ALWAYS query the RAG librarian before editing or writing any React/Next.js code. Relying on your own experience is strictly prohibited.
+
 **Why this skill is needed:**
 My (Antigravity) internal knowledge base may rely on older versions of React and Next.js. Due to "deceptive self-confidence", I might generate outdated code. To prevent this, I MUST use the up-to-date documentation from RAG.
 
