@@ -113,6 +113,7 @@ These are links to all context files available to you. Read them on-demand when 
 | Code Review | [code-review.md](./.agents/rules/code-review.md) | Before every commit review |
 | UI Patterns | [ui-styling.md](./.agents/rules/ui-styling.md) | When building or modifying UI |
 | Database | [database.md](./.agents/rules/database.md) | When changing schema, queries, migrations |
+| XML Standard | [xml-standard.md](./.agents/rules/xml-standard.md) | When creating or modifying XML-tagged rules in `.agents/` |
 | Documentation | [documentation.md](./.agents/rules/documentation.md) | When editing `.agents/` files |
 | RAG Usage | [rag-usage.md](./.agents/rules/rag-usage.md) | When using AnythingLLM RAG CLI |
 | Terminal | [terminal.md](./.agents/rules/terminal.md) | When running terminal commands |

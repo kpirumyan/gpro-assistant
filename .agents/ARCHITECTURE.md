@@ -37,7 +37,8 @@ gpro-assistant/
 │       ├── terminal.md
 │       ├── testing.md
 │       ├── ui-styling.md
-│       └── workflow.md
+│       ├── workflow.md
+│       └── xml-standard.md
 ├── drizzle/                    # Generated DB migration files (future)
 ├── scripts/                    # Utility scripts (e.g., RAG integration)
 │   └── ask-react-rag.ts
@@ -177,3 +178,4 @@ The project's architectural decisions are documented as standalone ADR markdown 
 - [ADR-008: XML tags for agent instructions](.agents/adr/adr-008-xml-tags-instructions.md)
 - [ADR-009: Universal Fuel Consumption Unit (L/km)](.agents/adr/adr-009-universal-fuel-consumption-unit.md)
 - [ADR-010: Transition from Context Plugins to On-Demand RAG](.agents/adr/adr-010-rag-over-plugins.md)
+- [ADR-011: XML Standard Specification as Permanent Reference](.agents/adr/adr-011-xml-standard-spec.md)
