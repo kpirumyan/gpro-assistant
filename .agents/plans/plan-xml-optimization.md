@@ -78,6 +78,7 @@
 <rule
   id="snake_case_id"                              <!-- Обязателен -->
   severity="ABSOLUTE|CRITICAL|MANDATORY"          <!-- Обязателен -->
+  domain="core|security|language|workflow|vcs"    <!-- Обязателен для семантической сортировки -->
   scope="orchestrator|coder|tester|reviewer|all"  <!-- Если неочевиден из контекста -->
   phase="all|plan|implement|test|review|terminal-audit"  <!-- Если применяется к конкретной фазе -->
   exception="/quick-fix|none"                     <!-- Явно разрешённые исключения -->
@@ -139,8 +140,6 @@
 | `<rule>` | Единица правила с атрибутами |
 | `<rule-ref>` | Ссылка на правило в другом файле (Single Source of Truth) |
 | `<system-rules>` | Контейнер глобальных правил |
-| `<security-rules>` | Контейнер правил безопасности |
-| `<language-rules>` | Контейнер языковых правил |
 | `<role-definition>` | Описание роли субагента |
 | `<permissions>` | Блок прав доступа агента |
 | `<file-access>` | Правило доступа к файлам |

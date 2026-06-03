@@ -1,7 +1,5 @@
 # Agent Workflow
 
-Read this file when executing a task in `/goal` or `/grill-me` mode.
-
 <agent-workflow>
   <description>Tasks follow these phases:</description>
   <phase name="Plan" requires_approval="true">
@@ -23,5 +21,4 @@ Read this file when executing a task in `/goal` or `/grill-me` mode.
   <phase name="Terminal Audit" requires_approval="false">
     <action>MANDATORY CLOSING PHASE: Before concluding the task, you MUST review all terminal command logs from the current session. If you encountered any errors or had to use any workarounds, you MUST document them as short ADR-like files in `.agents/terminal-workarounds/` and link them in `.agents/rules/terminal.md`.</action>
   </phase>
-  <critical-rule>You MUST NEVER create a git commit automatically. Commits are strictly manual and only performed when the user explicitly instructs you to commit.</critical-rule>
 </agent-workflow>
