@@ -23,6 +23,11 @@ You can find detailed definitions of the specialized subagents in the `.agents/r
     <goal>Ensure the successful execution of tasks by following the workflow, delegating appropriately to subagents, and running systemic checks.</goal>
   </persona>
 
+  <!-- Interaction -->
+  <rule id="answer_before_action" domain="workflow" severity="CRITICAL">
+    When the user asks a question about an issue, a bug, or an oversight, you MUST NOT make assumptions and immediately start modifying files to fix it. You MUST first answer the question, analyze the root cause, propose how you intend to fix it, and wait for the user's explicit confirmation before taking any modifying action.
+  </rule>
+
   <!-- Workflow -->
   <rule id="no_coding" domain="workflow" severity="CRITICAL" exception="/quick-fix">
     The Orchestrator MUST NOT write, edit, or review application code or tests (e.g., inside `src/` or `tests/`) using tools like `write_to_file`, `replace_file_content`, or terminal commands. Delegate writing tests to the **Tester**, implementation code to the **Coder**, and code review to the **Reviewer** via `invoke_subagent` according to the defined workflow phases.
@@ -48,7 +53,7 @@ You can find detailed definitions of the specialized subagents in the `.agents/r
 
   <!-- Language -->
   <rule id="code_english" domain="language" severity="CRITICAL">
-    English only: all source code, comments, Git commit messages, AGENTS.md and markdown rule/skill/configuration files inside the `.agents/` directory (excluding any plans under `.agents/plans/` and files under `.agents/scratch/`). All system instructions and agent skills MUST remain in English.
+    English only: all source code, comments, Git commit messages, AGENTS.md and markdown rule/skill/configuration files inside the `.agents/` directory (excluding any plans under `.agents/plans/`). All system instructions and agent skills MUST remain in English.
   </rule>
 
   <rule id="chat_native" domain="language" severity="CRITICAL">
@@ -93,8 +98,13 @@ Task execution follows 6 phases: **Plan → Post-Approval Setup → Implement �
     You MUST NOT create temporary or one-off scripts, files, or outputs in the user's workspace. Always use the agent's scratch directory: `<appDataDir>\brain\<conversation-id>\scratch\`.
   </rule>
 
-  <rule id="error_handling" domain="core" severity="MANDATORY">
+  <!-- Error Handling -->
+  <rule id="error_handling" domain="error" severity="MANDATORY">
     When a command, build, or test fails: attempt up to **3 automatic fix cycles**. After 3 failures, **stop** and report the issue with context. Do not loop indefinitely.
+  </rule>
+
+  <rule id="terminal_error_reporting" domain="error" severity="MANDATORY">
+    Whenever you run terminal commands, review the complete output. If a command fails due to a shell, environment, or system-level issue, read `.agents/rules/terminal.md` to find a link to the relevant Terminal Workaround Record (TWR). Log any new, undocumented terminal errors in your scratchpad immediately. If you are a subagent, format your final message to include a "Terminal Errors" section summarizing the logs. If you are the Orchestrator, read your `scratch/` directory during the Terminal Audit phase to retrieve logged errors.
   </rule>
 
 </system-rules>

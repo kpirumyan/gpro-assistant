@@ -42,9 +42,5 @@ Read this skill before running commands in the terminal or scripting integration
     </workaround>
   </rule>
 
-  <rule id="terminal_error_check" severity="MANDATORY">
-    <description>**Post-Execution Terminal Error Check**</description>
-    <action>Whenever you run any commands in the terminal during a turn, you MUST review the complete output of ALL executed commands. If any command requires a workaround, document it as a short ADR-like file in `.agents/terminal-workarounds/` (e.g., `tw-001-issue.md`) and add a link to it in this file.</action>
-  </rule>
 
 </terminal-rules>

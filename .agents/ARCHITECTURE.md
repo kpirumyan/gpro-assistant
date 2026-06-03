@@ -82,7 +82,7 @@ gpro-assistant/
 │       └── msw/                # MSW mock server for tests
 │           ├── handlers.ts
 │           └── server.ts
-├── AGENTS.md                   # Agent rules (always loaded)
+├── AGENTS.md                   # Agent rules (Orchestrator entry point & System Rules)
 ├── README.md                   # Project overview for humans
 ├── .agentignore                # Files excluded from agent context
 ├── .env.example                # Environment variable template

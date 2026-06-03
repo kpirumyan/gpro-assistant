@@ -57,7 +57,7 @@ There are two execution modes:
     3. **Output & Logging**:
        - **Live Mode (`/debate`)**: Output your final verdict in the chat in the same language as the topic prompt. Summarize the technical merits of both sides and make a final, authoritative architectural decision based on the application's context.
        - **Silent Mode**:
-         1. Create a log file in `.agents/logs/`.
+         1. Create a log file in `.agents/logs/debate/`.
          2. Filename format: `[role1_short]_vs_[role2_short]_[topic_slug]_[timestamp].md` (e.g., `arch_vs_cod_ssr_1717200561.md`). Use abbreviated roles (arch, cod, test, rev) to keep names short.
          3. File Content: Write a highly structured, punchy Markdown summary followed by the full raw transcript. DO NOT write a boring wall of text for the summary. Use bullet points and concise statements. Structure:
             - **Context**: 1-2 sentences on what was debated.

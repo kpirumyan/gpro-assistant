@@ -78,7 +78,7 @@ Correspondence between words in rule text and severity levels:
 <rule
   id="snake_case_id"                              <!-- Required -->
   severity="ABSOLUTE|CRITICAL|MANDATORY"          <!-- Required -->
-  domain="core|security|language|workflow|vcs"    <!-- Required for semantic sorting -->
+  domain="core|security|language|workflow|vcs|error" <!-- Required for semantic sorting -->
   scope="orchestrator|coder|tester|reviewer|all"  <!-- If not obvious from context -->
   phase="all|plan|implement|test|review|terminal-audit"  <!-- If applies to a specific phase -->
   exception="/quick-fix|none"                     <!-- Explicitly allowed exceptions -->
@@ -283,3 +283,4 @@ When creating or editing any file under `.agents/`:
 - [ ] New tags documented via ADR
 - [ ] Attributes do not duplicate parent tag context
 - [ ] Tag names use kebab-case, `id` attribute uses snake_case
+- [ ] Rules are grouped logically by domain and sorted by severity descending (ABSOLUTE > CRITICAL > MANDATORY) within groups
