@@ -46,69 +46,93 @@ export interface SessionData {
   modelResponsesCount: number;
   toolUsage: Record<string, number>;
   subagents: SubagentInfo[];
+  ecosystemPromptTokens: number;
+  ecosystemCompletionTokens: number;
+  ecosystemTotalTokens: number;
+  ecosystemStepsCount: number;
+  ecosystemUserRequestsCount: number;
+  ecosystemModelResponsesCount: number;
+  ecosystemToolUsage: Record<string, number>;
+  incomingMessages: Record<string, number>;
+  ecosystemIncomingMessages: Record<string, number>;
 }
 
-export function extractChatName(messages: TranscriptMessage[]): string | null {
-  for (const msg of messages) {
-    if (msg.type === 'USER_INPUT' && msg.content) {
-      const match = msg.content.match(/Chat Name:\s*(.+)/i);
-      if (match) {
-        return match[1].trim();
-      }
-      
-      const reqMatch = msg.content.match(/<USER_REQUEST>\s*([\s\S]*?)\s*<\/USER_REQUEST>/);
-      if (reqMatch) {
-         const firstLine = reqMatch[1].trim().split('\n')[0];
-         return firstLine.length > 50 ? firstLine.substring(0, 47) + '...' : firstLine;
-      }
+export function getChatNameFromMessage(msg: TranscriptMessage): string | null {
+  if (msg.type === 'USER_INPUT' && msg.content) {
+    const match = msg.content.match(/Chat Name:\s*(.+)/i);
+    if (match) {
+      return match[1].trim();
+    }
+    
+    const reqMatch = msg.content.match(/<USER_REQUEST>\s*([\s\S]*?)\s*<\/USER_REQUEST>/);
+    if (reqMatch) {
+       const firstLine = reqMatch[1].trim().split('\n')[0];
+       return firstLine.length > 50 ? firstLine.substring(0, 47) + '...' : firstLine;
     }
   }
   return null;
 }
 
-export function extractSubagents(messages: TranscriptMessage[]): SubagentInfo[] {
-  const subagentMap = new Map<string, string>();
-  let pendingSubagentNames: string[] = [];
-
+export function extractChatName(messages: TranscriptMessage[]): string | null {
   for (const msg of messages) {
-    if (msg.type === 'PLANNER_RESPONSE' && msg.tool_calls) {
-      for (const call of msg.tool_calls) {
-        if (call.name === 'invoke_subagent' && call.args && call.args.Subagents) {
-          try {
-            const subagentsList = typeof call.args.Subagents === 'string' 
-              ? JSON.parse(call.args.Subagents)
-              : call.args.Subagents;
-              
-            if (Array.isArray(subagentsList)) {
-              for (const s of subagentsList) {
-                pendingSubagentNames.push(s.Role || s.TypeName || 'Unknown Role');
-              }
-            } else {
-              pendingSubagentNames.push('Unknown Role');
+    const name = getChatNameFromMessage(msg);
+    if (name) return name;
+  }
+  return null;
+}
+
+export function processSubagentMessage(
+  msg: TranscriptMessage, 
+  subagentMap: Map<string, string>, 
+  pendingSubagentNames: string[]
+): void {
+  if (msg.type === 'PLANNER_RESPONSE' && msg.tool_calls) {
+    for (const call of msg.tool_calls) {
+      if (call.name === 'invoke_subagent' && call.args && call.args.Subagents) {
+        try {
+          const subagentsList = typeof call.args.Subagents === 'string' 
+            ? JSON.parse(call.args.Subagents)
+            : call.args.Subagents;
+            
+          if (Array.isArray(subagentsList)) {
+            for (const s of subagentsList) {
+              pendingSubagentNames.push(s.Role || s.TypeName || 'Unknown Role');
             }
-          } catch {
+          } else {
             pendingSubagentNames.push('Unknown Role');
           }
-        } else if (call.name === 'send_message' && call.args && call.args.Recipient) {
-          const recipientId = call.args.Recipient as string;
-          if (!subagentMap.has(recipientId)) {
-             subagentMap.set(recipientId, 'Unknown (Message Recipient)');
-          }
+        } catch {
+          pendingSubagentNames.push('Unknown Role');
+        }
+      } else if (call.name === 'send_message' && call.args && call.args.Recipient) {
+        const recipientId = (call.args.Recipient as string).replace(/^["']|["']$/g, '');
+        if (!subagentMap.has(recipientId)) {
+           subagentMap.set(recipientId, 'Unknown (Message Recipient)');
         }
       }
-    } else if (msg.type === 'INVOKE_SUBAGENT' && msg.content) {
-      const regex = /"conversationId":\s*"([^"]+)"/g;
-      let match;
-      while ((match = regex.exec(msg.content)) !== null) {
-        const id = match[1];
-        const name = pendingSubagentNames.shift() || 'Unknown Role';
-        if (!subagentMap.has(id)) {
-          subagentMap.set(id, name);
-        }
-      }
-      pendingSubagentNames = [];
     }
+  } else if (msg.type === 'INVOKE_SUBAGENT' && msg.content) {
+    const regex = /"conversationId":\s*"([^"]+)"/g;
+    let match;
+    while ((match = regex.exec(msg.content)) !== null) {
+      const id = match[1];
+      const name = pendingSubagentNames.shift() || 'Unknown Role';
+      if (!subagentMap.has(id)) {
+        subagentMap.set(id, name);
+      }
+    }
+    pendingSubagentNames.length = 0;
   }
+}
+
+export function extractSubagents(messages: TranscriptMessage[]): SubagentInfo[] {
+  const subagentMap = new Map<string, string>();
+  const pendingSubagentNames: string[] = [];
+
+  for (const msg of messages) {
+    processSubagentMessage(msg, subagentMap, pendingSubagentNames);
+  }
+
   return Array.from(subagentMap.entries()).map(([id, name]) => ({ id, name }));
 }
 
@@ -120,7 +144,7 @@ export function resolveTranscriptPath(arg: string): string {
   return path.join(brainPath, arg, '.system_generated', 'logs', 'transcript.jsonl');
 }
 
-export async function analyzeSession(filePath: string, recursive = true, visited: Set<string> = new Set()): Promise<SessionData> {
+export async function analyzeSession(filePath: string, recursive = true, visited: Set<string> = new Set(), isSubagent = false): Promise<SessionData> {
   try {
     await fs.access(filePath);
   } catch {
@@ -134,13 +158,14 @@ export async function analyzeSession(filePath: string, recursive = true, visited
 
   let chatName: string | null = null;
   const subagentMap = new Map<string, string>();
-  let pendingSubagentNames: string[] = [];
+  const pendingSubagentNames: string[] = [];
 
   let promptTokens = 0;
   let completionTokens = 0;
   let userRequestsCount = 0;
   let modelResponsesCount = 0;
   const toolUsage: Record<string, number> = {};
+  const incomingMessagesById: Record<string, number> = {};
 
   let currentPromptTokens = 0;
   let stepsCount = 0;
@@ -167,59 +192,32 @@ export async function analyzeSession(filePath: string, recursive = true, visited
       completedAt = msg.created_at;
     }
 
-    if (!chatName && msg.type === 'USER_INPUT' && msg.content) {
-      const match = msg.content.match(/Chat Name:\s*(.+)/i);
-      if (match) {
-        chatName = match[1].trim();
+    if (!chatName) {
+      const name = getChatNameFromMessage(msg);
+      if (name) {
+        chatName = name;
+      }
+    }
+
+    processSubagentMessage(msg, subagentMap, pendingSubagentNames);
+
+    if (msg.type === 'USER_INPUT') {
+      if (isSubagent) {
+        incomingMessagesById['Main Agent'] = (incomingMessagesById['Main Agent'] || 0) + 1;
+        if (!subagentMap.has('Main Agent')) {
+          subagentMap.set('Main Agent', 'Main Agent');
+        }
       } else {
-        const reqMatch = msg.content.match(/<USER_REQUEST>\s*([\s\S]*?)\s*<\/USER_REQUEST>/);
-        if (reqMatch) {
-           const firstLine = reqMatch[1].trim().split('\n')[0];
-           chatName = firstLine.length > 50 ? firstLine.substring(0, 47) + '...' : firstLine;
-        }
+        userRequestsCount++;
       }
     }
-
-    if (msg.type === 'PLANNER_RESPONSE' && msg.tool_calls) {
-      for (const call of msg.tool_calls) {
-        if (call.name === 'invoke_subagent' && call.args && call.args.Subagents) {
-          try {
-            const subagentsList = typeof call.args.Subagents === 'string' 
-              ? JSON.parse(call.args.Subagents)
-              : call.args.Subagents;
-              
-            if (Array.isArray(subagentsList)) {
-              for (const s of subagentsList) {
-                pendingSubagentNames.push(s.Role || s.TypeName || 'Unknown Role');
-              }
-            } else {
-              pendingSubagentNames.push('Unknown Role');
-            }
-          } catch {
-            pendingSubagentNames.push('Unknown Role');
-          }
-        } else if (call.name === 'send_message' && call.args && call.args.Recipient) {
-          const recipientId = call.args.Recipient as string;
-          if (!subagentMap.has(recipientId)) {
-             subagentMap.set(recipientId, 'Unknown (Message Recipient)');
-          }
-        }
-      }
-    } else if (msg.type === 'INVOKE_SUBAGENT' && msg.content) {
-      const regex = /"conversationId":\s*"([^"]+)"/g;
-      let match;
-      while ((match = regex.exec(msg.content)) !== null) {
-        const id = match[1];
-        const name = pendingSubagentNames.shift() || 'Unknown Role';
-        if (!subagentMap.has(id)) {
-          subagentMap.set(id, name);
-        }
-      }
-      pendingSubagentNames = [];
-    }
-
-    if (msg.type === 'USER_INPUT') userRequestsCount++;
     if (msg.source === 'MODEL') modelResponsesCount++;
+    if (msg.type === 'AGENT_MESSAGE' && msg.source) {
+      incomingMessagesById[msg.source] = (incomingMessagesById[msg.source] || 0) + 1;
+      if (!subagentMap.has(msg.source)) {
+        subagentMap.set(msg.source, `Unknown (${msg.source})`);
+      }
+    }
     
     if (msg.tool_calls) {
       for (const call of msg.tool_calls) {
@@ -252,6 +250,12 @@ export async function analyzeSession(filePath: string, recursive = true, visited
 
   const subagents = Array.from(subagentMap.entries()).map(([id, name]) => ({ id, name }));
 
+  const incomingMessages: Record<string, number> = {};
+  for (const [id, count] of Object.entries(incomingMessagesById)) {
+    const name = subagentMap.get(id) || id;
+    incomingMessages[name] = (incomingMessages[name] || 0) + count;
+  }
+
   const sessionData: SessionData = {
     chatName,
     sessionId,
@@ -265,7 +269,16 @@ export async function analyzeSession(filePath: string, recursive = true, visited
     userRequestsCount,
     modelResponsesCount,
     toolUsage,
-    subagents
+    subagents,
+    ecosystemPromptTokens: promptTokens,
+    ecosystemCompletionTokens: completionTokens,
+    ecosystemTotalTokens: promptTokens + completionTokens,
+    ecosystemStepsCount: stepsCount,
+    ecosystemUserRequestsCount: userRequestsCount,
+    ecosystemModelResponsesCount: modelResponsesCount,
+    ecosystemToolUsage: { ...toolUsage },
+    incomingMessages,
+    ecosystemIncomingMessages: { ...incomingMessages }
   };
 
   if (recursive && sessionData.subagents.length > 0) {
@@ -275,24 +288,28 @@ export async function analyzeSession(filePath: string, recursive = true, visited
       
       try {
         const subPath = path.join(brainDir, sub.id, '.system_generated', 'logs', 'transcript.jsonl');
-        const subData = await analyzeSession(subPath, true, visited);
+        const subData = await analyzeSession(subPath, true, visited, true);
         sub.stats = subData;
         
-        sessionData.promptTokens += subData.promptTokens;
-        sessionData.completionTokens += subData.completionTokens;
-        sessionData.totalTokens += subData.totalTokens;
-        sessionData.stepsCount += subData.stepsCount;
-        sessionData.userRequestsCount += subData.userRequestsCount;
-        sessionData.modelResponsesCount += subData.modelResponsesCount;
+        sessionData.ecosystemPromptTokens += subData.ecosystemPromptTokens;
+        sessionData.ecosystemCompletionTokens += subData.ecosystemCompletionTokens;
+        sessionData.ecosystemTotalTokens += subData.ecosystemTotalTokens;
+        sessionData.ecosystemStepsCount += subData.ecosystemStepsCount;
+        sessionData.ecosystemUserRequestsCount += subData.ecosystemUserRequestsCount;
+        sessionData.ecosystemModelResponsesCount += subData.ecosystemModelResponsesCount;
         
-        for (const [tool, count] of Object.entries(subData.toolUsage)) {
-          sessionData.toolUsage[tool] = (sessionData.toolUsage[tool] || 0) + count;
+        for (const [tool, count] of Object.entries(subData.ecosystemToolUsage)) {
+          sessionData.ecosystemToolUsage[tool] = (sessionData.ecosystemToolUsage[tool] || 0) + count;
+        }
+
+        for (const [sender, count] of Object.entries(subData.ecosystemIncomingMessages)) {
+          sessionData.ecosystemIncomingMessages[sender] = (sessionData.ecosystemIncomingMessages[sender] || 0) + count;
         }
       } catch (err: unknown) {
          if (typeof err === 'object' && err !== null && 'code' in err && (err as { code?: string }).code === 'ENOENT') {
             // ignore ENOENT
          } else {
-           console.warn(`Warning: Could not analyze subagent ${sub.id}:`, err instanceof Error ? err.message : err);
+           console.error(`Warning: Could not analyze subagent ${sub.id}:`, err instanceof Error ? err.message : err);
          }
       }
     }
@@ -301,11 +318,34 @@ export async function analyzeSession(filePath: string, recursive = true, visited
   return sessionData;
 }
 
+function formatTokens(tokens: number): string {
+  if (tokens >= 1000000) {
+    return (tokens / 1000000).toFixed(2) + 'M';
+  }
+  if (tokens >= 1000) {
+    return (tokens / 1000).toFixed(2) + 'K';
+  }
+  return tokens.toString();
+}
+
 export async function generateReport(sessionData: SessionData): Promise<string> {
   const toolsRows = Object.entries(sessionData.toolUsage)
     .sort((a, b) => b[1] - a[1])
     .map(([tool, count]) => `| ${tool} | ${count} |`)
     .join('\n');
+
+  const ecoToolsRows = Object.entries(sessionData.ecosystemToolUsage)
+    .sort((a, b) => b[1] - a[1])
+    .map(([tool, count]) => `| ${tool} | ${count} |`)
+    .join('\n');
+
+  const incomingMsgsStr = Object.keys(sessionData.incomingMessages).length > 0 
+    ? Object.entries(sessionData.incomingMessages).map(([s, c]) => `${s}: ${c}`).join(', ')
+    : 'None';
+
+  const ecoIncomingMsgsStr = Object.keys(sessionData.ecosystemIncomingMessages).length > 0 
+    ? Object.entries(sessionData.ecosystemIncomingMessages).map(([s, c]) => `${s}: ${c}`).join(', ')
+    : 'None';
 
   const subagentsList = sessionData.subagents.length > 0
     ? sessionData.subagents.map(s => {
@@ -313,7 +353,11 @@ export async function generateReport(sessionData: SessionData): Promise<string> 
           const toolsStr = Object.keys(s.stats.toolUsage).length > 0 
             ? Object.entries(s.stats.toolUsage).map(([t, c]) => `${t}: ${c}`).join(', ') 
             : 'None';
-          return `- **${s.name}** (${s.id})\n  - Duration: ${s.stats.durationSec} seconds\n  - Tokens: Prompt: ${s.stats.promptTokens}, Completion: ${s.stats.completionTokens}, Total: ${s.stats.totalTokens}\n  - Turns: Total Steps: ${s.stats.stepsCount}, User Requests: ${s.stats.userRequestsCount}, Model Responses: ${s.stats.modelResponsesCount}\n  - Tools: ${toolsStr}`;
+          const incomingMsgs = Object.keys(s.stats.incomingMessages).length > 0
+            ? Object.entries(s.stats.incomingMessages).map(([sender, count]) => `${sender}: ${count}`).join(', ')
+            : '';
+          const incomingMsgsPart = incomingMsgs ? `, Incoming Messages: ${incomingMsgs}` : '';
+          return `- **${s.name}** (${s.id})\n  - Duration: ${s.stats.durationSec} seconds\n  - Tokens: Prompt: ${formatTokens(s.stats.promptTokens)}, Completion: ${formatTokens(s.stats.completionTokens)}, Total: ${formatTokens(s.stats.totalTokens)}\n  - Turns: Total Steps: ${s.stats.stepsCount}, User Requests: ${s.stats.userRequestsCount}, Model Responses: ${s.stats.modelResponsesCount}${incomingMsgsPart}\n  - Tools: ${toolsStr}`;
         } else {
           return `- ${s.name} (${s.id})`;
         }
@@ -330,19 +374,32 @@ export async function generateReport(sessionData: SessionData): Promise<string> 
 - **Duration:** ${sessionData.durationSec} seconds
 
 ## Token Usage
-- **Prompt Tokens:** ${sessionData.promptTokens}
-- **Completion Tokens:** ${sessionData.completionTokens}
-- **Total Tokens:** ${sessionData.totalTokens}
+- **Prompt Tokens:** ${formatTokens(sessionData.promptTokens)} (Main Agent) / ${formatTokens(sessionData.ecosystemPromptTokens)} (Ecosystem Total)
+- **Completion Tokens:** ${formatTokens(sessionData.completionTokens)} (Main Agent) / ${formatTokens(sessionData.ecosystemCompletionTokens)} (Ecosystem Total)
+- **Total Tokens:** ${formatTokens(sessionData.totalTokens)} (Main Agent) / ${formatTokens(sessionData.ecosystemTotalTokens)} (Ecosystem Total)
 
 ## Turn Statistics
+**(Main Agent)**
 - **Total Steps:** ${sessionData.stepsCount}
 - **User Requests:** ${sessionData.userRequestsCount}
 - **Model Responses:** ${sessionData.modelResponsesCount}
+- **Incoming Messages:** ${incomingMsgsStr}
 
-## Tools Usage
+**(Ecosystem Total)**
+- **Total Steps:** ${sessionData.ecosystemStepsCount}
+- **User Requests:** ${sessionData.ecosystemUserRequestsCount}
+- **Model Responses:** ${sessionData.ecosystemModelResponsesCount}
+- **Incoming Messages:** ${ecoIncomingMsgsStr}
+
+## Tools Usage (Main Agent)
 | Tool | Count |
 |---|---|
 ${toolsRows || '| No tools used | 0 |'}
+
+## Tools Usage (Ecosystem Total)
+| Tool | Count |
+|---|---|
+${ecoToolsRows || '| No tools used | 0 |'}
 
 ## Subagents Tree
 ${subagentsList}
