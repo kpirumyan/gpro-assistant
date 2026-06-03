@@ -39,7 +39,6 @@ yarn-error.log*
 .vercel
 
 # agents
-.agents/plans/
 .agents/rag-sessions/
 .agents/logs/
 

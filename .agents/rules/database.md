@@ -41,7 +41,7 @@ Use `DATABASE_URL` for the app runtime. Use `DATABASE_URL_UNPOOLED` for Drizzle 
 
 ## Schema conventions
 
-<schema_rules>
+<schema-rules>
   <rule id="naming">
     **Database columns**: `snake_case` (e.g., `created_at`, `api_token`)
     **TypeScript fields**: `camelCase` (Drizzle maps automatically)
@@ -56,7 +56,7 @@ Use `DATABASE_URL` for the app runtime. Use `DATABASE_URL_UNPOOLED` for Drizzle 
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     ```
   </rule>
-</schema_rules>
+</schema-rules>
 
 ### Example schema
 
@@ -93,10 +93,10 @@ npx drizzle-kit studio
 
 - Run migrations against `DATABASE_URL_UNPOOLED` (direct connection).
 
-<migration_rules>
+<migration-rules>
   <rule id="commit_migrations">Commit migration files in `drizzle/` to git.</rule>
   <rule id="no_manual_migrations" severity="CRITICAL">Never edit generated migration files manually.</rule>
-</migration_rules>
+</migration-rules>
 
 ## Testing
 

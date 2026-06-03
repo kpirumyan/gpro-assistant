@@ -8,17 +8,17 @@ Read this skill before running commands in the terminal or scripting integration
 
 ## Stack & Shells
 
-<terminal_shells>
+<terminal-shells>
   <shell name="Git Bash" role="PRIMARY">
     Git Bash is the primary and preferred shell for all commands. Execute all commands using the Git Bash wrapper: `& "C:\Program Files\Git\bin\bash.exe" -c "..."`. Avoid WSL bash by never using a plain `bash` command.
   </shell>
-</terminal_shells>
+</terminal-shells>
 
 ---
 
 ## Rules & Workarounds
 
-<terminal_rules>
+<terminal-rules>
   <rule id="non_tty_drizzle_generate" severity="CRITICAL">
     <description>**Non-TTY environments (Drizzle Kit Generate)**</description>
     <action>When running inside automated agent sandboxes, `process.stdout.isTTY` is `false`. Since `drizzle-kit generate` requires interactive prompts to confirm renames or drop/create conflicts, it crashes with `Error: Interactive prompts require a TTY terminal`.</action>
@@ -42,4 +42,9 @@ Read this skill before running commands in the terminal or scripting integration
     </workaround>
   </rule>
 
-</terminal_rules>
+  <rule id="terminal_error_check" severity="MANDATORY">
+    <description>**Post-Execution Terminal Error Check**</description>
+    <action>Whenever you run any commands in the terminal during a turn, you MUST review the complete output of ALL executed commands. If any command requires a workaround, document it as a short ADR-like file in `.agents/terminal-workarounds/` (e.g., `tw-001-issue.md`) and add a link to it in this file.</action>
+  </rule>
+
+</terminal-rules>

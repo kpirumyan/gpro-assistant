@@ -41,22 +41,22 @@ TypeScript interfaces/types that match the GPRO API response shapes. Keep in syn
 
 ## Error handling
 
-<error_handling_rules>
+<error-handling-rules>
   <rule id="try_catch">Wrap all API calls in try/catch.</rule>
   <rule id="handle_401_403">**Auth errors (401/403)** — token invalid or expired, surface to user</rule>
   <rule id="handle_429">**Rate limit (429)** — retry after delay</rule>
   <rule id="handle_5xx">**Server errors (5xx)** — retry up to 3 times with exponential backoff</rule>
   <rule id="handle_4xx">**Client errors (4xx)** — do not retry, surface error message</rule>
   <rule id="no_swallow" severity="MANDATORY">Never swallow errors silently.</rule>
-</error_handling_rules>
+</error-handling-rules>
 
 ## Testing
 
-<api_testing_rules>
+<api-testing-rules>
   <rule id="always_mock_api" severity="CRITICAL">**Always** mock API calls in tests using MSW. Never call the real GPRO API from tests.</rule>
   <rule id="msw_locations">MSW handlers: `src/test/msw/handlers.ts`. Fixtures: `src/lib/gpro/__fixtures__/` — JSON files with realistic sample API responses.</rule>
   <rule id="new_endpoint">When adding a new API endpoint, add both: 1) A fixture file with a sample response, and 2) An MSW handler that returns the fixture.</rule>
-</api_testing_rules>
+</api-testing-rules>
 
 ## Reference
 

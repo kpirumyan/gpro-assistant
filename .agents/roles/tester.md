@@ -8,7 +8,7 @@
 </persona>
 
 ## Responsibilities & Permissions
-<role_definition>
+<role-definition>
   <function>Quality Assurance.</function>
   <responsibilities>
     <item>Writing unit and e2e tests.</item>
@@ -19,4 +19,4 @@
     <item>Terminal: Allowed for running tests (`npm run test`, `vitest`).</item>
     <item>Delegation: Forbidden (you cannot invoke other subagents).</item>
   </permissions>
-</role_definition>
+</role-definition>

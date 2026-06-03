@@ -37,7 +37,7 @@ npx tsx scripts/ask-web-guidance-rag.ts --new "Your UI/CSS query"
 ```
 **RULE:** If the task is related to UI, layout, CSS, accessibility, or web animations → ALWAYS ask `ask-web-guidance-rag` FIRST.
 
-<rag_rules>
+<rag-rules>
   <rule id="mandatory_rag_query" severity="CRITICAL">
     **Mandatory RAG Consultation:** I **MUST NEVER** rely on my own training data or prior experience when modifying, creating, or refactoring React or Next.js code. I **ALWAYS** query the RAG (for React or Next.js depending on the task) before writing any code. The ONLY exception is fixing trivial typos or syntax errors (like missing commas or brackets).
   </rule>
@@ -53,7 +53,7 @@ npx tsx scripts/ask-web-guidance-rag.ts --new "Your UI/CSS query"
   <rule id="follow_rag_links" severity="CRITICAL">
     **Follow RAG Links:** If the RAG response provides external URLs, documentation links, or references to specific guides containing the implementation details, I **MUST** use the `read_url_content` tool to fetch and read the full contents of those URLs before generating or modifying any code. I must never assume the contents of the linked documentation based only on the short summary.
   </rule>
-</rag_rules>
+</rag-rules>
 
 ## When to apply RAG in the workflow?
 

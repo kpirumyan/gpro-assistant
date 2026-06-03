@@ -5,7 +5,7 @@ There are two execution modes:
 1. **Live Mode**: Triggered by the user via the `/debate` command. The debate is streamed directly to the chat.
 2. **Silent Mode**: Triggered automatically by the Orchestrator during background tasks to resolve architectural or technical disagreements without interrupting the user.
 
-<debate_workflow>
+<debate-workflow>
   <phase name="Preparation">
     1. Parse the prompt or current context to identify the **Topic**, the **Number of Iterations** (N), and the **Roles** of the two participants. If N is not specified, use N = 5. If Roles are not specified, default to `Reviewer` and `Coder`.
     2. Read the corresponding role definitions from `.agents/roles/<RoleName>.md` (e.g., `.agents/roles/reviewer.md` and `.agents/roles/coder.md`).
@@ -74,7 +74,7 @@ There are two execution modes:
          4. Tell the user in chat: "I conducted a background debate on [topic]. The winner is [Choice]. Log saved to [path]."
   </phase>
 
-  <escalation_protocol>
+  <escalation-protocol>
     <description>This protocol defines how normal coding cycles (Tester vs Coder, Reviewer vs Coder) are escalated into debates to prevent infinite loops.</description>
     <step name="Fast Lane">
       Normal cycles (TDD loop or Code Review loop) run without debates. The Critic (Tester/Reviewer) provides feedback, and the Actor (Coder) implements it. This loop has a STRICT LIMIT of exactly 3 iterations.
@@ -87,5 +87,5 @@ There are two execution modes:
       - If the Coder won: The phase is marked complete, move to the next phase (e.g. from Review to Terminal Audit).
       - If the Critic won: The Orchestrator gives the Coder an unappealable directive based on the debate's outcome, forcing the Coder to implement it exactly as decided.
     </step>
-  </escalation_protocol>
-</debate_workflow>
+  </escalation-protocol>
+</debate-workflow>

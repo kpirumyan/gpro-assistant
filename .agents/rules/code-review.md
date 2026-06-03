@@ -8,7 +8,7 @@ Read this skill and run through the checklist **before every commit**.
 
 ## Pre-commit checklist
 
-<code_review_checklist>
+<code-review-checklist>
   <description>Run through every item before committing. Fix any issues found.</description>
   
   <stage id="1" name="Typecheck, tests and lint">
@@ -48,7 +48,7 @@ Read this skill and run through the checklist **before every commit**.
     </check>
     <check id="env_sync">`.env.example` — were new environment variables introduced?</check>
   </stage>
-</code_review_checklist>
+</code-review-checklist>
 
 ## Commit message
 
@@ -72,11 +72,11 @@ Rules:
 
 ## When to raise to user
 
-<escalation_rules>
+<escalation-rules>
   <rule id="escalation_conditions" severity="CRITICAL">
     Stop and report instead of committing if:
     - Tests fail and 3 fix attempts didn't resolve the issue
     - Architecture changes were not in the approved plan
     - A decision has multiple valid approaches and no clear winner
   </rule>
-</escalation_rules>
+</escalation-rules>

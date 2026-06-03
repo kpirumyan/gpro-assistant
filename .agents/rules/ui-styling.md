@@ -69,7 +69,7 @@ When adding a new page:
 
 ## Form patterns
 
-<form_rules>
+<form-rules>
   <rule id="settings_pattern">
     Follow the pattern established in `SettingsApiKeyForm`:
     - Wrap in `<section>` with card styling
@@ -79,7 +79,7 @@ When adding a new page:
     - Styled inputs with focus ring transitions
     - Clear button with `aria-label`
   </rule>
-</form_rules>
+</form-rules>
 
 ### Input styling
 
@@ -102,14 +102,14 @@ dark:bg-zinc-50 dark:text-zinc-950 dark:hover:bg-zinc-200
 
 ## Accessibility
 
-<accessibility_rules>
+<accessibility-rules>
   <rule id="semantic_html">Semantic HTML: `<header>`, `<nav>`, `<main>`, `<section>`, `<form>`</rule>
   <rule id="form_labels" severity="MANDATORY">Every form input has a visible `<label>`</rule>
   <rule id="aria_roles">Error messages use `role="alert"`. Success/status messages use `role="status"`</rule>
   <rule id="aria_labels" severity="MANDATORY">Interactive elements have `aria-label` when text content is insufficient</rule>
   <rule id="keyboard_nav">Keyboard navigation: all interactive elements reachable via Tab</rule>
   <rule id="color_contrast">Color contrast: zinc palette meets WCAG AA by default</rule>
-</accessibility_rules>
+</accessibility-rules>
 
 ## Responsive design
 
@@ -125,10 +125,10 @@ dark:bg-zinc-50 dark:text-zinc-950 dark:hover:bg-zinc-200
 
 ## Hooks and state
 
-<hooks_rules>
+<hooks-rules>
   <rule id="no_set_state_in_effect" severity="CRITICAL">
     <description>**ESLint `react-hooks/set-state-in-effect`**: calling `setState()` synchronously inside `useEffect` causes cascading renders and is flagged as a lint error.</description>
     <workaround>For post-mount DOM effects (e.g. enabling CSS transitions after hydration), use a **ref callback** + `requestAnimationFrame` instead of `useState` + `useEffect`. Example: `const enableTransition = useCallback((node) => { if (node) rAF(() => node.style.transitionDuration = '200ms'); }, [])` and pass as `ref={enableTransition}`.</workaround>
   </rule>
-</hooks_rules>
+</hooks-rules>
 

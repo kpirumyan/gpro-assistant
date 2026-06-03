@@ -27,13 +27,17 @@ gpro-assistant/
 │   ├── adr/                    # Architecture Decision Records
 │   ├── ARCHITECTURE.md         # This file
 │   ├── plugins/                # Agent plugins (chrome-devtools)
-│   └── skills/                 # Skill files loaded by agent on demand
-│       ├── testing-rules.md
-│       ├── api-integration-rules.md
-│       ├── code-review-checklist.md
-│       ├── ui-styling-rules.md
-│       ├── db-conventions.md
-│       └── rag-for-react-next-docs.md
+│   └── rules/                  # On-demand rule files loaded by trigger
+│       ├── api-integration.md
+│       ├── code-review.md
+│       ├── database.md
+│       ├── documentation.md
+│       ├── interaction-modes.md
+│       ├── rag-usage.md
+│       ├── terminal.md
+│       ├── testing.md
+│       ├── ui-styling.md
+│       └── workflow.md
 ├── drizzle/                    # Generated DB migration files (future)
 ├── scripts/                    # Utility scripts (e.g., RAG integration)
 │   └── ask-react-rag.ts
@@ -117,7 +121,7 @@ Next.js App (React UI)
 
 ## Key patterns
 
-<architecture_patterns>
+<architecture-patterns>
   <pattern id="single_component_per_file">
     <name>Single component per file</name>
     <description>Never have multiple React components in one file. Each component should be extracted to its own file.</description>
@@ -157,7 +161,7 @@ Next.js App (React UI)
     <name>Client state persistence via useLocalStorage hook</name>
     <description>For persisting client-side UI state (like sidebar expansion or fuel unit selection), we use the custom `useLocalStorage` hook located in `src/hooks/useLocalStorage.ts`. This hook safely handles hydration, prevents cascading renders, and wraps access in `try/catch` to prevent crashes in strict browser environments (e.g. Safari private mode).</description>
   </pattern>
-</architecture_patterns>
+</architecture-patterns>
 
 ## Architecture Decision Records (ADR)
 

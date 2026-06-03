@@ -38,16 +38,16 @@ Not installed: Jest, Playwright, Cypress.
 
 ## TDD workflow
 
-<tdd_workflow>
+<tdd-workflow>
   <step id="1">Write a failing test that describes the expected behavior.</step>
   <step id="2">Write the minimal code to make the test pass.</step>
   <step id="3">Refactor if needed — tests must still pass.</step>
   <step id="4" severity="MANDATORY">Deliver test + code together; do not pause between writing test and code.</step>
-</tdd_workflow>
+</tdd-workflow>
 
 ## Rules
 
-<testing_rules>
+<testing-rules>
   <rule id="never_weaken_tests" severity="CRITICAL">**Never change tests to make a fix pass.** Fix production code (or MSW mocks / fixtures) instead.</rule>
   <rule id="explicit_test_edits">Only edit tests when the user explicitly asks to add, update, or remove test coverage.</rule>
   <rule id="co_locate_lib_tests">Every new module in `src/lib/` should have a co-located `.test.ts` file.</rule>
@@ -64,7 +64,7 @@ Not installed: Jest, Playwright, Cypress.
     <description>**Avoid Redundant Tests when Writing**</description>
     <action>Do not write redundant or unnecessary tests — avoid duplicate test cases covering identical scenarios, testing trivial code without logic (like static rendering of fixed props), or testing obsolete behavior.</action>
   </rule>
-</testing_rules>
+</testing-rules>
 
 ## MSW patterns
 
